@@ -5,6 +5,19 @@ if [[ " $* " =~ " --debug " ]]; then
     set -x
 fi
 
+set +e
+
+echo "Waiting on networking..."
+for i in {1..20}; do
+    ping -c 1 archive.ubuntu.com
+    if [ $? -ne 0 ]; then
+        sleep 5
+    else
+        break
+    fi
+done
+echo "Done!"
+
 distro="RHEL"
 installer=`type -P yum`
 

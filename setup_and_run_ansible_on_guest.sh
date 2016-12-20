@@ -6,7 +6,7 @@ PLAYBOOK=master_playbook.yaml
 
 CNAME=$1
 if [ -z "$CNAME" ]; then
-  echo "usage: $0 <container-name>"
+  echo "usage: $0 <container-name> [--debug]"
   exit 1
 fi
 shift

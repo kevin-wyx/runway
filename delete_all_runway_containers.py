@@ -23,5 +23,9 @@ p = subprocess.run(shlex.split(list_command), stdout=subprocess.PIPE)
 containers = json.loads(p.stdout.decode())
 to_delete = [x['name'] for x in containers if x['name'].startswith('swift-runway-')]
 
-delete_command = 'lxc delete --force %s' % ' '.join(to_delete)
-p = subprocess.run(shlex.split(delete_command))
+if to_delete:
+    delete_command = 'lxc delete --force %s' % ' '.join(to_delete)
+    p = subprocess.run(shlex.split(delete_command))
+    print('%d containers deleted' % len(to_delete))
+else:
+    print('No containers to delete')

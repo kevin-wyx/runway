@@ -11,8 +11,17 @@ DISTRO=$1
 if [ -z "$DISTRO" ];  then
     echo "Required DISTRO variable is not specified"
     echo
-    echo "usage: $0 [--debug] DISTRO"
+    echo "usage: $0 [--debug] DISTRO CNAME"
     exit 1
+fi
+
+if [ -z $2 ]; then
+    echo "Required CNAME variable is not specified"
+    echo
+    echo "usage: $0 [--debug] DISTRO CNAME"
+    exit 1
+else
+    CNAME=$2
 fi
 
 BASE=ubuntu:16.04
@@ -26,12 +35,5 @@ lxc profile create swift-runway-v1 2>/dev/null
 set -e
 cat container-base/swift-runway-v1.yaml | lxc profile edit swift-runway-v1
 
-# Using colons makes using lxc-cli inconvenient, and using periods makes it
-# an invalid hostname, so just use all dashes
-TS=`date +%F-%k-%M-%S-%N`
-CNAME=swift-runway-$TS
-
 # launch the new container
 lxc launch $BASE $CNAME -p swift-runway-v1
-
-echo $CNAME launched

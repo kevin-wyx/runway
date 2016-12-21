@@ -1,0 +1,6 @@
+[submodule "swift"]
+	path = swift
+	url = https://github.com/openstack/swift.git
+[submodule "components/swift"]
+	path = components/swift
+	url = https://github.com/openstack/swift.git

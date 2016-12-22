@@ -17,13 +17,13 @@ if [[ " $* " =~ " --debug " ]]; then
 fi
 
 # get all the guest-executed stuff pushed over
-# lxc file push ./ansible/ $CNAME/tmp/
+# lxc file push ./ansible/ $CNAME/root/
 # unfortunately, lxc doesn't support directly pushing a whole directory
 # https://github.com/lxc/lxd/issues/1218
-tar cf - ./ansible | lxc exec $CNAME -- tar xvf - -C /tmp/
+tar cf - ./ansible | lxc exec $CNAME -- tar xvf - -C /root/
 
 # install ansible
-lxc exec $CNAME -- /bin/bash /tmp/ansible/install_ansible.sh $DEBUG
+lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG
 
 # run ansible playbook to bootstrap container
-lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /tmp/ansible/master_playbook.yaml
+lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/master_playbook.yaml

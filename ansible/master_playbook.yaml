@@ -1,3 +1,6 @@
 # starting point for ansible deploy
-
-- include: tasks/main.yaml
+---
+- name: The whole shebang
+  hosts: localhost
+  tasks:
+    - include: tasks/main.yaml

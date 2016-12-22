@@ -2,8 +2,6 @@
 
 set -e
 
-PLAYBOOK=master_playbook.yaml
-
 CNAME=$1
 if [ -z "$CNAME" ]; then
   echo "usage: $0 <container-name> [--debug]"
@@ -18,10 +16,14 @@ if [[ " $* " =~ " --debug " ]]; then
     DEBUG="--debug"
 fi
 
+# get all the guest-executed stuff pushed over
+# lxc file push ./ansible/ $CNAME/tmp/
+# unfortunately, lxc doesn't support directly pushing a whole directory
+# https://github.com/lxc/lxd/issues/1218
+tar cf - ./ansible | lxc exec $CNAME -- tar xvf - -C /tmp/
+
 # install ansible
-lxc file push ./ansible/install_ansible.sh $CNAME/tmp/
-lxc exec $CNAME -- /bin/bash /tmp/install_ansible.sh $DEBUG
+lxc exec $CNAME -- /bin/bash /tmp/ansible/install_ansible.sh $DEBUG
 
 # run ansible playbook to bootstrap container
-#lxc file push ansible/$PLAYBOOK $CNAME/tmp/
-#lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /tmp/$PLAYBOOK
+lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /tmp/ansible/master_playbook.yaml

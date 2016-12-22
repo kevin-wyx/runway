@@ -1,0 +1,20 @@
+---
+
+-name: Create swift user
+    -user:
+        name: swift
+        group: swift
+        # password is "password"
+        password: $6$EgUVKk/vDpZbfJ$gtzFx.iN.iVbglXGBWaOeptejT3phyjmQWW.YeX5F75EMuNzqvOh1icDOHUlYapBiXna4pVNK5Zg6ZYPraXRm/
+    register: swiftusercreated
+
+
+- name: Create etc swift
+    when: swiftusercreated|success
+    -file:
+        path: /etc/swift
+        state: directory
+        mode: 0755
+        owner: swift
+        group: swift
+    register: etcswiftcreated

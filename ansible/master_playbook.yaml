@@ -1,1 +1,3 @@
 # starting point for ansible deploy
+
+- include: tasks/main.yaml

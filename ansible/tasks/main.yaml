@@ -1,9 +1,11 @@
 ---
+
 - name: Create swift group
   group:
     name: swift
     state: present
   register: swiftgroupcreated
+
 
 - name: Create swift user
   when: swiftgroupcreated|success
@@ -24,3 +26,14 @@
     owner: swift
     group: swift
   register: etcswiftcreated
+
+
+# - name: Create swift config files
+#   register: swiftconfigscreated
+
+# - name: Set up swift disks
+#   register: drivesetup
+
+
+# - name: Build rings
+#   when: drivesetup|success

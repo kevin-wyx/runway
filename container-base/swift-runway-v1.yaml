@@ -4,7 +4,7 @@ config:
   raw.lxc: |-
     lxc.cgroup.devices.allow = c 10:237 rwm
     lxc.aa_profile = unconfined
-    lxc.cgroup.devices.allow = b 7:* rwm
+    lxc.cgroup.devices.allow = b 252:* rwm
   security.privileged: "true"
 description: Swift object storage all-in-one
 devices:
@@ -13,27 +13,43 @@ devices:
     nictype: bridged
     parent: lxdbr0
     type: nic
-  loop0:
-    path: /dev/loop0
+  disk0:
+    path: /dev/sdb
+    major: 252
+    minor: 0
     type: unix-block
-  loop1:
-    path: /dev/loop1
+  disk1:
+    path: /dev/sdc
+    major: 252
+    minor: 1
     type: unix-block
-  loop2:
-    path: /dev/loop2
+  disk2:
+    path: /dev/sdd
+    major: 252
+    minor: 2
     type: unix-block
-  loop3:
-    path: /dev/loop3
+  disk3:
+    path: /dev/sde
+    major: 252
+    minor: 3
     type: unix-block
-  loop4:
-    path: /dev/loop4
+  disk4:
+    path: /dev/sdf
+    major: 252
+    minor: 4
     type: unix-block
-  loop5:
-    path: /dev/loop5
+  disk5:
+    path: /dev/sdg
+    major: 252
+    minor: 5
     type: unix-block
-  loop6:
-    path: /dev/loop6
+  disk6:
+    path: /dev/sdh
+    major: 252
+    minor: 6
     type: unix-block
-  loop7:
-    path: /dev/loop7
+  disk7:
+    path: /dev/sdi
+    major: 252
+    minor: 7
     type: unix-block

@@ -45,3 +45,16 @@ else:
         p = subprocess.run(shlex.split(delete_command), stdout=subprocess.PIPE)
     else:
         print('%d volumes deleted' % len(lvlist))
+
+# delete associated lxc profiles
+profile_list_command = 'lxc profile list'
+p = subprocess.run(shlex.split(profile_list_command), stdout=subprocess.PIPE)
+profiles = p.stdout.decode().split('\n')
+to_delete = [x for x in profiles if x.startswith('swift-runway-')]
+if to_delete:
+    for profile in to_delete:
+        delete_command = 'lxc profile delete %s' % profile
+        p = subprocess.run(shlex.split(delete_command))
+    print('%d profles deleted' % len(to_delete))
+else:
+    print('No profles to delete')

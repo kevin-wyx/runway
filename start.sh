@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z ${1+x} ]; then
     DISTRO=ubuntu
 else

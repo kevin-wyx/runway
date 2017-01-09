@@ -28,12 +28,57 @@
   register: etcswiftcreated
 
 
-# - name: Create swift config files
-#   register: swiftconfigscreated
+- name: Create swift config files
+  register: swiftconfigscreated
+  when: etcswiftcreated|success
+  copy:
+    src: ../components/swift/doc/saio/swift/
+    dest: /etc/swift/
+    owner: swift
+    group: swift
 
-# - name: Set up swift disks
-#   register: drivesetup
+
+- name: Make filesystems on disks
+  register: filesystemscreated
+  with_items:
+    - sdb
+    - sdc
+    - sdd
+    - sde
+    - sdf
+    - sdg
+    - sdh
+    - sdi
+  filesystem:
+    fstype: xfs
+    dev: /dev/{{ item }}
+    force: no
+
+- name: Mount disks
+  register: drivesetup
+  when: filesystemscreated|success
+  with_items:
+    - { drive: sdb, mp: /srv/node/1/d1 }
+    - { drive: sdc, mp: /srv/node/2/d2 }
+    - { drive: sdd, mp: /srv/node/3/d3 }
+    - { drive: sde, mp: /srv/node/4/d4 }
+    - { drive: sdf, mp: /srv/node/1/d5 }
+    - { drive: sdg, mp: /srv/node/2/d6 }
+    - { drive: sdh, mp: /srv/node/3/d7 }
+    - { drive: sdi, mp: /srv/node/4/d8 }
+  mount:
+    name: "{{ item.mp }}"
+    src: /dev/{{ item.drive }}
+    fstype: xfs
+    state: mounted
+    opts: noatime,nodiratime,logbufs=2
 
 
 # - name: Build rings
 #   when: drivesetup|success
+#   register: ringssetup
+
+
+# - name: Start swift
+#   register: swiftstarted
+#   when: swiftconfigscreated|success

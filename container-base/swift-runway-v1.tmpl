@@ -1,8 +1,7 @@
 # profile for guest container
-name: swift-runway-v1
+name: {name}
 config:
   raw.lxc: |-
-    lxc.cgroup.devices.allow = c 10:237 rwm
     lxc.aa_profile = unconfined
     lxc.cgroup.devices.allow = b 252:* rwm
   security.privileged: "true"
@@ -15,41 +14,41 @@ devices:
     type: nic
   disk0:
     path: /dev/sdb
-    major: 252
-    minor: 0
+    major: {major0}
+    minor: {minor0}
     type: unix-block
   disk1:
     path: /dev/sdc
-    major: 252
-    minor: 1
+    major: {major1}
+    minor: {minor1}
     type: unix-block
   disk2:
     path: /dev/sdd
-    major: 252
-    minor: 2
+    major: {major2}
+    minor: {minor2}
     type: unix-block
   disk3:
     path: /dev/sde
-    major: 252
-    minor: 3
+    major: {major3}
+    minor: {minor3}
     type: unix-block
   disk4:
     path: /dev/sdf
-    major: 252
-    minor: 4
+    major: {major4}
+    minor: {minor4}
     type: unix-block
   disk5:
     path: /dev/sdg
-    major: 252
-    minor: 5
+    major: {major5}
+    minor: {minor5}
     type: unix-block
   disk6:
     path: /dev/sdh
-    major: 252
-    minor: 6
+    major: {major6}
+    minor: {minor6}
     type: unix-block
   disk7:
     path: /dev/sdi
-    major: 252
-    minor: 7
+    major: {major7}
+    minor: {minor7}
     type: unix-block

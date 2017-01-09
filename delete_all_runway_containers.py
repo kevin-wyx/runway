@@ -16,6 +16,10 @@
 import json
 import subprocess
 import shlex
+import os
+
+
+VOLUME_GROUP = 'swift-runway-vg01'
 
 list_command = 'lxc list --format=json'
 p = subprocess.run(shlex.split(list_command), stdout=subprocess.PIPE)
@@ -29,3 +33,15 @@ if to_delete:
     print('%d containers deleted' % len(to_delete))
 else:
     print('No containers to delete')
+
+# delete associated lvm volumes
+try:
+    lvlist = os.listdir('/dev/%s' % VOLUME_GROUP)
+except FileNotFoundError:
+    print('No volumes to delete')
+else:
+    for logical_volume in lvlist:
+        delete_command = 'lvremove --yes /dev/%s/%s' % (VOLUME_GROUP, logical_volume)
+        p = subprocess.run(shlex.split(delete_command), stdout=subprocess.PIPE)
+    else:
+        print('%d volumes deleted' % len(lvlist))

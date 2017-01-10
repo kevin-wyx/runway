@@ -55,7 +55,7 @@
     force: no
 
 - name: Mount disks
-  register: drivesetup
+  register: drivesmounted
   when: filesystemscreated|success
   with_items:
     - { drive: sdb, mp: /srv/node/1/d1 }
@@ -75,8 +75,18 @@
 
 
 # - name: Build rings
-#   when: drivesetup|success
+#   when: drivesmounted|success
 #   register: ringssetup
+
+
+- name: Set up rsync
+  register: rsyncsetup
+  replace:
+    dest: /etc/default/rsync
+    regexp: RSYNC_ENABLE=false
+    replace: RSYNC_ENABLE=true
+
+# - name: Set up swift configs
 
 
 # - name: Start swift

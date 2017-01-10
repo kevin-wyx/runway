@@ -12,7 +12,7 @@ dev_numbers = {}
 
 for i in range(8):
     # this can give an error. how do we suppress?
-    create_command = "lvcreate --size 10G --name '%s-vol%s' %s" % (CNAME, i, VOLUME_GROUP)
+    create_command = "lvcreate -y --size 10G --name '%s-vol%s' %s" % (CNAME, i, VOLUME_GROUP)
     p = subprocess.run(shlex.split(create_command), stdout=subprocess.PIPE)
     display_command = "lvdisplay '/dev/%s/%s-vol%s'" % (VOLUME_GROUP, CNAME, i)
     p = subprocess.run(shlex.split(display_command), stdout=subprocess.PIPE)

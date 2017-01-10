@@ -2,6 +2,12 @@
 
 set -e
 
+if [ `id -u` -ne 0 ]; then
+    echo 'Must be run as root'
+    exit 1
+fi
+
+
 if [ -z ${1+x} ]; then
     DISTRO=ubuntu
 else

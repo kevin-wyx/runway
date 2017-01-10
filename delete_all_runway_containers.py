@@ -17,7 +17,12 @@ import json
 import subprocess
 import shlex
 import os
+import sys
 
+
+if os.geteuid() != 0:
+    print('must be run as root')
+    sys.exit(1)
 
 VOLUME_GROUP = 'swift-runway-vg01'
 

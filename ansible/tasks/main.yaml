@@ -72,20 +72,34 @@
   register: drivesmounted
   when: filesystemscreated|success
   with_items:
-    - { drive: sdb, mp: /srv/node/1/d1 }
-    - { drive: sdc, mp: /srv/node/2/d2 }
-    - { drive: sdd, mp: /srv/node/3/d3 }
-    - { drive: sde, mp: /srv/node/4/d4 }
-    - { drive: sdf, mp: /srv/node/1/d5 }
-    - { drive: sdg, mp: /srv/node/2/d6 }
-    - { drive: sdh, mp: /srv/node/3/d7 }
-    - { drive: sdi, mp: /srv/node/4/d8 }
+    - { drive: sdb, mp: /srv/1/node/d1 }
+    - { drive: sdc, mp: /srv/2/node/d2 }
+    - { drive: sdd, mp: /srv/3/node/d3 }
+    - { drive: sde, mp: /srv/4/node/d4 }
+    - { drive: sdf, mp: /srv/1/node/d5 }
+    - { drive: sdg, mp: /srv/2/node/d6 }
+    - { drive: sdh, mp: /srv/3/node/d7 }
+    - { drive: sdi, mp: /srv/4/node/d8 }
   mount:
     name: "{{ item.mp }}"
     src: /dev/{{ item.drive }}
     fstype: xfs
     state: mounted
     opts: noatime,nodiratime,logbufs=2
+
+- name: Set permissions
+  register: permissionsset
+  when: drivesmounted|success
+  with_items:
+    - /srv/1
+    - /srv/2
+    - /srv/3
+    - /srv/4
+  file:
+    recurse: yes
+    owner: swift
+    group: swift
+    path: "{{ item }}"
 
 
 - name: Set up rsync
@@ -130,11 +144,15 @@
     chdir: /root/swift
 
 
-# - name: Build rings
-#   when: drivesmounted|success
-#   register: ringssetup
+- name: Build rings
+  when: swiftinstalled|success
+  register: ringssetup
+  command: ./make_rings.sh
+  args:
+    chdir: /root/ansible
 
 
-# - name: Start swift
-#   register: swiftstarted
-#   when: swiftconfigscreated|success
+- name: Start swift
+  register: swiftstarted
+  when: ringssetup|success
+  command: swift-init main start

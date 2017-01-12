@@ -30,15 +30,8 @@ BASE=ubuntu:16.04
 #fi
 
 
-
-# NEW PLAN
 # assume well-known lvm volume group on host
 #   ...later we'll figure out how to make this
-# ask lvm for devices from this vg
-# map those devices to the lxc profile
-
-#sudo vgcreate swift-runway-vg01 /dev/sda1 /dev/sdb1 /dev/sdc1 /dev/sdd1
-
 VG_NAME=swift-runway-vg01
 
 # make a container profile that maps 8 block devices to the guest

@@ -16,6 +16,11 @@ if [[ " $* " =~ " --debug " ]]; then
     DEBUG="--debug"
 fi
 
+# load the components
+if [ ! -d ./components/swift/.git ]; then
+    git clone https://github.com/openstack/swift.git ./components/swift
+fi
+
 # get all the guest-executed stuff pushed over
 # lxc file push ./ansible/ $CNAME/root/
 # unfortunately, lxc doesn't support directly pushing a whole directory
@@ -26,7 +31,7 @@ tar cf - ./ansible | lxc exec $CNAME -- tar xf - -C /root/
 # lxc file push ./components/ $CNAME/root/
 # unfortunately, lxc doesn't support directly pushing a whole directory
 # https://github.com/lxc/lxd/issues/1218
-tar cf - ./components | lxc exec $CNAME -- tar xf - -C /root/
+tar cf - -C ./components . | lxc exec $CNAME -- tar xf - -C /root/
 
 # install ansible
 lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG

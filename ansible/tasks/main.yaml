@@ -32,7 +32,7 @@
   register: swiftconfigscreated
   when: etcswiftcreated|success
   copy:
-    src: ../components/swift/doc/saio/swift/
+    src: ../swift/doc/saio/swift/
     dest: /etc/swift/
     owner: swift
     group: swift
@@ -74,11 +74,6 @@
     opts: noatime,nodiratime,logbufs=2
 
 
-# - name: Build rings
-#   when: drivesmounted|success
-#   register: ringssetup
-
-
 - name: Set up rsync
   register: rsyncsetup
   replace:
@@ -86,7 +81,44 @@
     regexp: RSYNC_ENABLE=false
     replace: RSYNC_ENABLE=true
 
-# - name: Set up swift configs
+- name: install dependencies
+  register: swiftdependenciesinstalled
+  apt: name={{item}} state=installed
+  with_items:
+    - curl
+    - gcc
+    - memcached
+    # - rsync
+    - sqlite3
+    # - xfsprogs
+    # - git-core
+    - libffi-dev
+    - python-setuptools
+    - liberasurecode-dev
+    - libssl-dev
+    - python-coverage
+    - python-dev
+    - python-nose
+    - python-xattr
+    - python-eventlet
+    - python-greenlet
+    - python-pastedeploy
+    - python-netifaces
+    - python-pip
+    - python-dnspython
+    - python-mock
+
+- name: Install swift
+  register: swiftinstalled
+  when: swiftdependenciesinstalled|success
+  command: /usr/bin/python ./setup.py develop
+  args:
+    chdir: /root/swift
+
+
+# - name: Build rings
+#   when: drivesmounted|success
+#   register: ringssetup
 
 
 # - name: Start swift

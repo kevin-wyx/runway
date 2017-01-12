@@ -37,6 +37,20 @@
     owner: swift
     group: swift
 
+- name: list of the .conf files and store it in register
+  raw: find /etc/swift -type f -name "*.conf"
+  register: swift_conf_files
+  when: swiftconfigscreated|success
+
+- name: Set swift user in configs
+  register: configsed
+  when: swift_conf_files|success
+  with_items: swift_conf_files.stdout_lines
+  replace:
+    dest: "{{ item }}"
+    regexp: user = <your-user-name>
+    replace: user = swift
+
 
 - name: Make filesystems on disks
   register: filesystemscreated

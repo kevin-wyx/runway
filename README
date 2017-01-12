@@ -1,0 +1,5 @@
+Easily set up a SAIO in a container.
+
+Requires a lvm volume group named swift-runway-vg01 and assumes it's running on an Ubuntu 16.04 host.
+
+Start with `start.sh`. Clean everything up with `delete_all_runway_containers.py`. Because of the lvm commands, these need to be run as root.

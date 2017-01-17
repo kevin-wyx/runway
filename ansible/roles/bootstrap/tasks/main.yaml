@@ -1,0 +1,69 @@
+# set up drives and mount them
+---
+- name: Create swift group
+  group:
+    name: swift
+    state: present
+  register: swiftgroupcreated
+
+
+- name: Create swift user
+  when: swiftgroupcreated|success
+  user:
+    name: swift
+    group: swift
+    # password is "password"
+    password: $6$EgUVKk/vDpZbfJ$gtzFx.iN.iVbglXGBWaOeptejT3phyjmQWW.YeX5F75EMuNzqvOh1icDOHUlYapBiXna4pVNK5Zg6ZYPraXRm/
+  register: swiftusercreated
+
+
+- name: Make filesystems on disks
+  register: filesystemscreated
+  with_items:
+    - sdb
+    - sdc
+    - sdd
+    - sde
+    - sdf
+    - sdg
+    - sdh
+    - sdi
+  filesystem:
+    fstype: xfs
+    dev: /dev/{{ item }}
+    force: no
+
+
+- name: Mount disks
+  register: drivesmounted
+  when: filesystemscreated|success
+  with_items:
+    - { drive: sdb, mp: /srv/1/node/d1 }
+    - { drive: sdc, mp: /srv/2/node/d2 }
+    - { drive: sdd, mp: /srv/3/node/d3 }
+    - { drive: sde, mp: /srv/4/node/d4 }
+    - { drive: sdf, mp: /srv/1/node/d5 }
+    - { drive: sdg, mp: /srv/2/node/d6 }
+    - { drive: sdh, mp: /srv/3/node/d7 }
+    - { drive: sdi, mp: /srv/4/node/d8 }
+  mount:
+    name: "{{ item.mp }}"
+    src: /dev/{{ item.drive }}
+    fstype: xfs
+    state: mounted
+    opts: noatime,nodiratime,logbufs=2
+
+
+- name: Set permissions
+  register: permissionsset
+  when: drivesmounted|success and swiftusercreated|success
+  with_items:
+    - /srv/1
+    - /srv/2
+    - /srv/3
+    - /srv/4
+  file:
+    recurse: yes
+    owner: swift
+    group: swift
+    path: "{{ item }}"

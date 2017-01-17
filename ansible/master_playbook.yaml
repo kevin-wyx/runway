@@ -2,5 +2,6 @@
 ---
 - name: The whole shebang
   hosts: localhost
-  tasks:
-    - include: tasks/main.yaml
+  roles:
+    - bootstrap
+    - swift

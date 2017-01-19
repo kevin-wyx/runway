@@ -28,6 +28,7 @@ CNAME=swift-runway-$TS
 
 echo $CNAME
 
-./make_base_container.sh $DISTRO $CNAME $DEBUG
+./build-ss-node.sh $CNAME
+#./make_base_container.sh $DISTRO $CNAME $DEBUG
 
 ./setup_and_run_ansible_on_guest.sh $CNAME $DEBUG

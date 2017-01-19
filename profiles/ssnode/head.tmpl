@@ -1,0 +1,9 @@
+name: [profile]
+config:
+  raw.lxc: |-
+    lxc.cgroup.devices.allow = c 10:236 rwm
+    lxc.cgroup.devices.allow = b 230:* rwm
+    lxc.aa_profile = unconfined
+  security.privileged: "true"
+description: ""
+devices:

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# vars
+CONTROLLER=$1
+
+# Detect what OS machine is running
+# Based on detected OS, take specific actions later
+if [[ -e /etc/os-release ]]; then
+  # Check for Alpine
+  if [ $(cat /etc/os-release | grep '\<ID=' | sed 's/ID=//') == "alpine" ]; then
+    DISTRO="alpine"
+  # Check for CentOS
+  elif  [ $(cat /etc/os-release | grep '\<ID=' | sed 's/ID=//') == "centos" ]; then
+    DISTRO="centos"
+  # Check for Debian
+  elif  [ $(cat /etc/os-release | grep '\<ID=' | sed 's/ID=//') == "debian" ]; then
+    DISTRO="debian"
+  # Check for Ubuntu
+  elif  [ $(cat /etc/os-release | grep '\<ID=' | sed 's/ID=//') == "ubuntu" ]; then
+    DISTRO="ubuntu"
+  fi
+  printf "[i] OS seems to be '$DISTRO'\n"
+else
+  printf "[!] Can't find an os-release file to determine OS. Exiting...\n"
+  exit 1;
+fi
+
+printf "[i] Checking that 'sudo' package is installed...\n"
+
+if [[ $(which sudo | sed 's@.*/@@') == "sudo" ]]; then
+  printf "[i] The 'sudo' package appears to be installed.\n"
+else
+  printf "[!] The 'sudo' package appears to be missing.\n\n"
+  read -e -p ">>> Do you want to install it? [y/n] " INSTALL_PKGS
+  if [ "$INSTALL_PKGS" == "y" ]; then
+    printf "\n[i] Installing missing packages...\n\n"
+    # Alpine
+    if [ "$DISTRO" == "alpine" ]; then
+      apk add sudo
+    # CentOS
+    elif [ "$DISTRO" == "centos" ]; then
+      yum install -y sudo
+    # Debian
+    elif [ "$DISTRO" == "debian" ]; then
+      apt-get install -y sudo
+    # Ubuntu
+    elif [ "$DISTRO" == "ubuntu" ]; then
+      apt-get install -y sudo
+    fi
+  else
+    printf "\n[!] You selected to not install required packages. Exiting...\n\n"
+    exit 1;
+  fi
+fi
+
+# Get the cert from the given controller
+echo -n | openssl s_client -connect $CONTROLLER:443 > $CONTROLLER.crt
+
+# Remove everything before the "BEGIN CERTIFICATE" line
+sed -i '/-BEGIN\ CERTIFICATE-/,$!d' $CONTROLLER.crt
+
+# Remove everything below the "END CERTIFICATE" line
+sed -i '/-END\ CERTIFICATE-/q' $CONTROLLER.crt
+
+# Copy cert into place
+if [ $DISTRO == "ubuntu" ]; then
+  sudo cp $CONTROLLER.crt /usr/local/share/ca-certificates/
+  sudo update-ca-certificates
+  sudo c_rehash
+else
+  cat $CONTROLLER.crt >> /etc/pki/tls/certs/ca-bundle.crt
+fi

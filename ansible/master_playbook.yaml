@@ -2,5 +2,7 @@
 ---
 - name: The whole shebang
   hosts: localhost
+  vars:
+    jsonVar: "{{ lookup('file', '/tmp/drives.json') | from_json }}"
   tasks:
     - include: tasks/main.yaml

@@ -1,5 +1,4 @@
 ---
-
 - name: Create swift group
   group:
     name: swift
@@ -45,7 +44,8 @@
 - name: Set swift user in configs
   register: configsed
   when: swift_conf_files|success
-  with_items: swift_conf_files.stdout_lines
+  with_items: "{{ swift_conf_files.stdout_lines }}"
+  #with_items: swift_conf_files.stdout_lines
   replace:
     dest: "{{ item }}"
     regexp: user = <your-user-name>
@@ -54,32 +54,34 @@
 
 - name: Make filesystems on disks
   register: filesystemscreated
-  with_items:
-    - sdb
-    - sdc
-    - sdd
-    - sde
-    - sdf
-    - sdg
-    - sdh
-    - sdi
+  #with_items:
+  #  - zd80
+  #  - zd96
+  #  - zd112
+  #  - zd128
+  #  - zd144
+  #  - zd160
+  #  - zd176
+  #  - zd192
+  with_items: "{{ jsonVar }}"
   filesystem:
     fstype: xfs
-    dev: /dev/{{ item }}
+    dev: /dev/{{ item.drive }}
     force: no
 
 - name: Mount disks
   register: drivesmounted
   when: filesystemscreated|success
-  with_items:
-    - { drive: sdb, mp: /srv/1/node/d1 }
-    - { drive: sdc, mp: /srv/2/node/d2 }
-    - { drive: sdd, mp: /srv/3/node/d3 }
-    - { drive: sde, mp: /srv/4/node/d4 }
-    - { drive: sdf, mp: /srv/1/node/d5 }
-    - { drive: sdg, mp: /srv/2/node/d6 }
-    - { drive: sdh, mp: /srv/3/node/d7 }
-    - { drive: sdi, mp: /srv/4/node/d8 }
+  #with_items:
+  #  - { drive: zd80, mp: /srv/1/node/d1 }
+  #  - { drive: zd96, mp: /srv/2/node/d2 }
+  #  - { drive: zd112, mp: /srv/3/node/d3 }
+  #  - { drive: zd128, mp: /srv/4/node/d4 }
+  #  - { drive: zd144, mp: /srv/1/node/d5 }
+  #  - { drive: zd160, mp: /srv/2/node/d6 }
+  #  - { drive: zd176, mp: /srv/3/node/d7 }
+  #  - { drive: zd192, mp: /srv/4/node/d8 }
+  with_items: "{{ jsonVar }}"
   mount:
     name: "{{ item.mp }}"
     src: /dev/{{ item.drive }}

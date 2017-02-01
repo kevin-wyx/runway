@@ -1,0 +1,3 @@
+# ignore everything in the components dir, except the README
+components/*
+!components/README

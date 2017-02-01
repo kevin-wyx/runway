@@ -14,7 +14,7 @@
   register: swiftconfigscreated
   when: etcswiftcreated|success
   copy:
-    src: ../swift/doc/saio/swift/
+    src: /home/swift/runway_components/swift/doc/saio/swift/
     dest: /etc/swift/
     owner: swift
     group: swift
@@ -72,7 +72,8 @@
   when: swiftdependenciesinstalled|success
   command: /usr/bin/python ./setup.py develop
   args:
-    chdir: /root/swift
+    chdir: /home/swift/runway_components/swift
+  become_user: swift
 
 - name: Build rings
   when: swiftinstalled|success
@@ -85,3 +86,4 @@
   register: swiftstarted
   when: ringssetup|success
   command: swift-init main start
+  become_user: swift

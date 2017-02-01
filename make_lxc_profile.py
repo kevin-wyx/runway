@@ -3,6 +3,7 @@
 import subprocess
 import shlex
 import sys
+import os.path
 
 
 CNAME = sys.argv[1]
@@ -23,7 +24,11 @@ for i in range(8):
             dev_numbers['minor%d' % i] = minor
             dev_numbers['major%d' % i] = major
 
+template_vars = {}
+template_vars.update(dev_numbers)
+template_vars['path_to_repo'] = os.path.dirname(os.path.realpath(__file__))
+
 template_file = 'container-base/swift-runway-v1.tmpl'
 raw = open(template_file).read()
-formatted = raw.format(name="%s-profile" % CNAME, **dev_numbers)
+formatted = raw.format(name="%s-profile" % CNAME, **template_vars)
 print(formatted)

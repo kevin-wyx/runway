@@ -19,6 +19,8 @@
     owner: swift
     group: swift
 
+#todo: add /etc/swift/test.conf
+
 - name: list of the .conf files and store it in register
   raw: find /etc/swift -type f -name "*.conf"
   register: swift_conf_files

@@ -18,6 +18,7 @@ import subprocess
 import shlex
 import os
 import sys
+import shutil
 
 
 if os.geteuid() != 0:
@@ -63,3 +64,10 @@ if to_delete:
     print('%d profles deleted' % len(to_delete))
 else:
     print('No profles to delete')
+
+# delete container working spaces
+for dirname in os.listdir('guest_workspaces'):
+    if dirname == 'README':
+        continue
+    dirname = 'guest_workspaces/' + dirname
+    shutil.rmtree(dirname)

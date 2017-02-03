@@ -1,3 +1,7 @@
 # ignore everything in the components dir, except the README
 components/*
 !components/README
+
+# ignore everything in the guest_workspaces dir, except the README
+guest_workspaces/*
+!guest_workspaces/README

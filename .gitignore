@@ -5,3 +5,6 @@ components/*
 # ignore everything in the guest_workspaces dir, except the README
 guest_workspaces/*
 !guest_workspaces/README
+
+# .vagrant
+.vagrant/

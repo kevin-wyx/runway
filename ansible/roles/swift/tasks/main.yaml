@@ -55,7 +55,6 @@
     # - git-core
     - libffi-dev
     - python-setuptools
-    - liberasurecode-dev
     - libssl-dev
     - python-coverage
     - python-dev
@@ -69,9 +68,11 @@
     - python-dnspython
     - python-mock
 
+- include: install_libec.yaml
+
 - name: Install swift
   register: swiftinstalled
-  when: swiftdependenciesinstalled|success
+  when: swiftdependenciesinstalled|success and libec_installed|success
   command: /usr/bin/python ./setup.py develop
   args:
     chdir: /home/swift/runway_components/swift

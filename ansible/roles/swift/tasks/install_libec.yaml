@@ -1,0 +1,28 @@
+# install liberasurecode
+---
+- name: Is libec in components
+  stat:
+    path: /home/swift/runway_components/liberasurecode
+  register: libec_stat
+
+- name: install from distro
+  when: not libec_stat.stat.exists
+  apt: name=liberasurecode-dev state=installed
+  register: libec_installed
+
+- name: install build tools
+  when: libec_stat.stat.exists and libec_stat.stat.isdir
+  register: build_tools_installed
+  apt: name={{item}} state=installed
+  with_items:
+    - build-essential
+    - autoconf
+    - automake
+    - libtool
+
+- name: install from source
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed|success
+  register: libec_installed
+  shell: ./autogen.sh && ./configure && make && make install && ldconfig
+  args:
+    chdir: /home/swift/runway_components/liberasurecode

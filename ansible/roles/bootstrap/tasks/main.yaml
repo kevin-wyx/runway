@@ -1,5 +1,11 @@
 # set up drives and mount them
 ---
+- name: delete ubuntu user
+  user:
+    name: ubuntu
+    remove: yes
+    state: absent
+
 - name: Create swift group
   group:
     name: swift

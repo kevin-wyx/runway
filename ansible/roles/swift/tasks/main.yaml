@@ -35,12 +35,14 @@
     regexp: user = <your-user-name>
     replace: user = swift
 
-- name: Set up rsync
+- name: Set up rsync on boot
   register: rsyncsetup
   replace:
     dest: /etc/default/rsync
     regexp: RSYNC_ENABLE=false
     replace: RSYNC_ENABLE=true
+
+- include: setup_swift_logging.yaml
 
 - name: install dependencies
   register: swiftdependenciesinstalled

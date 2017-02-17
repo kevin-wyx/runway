@@ -84,6 +84,7 @@
     - python-netifaces
     - python-pip
     - python-dnspython
+    # mock should be installed with pip instead. apt version is too old
     - python-mock
 
 - include: install_libec.yaml

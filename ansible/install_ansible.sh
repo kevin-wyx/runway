@@ -31,8 +31,7 @@ if [ -z "$installer" ]; then
   exit 1
 fi
 
-if [ "$distro" == "RHEL" ]; then
-  $installer install -y epel-release
-fi
+$installer install -y python-pip build-essential gcc libssl-dev python-dev libffi-dev
 
-$installer install -y ansible
+
+pip install ansible

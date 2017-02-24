@@ -29,7 +29,7 @@
 - name: Set swift user in configs
   register: configsed
   when: swift_conf_files|success
-  with_items: swift_conf_files.stdout_lines
+  with_items: "{{ swift_conf_files.stdout_lines }}"
   replace:
     dest: "{{ item }}"
     regexp: user = <your-user-name>
@@ -60,6 +60,8 @@
 
 - include: setup_swift_logging.yaml
 
+- include: install_libec.yaml
+
 - name: install dependencies
   register: swiftdependenciesinstalled
   apt: name={{item}} state=installed
@@ -71,23 +73,34 @@
     - sqlite3
     # - xfsprogs
     # - git-core
-    - libffi-dev
-    - python-setuptools
-    - libssl-dev
-    - python-coverage
-    - python-dev
-    - python-nose
-    - python-xattr
-    - python-eventlet
-    - python-greenlet
-    - python-pastedeploy
-    - python-netifaces
-    - python-pip
-    - python-dnspython
+    # - libffi-dev
+    # - python-setuptools
+    # - libssl-dev
+    # - python-coverage
+    # - python-dev
+    # - python-nose
+    # - python-xattr
+    # - python-eventlet
+    # - python-greenlet
+    # - python-pastedeploy
+    # - python-netifaces
+    # - python-pip
+    # - python-dnspython
     # mock should be installed with pip instead. apt version is too old
-    - python-mock
+    # - python-mock
 
-- include: install_libec.yaml
+- name: update pip
+  pip:
+    name: pip
+    state: latest
+
+- name: install pip dependencies
+  pip:
+    requirements: "{{item}}"
+    chdir: /home/swift/runway_components/swift
+  with_items:
+    - requirements.txt
+    - test-requirements.txt
 
 - name: Install swift
   register: swiftinstalled

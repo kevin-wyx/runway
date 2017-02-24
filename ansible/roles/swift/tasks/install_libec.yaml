@@ -5,10 +5,10 @@
     path: /home/swift/runway_components/liberasurecode
   register: libec_stat
 
-- name: install from distro
-  when: not libec_stat.stat.exists
-  apt: name=liberasurecode-dev state=installed
-  register: libec_installed
+# - name: install from distro
+#   when: not libec_stat.stat.exists
+#   apt: name=liberasurecode-dev state=installed
+#   register: libec_installed
 
 - name: install build tools
   when: libec_stat.stat.exists and libec_stat.stat.isdir

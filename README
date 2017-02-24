@@ -22,8 +22,10 @@ Project plans:
  - allow the host to be something other than Ubuntu 16.04
  - allow the guest containers to be something other than Ubuntu
 
+Clone the appropriate code repos into the `components` directory.
+
 The `components` directory is where the source repos for the
-constituent parts go. This is what's installed on teh guest
+constituent parts go. This is what's installed on the guest
 containers. However, it's not directly installed from there. It's
 first copied into a unique directory in the `guest_workspaces`
 directory, and those are in turn bind-mounted to the guest container.

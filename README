@@ -9,7 +9,7 @@ This project has three target use cases:
  - Developers looking for an API test target against which to write apps
  - Something easily consumable for CI to integrate into a QA process
 
-Requires a lvm volume group named swift-runway-vg01 and assumes it's
+Requires a lvm volume group named "swift-runway-vg01" and assumes it's
 running on an Ubuntu 16.04 host.
 
 Start with `start.sh`. Clean everything up with

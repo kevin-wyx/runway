@@ -19,7 +19,13 @@
     owner: swift
     group: swift
 
-#todo: add /etc/swift/test.conf
+- name: Create swift test config file
+  when: etcswiftcreated|success
+  copy:
+    src: /home/swift/code/swift/test/sample.conf
+    dest: /etc/swift/test.conf
+    owner: swift
+    group: swift
 
 - name: list of the .conf files and store it in register
   raw: find /etc/swift -type f -name "*.conf"

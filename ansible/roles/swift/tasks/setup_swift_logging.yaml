@@ -2,7 +2,7 @@
 ---
 - name: copy swift log file
   copy:
-    src: /home/swift/runway_components/swift/doc/saio/rsyslog.d/10-swift.conf
+    src: /home/swift/code/swift/doc/saio/rsyslog.d/10-swift.conf
     dest: /etc/rsyslog.d/10-swift.conf
 
 - name: update syslog group

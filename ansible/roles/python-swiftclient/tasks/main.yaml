@@ -1,0 +1,31 @@
+# install swift
+---
+- stat: 
+    path: /home/swift/code/python-swiftclient
+  register: swiftclient_stat
+
+- name: update pip
+  pip:
+    name: pip
+    state: latest
+
+- name: install pip dependencies
+  pip:
+    requirements: "{{item}}"
+    chdir: /home/swift/code/python-swiftclient
+  with_items:
+    - requirements.txt
+    - test-requirements.txt
+
+- name: Install swiftclient from source
+  when: swiftclientdependenciesinstalled|success
+  command: /usr/bin/python ./setup.py develop
+  args:
+    chdir: /home/swift/code/python-swiftclient
+  become_user: swift
+  when: swiftclient_stat.stat.exists
+
+- name: intall swiftclient from pip
+  pip:
+    name: python-swiftclient
+  when: not swiftclient_stat.stat.exists == False

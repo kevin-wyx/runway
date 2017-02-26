@@ -7,6 +7,9 @@ if [ `id -u` -ne 0 ]; then
     exit 1
 fi
 
+# Directory containing the script, so that we can call other scripts
+#DIR="$(dirname "$(readlink -f "${0}")")" # not supported on OSX
+DIR="$( cd "$( dirname "${0}" )" && pwd )"
 
 if [ -z ${1+x} ]; then
     DISTRO=ubuntu
@@ -28,6 +31,6 @@ CNAME=swift-runway-$TS
 
 echo $CNAME
 
-./make_base_container.sh $DISTRO $CNAME $DEBUG
+$DIR/make_base_container.sh $DISTRO $CNAME $DEBUG
 
-./setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
+$DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG

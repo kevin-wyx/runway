@@ -18,8 +18,10 @@
   user:
     name: swift
     group: swift
+    groups: sudo
     # password is "password"
     password: $6$EgUVKk/vDpZbfJ$gtzFx.iN.iVbglXGBWaOeptejT3phyjmQWW.YeX5F75EMuNzqvOh1icDOHUlYapBiXna4pVNK5Zg6ZYPraXRm/
+    shell: /bin/bash
   register: swiftusercreated
 
 

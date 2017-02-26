@@ -14,7 +14,7 @@
   register: swiftconfigscreated
   when: etcswiftcreated|success
   copy:
-    src: /home/swift/runway_components/swift/doc/saio/swift/
+    src: /home/swift/code/swift/doc/saio/swift/
     dest: /etc/swift/
     owner: swift
     group: swift
@@ -35,6 +35,31 @@
     regexp: user = <your-user-name>
     replace: user = swift
 
+- name: Move SAIO bin scripts
+  register: bin_scripts
+  when: etcswiftcreated|success
+  copy:
+    src: /home/swift/code/swift/doc/saio/bin/
+    dest: /home/swift/bin
+    owner: swift
+    group: swift
+    mode: 0775
+
+- name: Copy modified remakerings
+  copy:
+    src: remakerings
+    dest: /home/swift/bin/remakerings
+    owner: swift
+    group: swift
+    mode: 0775
+
+- name: Add bin to PATH
+  copy:
+    src: path_home_bin.sh
+    dest: /etc/profile.d
+    owner: root
+    group: root
+
 - name: Set up rsync on boot
   register: rsyncsetup
   replace:
@@ -44,7 +69,7 @@
 
 - name: rsync config file
   copy:
-    src: /home/swift/runway_components/swift/doc/saio/rsyncd.conf
+    src: /home/swift/code/swift/doc/saio/rsyncd.conf
     dest: /etc/rsyncd.conf
 
 - name: set swift user in rsync config
@@ -97,7 +122,7 @@
 - name: install pip dependencies
   pip:
     requirements: "{{item}}"
-    chdir: /home/swift/runway_components/swift
+    chdir: /home/swift/code/swift
   with_items:
     - requirements.txt
     - test-requirements.txt
@@ -107,15 +132,15 @@
   when: swiftdependenciesinstalled|success and libec_installed|success
   command: /usr/bin/python ./setup.py develop
   args:
-    chdir: /home/swift/runway_components/swift
+    chdir: /home/swift/code/swift
   become_user: swift
 
 - name: Build rings
   when: swiftinstalled|success
   register: ringssetup
-  command: ./make_rings.sh
+  command: ./remakerings
   args:
-    chdir: /root/ansible
+    chdir: /home/swift/bin/
 
 - name: Start swift
   register: swiftstarted

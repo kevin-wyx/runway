@@ -2,7 +2,7 @@
 ---
 - name: Is libec in components
   stat:
-    path: /home/swift/runway_components/liberasurecode
+    path: /home/swift/code/liberasurecode
   register: libec_stat
 
 # - name: install from distro
@@ -25,4 +25,4 @@
   register: libec_installed
   shell: ./autogen.sh && ./configure && make && make install && ldconfig
   args:
-    chdir: /home/swift/runway_components/liberasurecode
+    chdir: /home/swift/code/liberasurecode

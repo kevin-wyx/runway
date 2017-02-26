@@ -1,4 +1,4 @@
-# install swift
+# install python-swiftclient
 ---
 - stat: 
     path: /home/swift/code/python-swiftclient
@@ -28,4 +28,4 @@
 - name: intall swiftclient from pip
   pip:
     name: python-swiftclient
-  when: not swiftclient_stat.stat.exists == False
+  when: not swiftclient_stat.stat.exists

@@ -24,6 +24,8 @@ installer=`type -P yum`
 if [ -z "$installer" ]; then
   installer=`which apt-get`
   distro="Debian"
+  # the update step is needed to make sure package sources are available
+  $installer update
 fi
 
 if [ -z "$installer" ]; then

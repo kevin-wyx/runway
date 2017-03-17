@@ -28,11 +28,6 @@ else
     CNAME=$2
 fi
 
-BASE=ubuntu:16.04
-#if [ "$DISTRO" == "RHEL" ]; then
-#    BASE=ci-base-image-centos
-#fi
-
 # snapshot the components directory into a container-specific working dir
 working_dir=guest_workspaces/${CNAME}_shared_code/
 mkdir -p $working_dir
@@ -47,4 +42,14 @@ lxc profile create $CNAME-profile
 $DIR/make_lxc_profile.py $CNAME $VG_NAME | lxc profile edit $CNAME-profile
 
 # launch the new container
+set +e
+BASE=runway-base
 lxc launch $BASE $CNAME -p $CNAME-profile
+set -e
+if [ $? -ne 0 ]; then
+    BASE=ubuntu:16.04
+    #if [ "$DISTRO" == "RHEL" ]; then
+    #    BASE=ci-base-image-centos
+    #fi
+    lxc launch $BASE $CNAME -p $CNAME-profile
+fi

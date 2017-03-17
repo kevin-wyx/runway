@@ -16,4 +16,6 @@ if [[ " $* " =~ " --debug " ]]; then
     DEBUG="--debug"
 fi
 
-lxc publish --force $CNAME --alias runway-base
+lxc stop $CNAME
+lxc publish $CNAME --alias runway-base
+lxc start $CNAME

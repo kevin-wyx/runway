@@ -35,4 +35,6 @@ $DIR/make_base_container.sh $DISTRO $CNAME $DEBUG
 
 $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
-$DIR/snapshot_created_container.sh $CNAME $DEBUG
+if [[ ! " $* " =~ " --no-snapshot " ]]; then
+    $DIR/snapshot_created_container.sh $CNAME $DEBUG
+fi

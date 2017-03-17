@@ -16,9 +16,9 @@
   with_items:
     - requirements.txt
     - test-requirements.txt
+  when: swiftclient_stat.stat.exists
 
 - name: Install swiftclient from source
-  when: swiftclientdependenciesinstalled|success
   command: /usr/bin/python ./setup.py develop
   args:
     chdir: /home/swift/code/python-swiftclient

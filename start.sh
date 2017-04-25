@@ -31,7 +31,10 @@ CNAME=swift-runway-$TS
 
 echo $CNAME
 
-$DIR/make_base_container.sh $DISTRO $CNAME $DEBUG
+# TODO pass in from cmd line
+BASEIMAGE=runway-base
+
+$DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $DEBUG
 
 $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 

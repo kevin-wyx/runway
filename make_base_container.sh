@@ -15,17 +15,29 @@ DISTRO=$1
 if [ -z "$DISTRO" ];  then
     echo "Required DISTRO variable is not specified"
     echo
-    echo "usage: $0 [--debug] DISTRO CNAME"
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
     exit 1
 fi
 
 if [ -z $2 ]; then
     echo "Required CNAME variable is not specified"
     echo
-    echo "usage: $0 [--debug] DISTRO CNAME"
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
     exit 1
 else
     CNAME=$2
+fi
+
+BASEIMAGE=ubuntu:16.04
+if [ "$DISTRO" == "RHEL" ]; then
+   BASEIMAGE=images:centos/7/amd64
+fi
+if [ -z $3 ]; then
+    echo "Optional BASEIMAGE variable is not specified. Using $BASEIMAGE"
+    echo
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
+else
+    BASEIMAGE=$3
 fi
 
 # snapshot the components directory into a container-specific working dir
@@ -34,7 +46,7 @@ mkdir -p $working_dir
 rsync -a components/ $working_dir
 
 # assume well-known lvm volume group on host
-#   ...later we'll figure out how to make this
+#   ...later we'll figure out how to make this dynamic
 VG_NAME=swift-runway-vg01
 
 # make a container profile that maps 8 block devices to the guest
@@ -43,13 +55,8 @@ $DIR/make_lxc_profile.py $CNAME $VG_NAME | lxc profile edit $CNAME-profile
 
 # launch the new container
 set +e
-BASE=runway-base
-lxc launch $BASE $CNAME -p $CNAME-profile
+lxc launch $BASEIMAGE $CNAME -p $CNAME-profile
 set -e
 if [ $? -ne 0 ]; then
-    BASE=ubuntu:16.04
-    #if [ "$DISTRO" == "RHEL" ]; then
-    #    BASE=ci-base-image-centos
-    #fi
-    lxc launch $BASE $CNAME -p $CNAME-profile
+    lxc launch $BASEIMAGE $CNAME -p $CNAME-profile
 fi

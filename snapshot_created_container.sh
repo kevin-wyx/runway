@@ -22,5 +22,5 @@ if [[ " $* " =~ " --debug " ]]; then
 fi
 
 lxc stop $CNAME
-lxc publish $CNAME --alias $BASEIMAGE
+lxc publish $CNAME --alias $BASEIMAGE description="Created by swift runway"
 lxc start $CNAME

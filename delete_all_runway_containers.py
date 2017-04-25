@@ -71,3 +71,19 @@ for dirname in os.listdir('guest_workspaces'):
         continue
     dirname = 'guest_workspaces/' + dirname
     shutil.rmtree(dirname)
+
+# delete snapshotted container images
+images_to_delete = []
+image_list_command = 'lxc image list description="Created by swift runway"'
+p = subprocess.run(shlex.split(image_list_command), stdout=subprocess.PIPE)
+for line in p.stdout.decode().split('\n'):
+    if "Created by swift runway" in line:
+        parts = line.split('|')
+        fingerprint = parts[2].strip()
+        images_to_delete.append(fingerprint)
+if images_to_delete:
+    print('Deleting %d images' % len(images_to_delete))
+    image_delete_command = 'lxc image delete %s' % ' '.join(images_to_delete)
+    p = subprocess.run(shlex.split(image_delete_command))
+else:
+    print('No images to delete')

@@ -17,6 +17,12 @@ else
     DISTRO=$1
 fi
 
+if [ -z ${2+x} ]; then
+    BASEIMAGE=runway-base
+else
+    BASEIMAGE=$2
+fi
+
 DEBUG=''
 # if --debug is given in the list of arguments
 if [[ " $* " =~ " --debug " ]]; then
@@ -31,13 +37,10 @@ CNAME=swift-runway-$TS
 
 echo $CNAME
 
-# TODO pass in from cmd line
-BASEIMAGE=runway-base
-
 $DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $DEBUG
 
 $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
 if [[ ! " $* " =~ " --no-snapshot " ]]; then
-    $DIR/snapshot_created_container.sh $CNAME $DEBUG
+    $DIR/snapshot_created_container.sh $CNAME $BASEIMAGE $DEBUG
 fi

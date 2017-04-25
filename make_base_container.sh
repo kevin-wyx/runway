@@ -32,6 +32,7 @@ BASEIMAGE=ubuntu:16.04
 if [ "$DISTRO" == "RHEL" ]; then
    BASEIMAGE=images:centos/7/amd64
 fi
+DEFAULTIMAGE=$BASEIMAGE
 if [ -z $3 ]; then
     echo "Optional BASEIMAGE variable is not specified. Using $BASEIMAGE"
     echo
@@ -54,9 +55,4 @@ lxc profile create $CNAME-profile
 $DIR/make_lxc_profile.py $CNAME $VG_NAME | lxc profile edit $CNAME-profile
 
 # launch the new container
-set +e
-lxc launch $BASEIMAGE $CNAME -p $CNAME-profile
-set -e
-if [ $? -ne 0 ]; then
-    lxc launch $BASEIMAGE $CNAME -p $CNAME-profile
-fi
+lxc launch $BASEIMAGE $CNAME -p $CNAME-profile || lxc launch $DEFAULTIMAGE $CNAME -p $CNAME-profile

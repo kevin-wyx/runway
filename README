@@ -31,3 +31,13 @@ first copied into a unique directory in the `guest_workspaces`
 directory, and those are in turn bind-mounted to the guest container.
 This allows for easily having different versions of the source running
 at the same time in different guest containers.
+
+----
+
+Getting code from your machine onto the running container
+
+`runway_sync <runway host> [target container name]` syncs the pwd to
+the host machine and the given target container. If the target
+container name isn't given, it defaults to the special value "RECENT"
+which syncs to the most recent container. The special value "NEW" will
+start a new container with that code.

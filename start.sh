@@ -41,6 +41,9 @@ $DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $DEBUG
 
 $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
+#TODO: for anything in the components directory (other than some well-known stuff)
+# look for the common install script and run it on the container
+
 if [[ ! " $* " =~ " --no-snapshot " ]]; then
     $DIR/snapshot_created_container.sh $CNAME $BASEIMAGE $DEBUG
 fi

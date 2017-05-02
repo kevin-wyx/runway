@@ -25,6 +25,8 @@ if os.geteuid() != 0:
     print('must be run as root')
     sys.exit(1)
 
+delete_everything = '--all' in sys.argv[1:]
+
 VOLUME_GROUP = 'swift-runway-vg01'
 
 list_command = 'lxc list --format=json'
@@ -80,7 +82,8 @@ for line in p.stdout.decode().split('\n'):
     if "Created by swift runway" in line:
         parts = line.split('|')
         fingerprint = parts[2].strip()
-        images_to_delete.append(fingerprint)
+        if delete_everything or 'runway-base' not in line:
+            images_to_delete.append(fingerprint)
 if images_to_delete:
     print('Deleting %d images' % len(images_to_delete))
     image_delete_command = 'lxc image delete %s' % ' '.join(images_to_delete)

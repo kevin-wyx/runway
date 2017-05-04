@@ -1,5 +1,10 @@
 # install swift
 ---
+- name: install sudo
+  yum: name={{item}} state=installed
+  with_items:
+    - sudo
+
 - name: Create etc swift
   when: swiftusercreated|success
   file:
@@ -66,12 +71,28 @@
     owner: root
     group: root
 
-- name: Set up rsync on boot
+- name: Set up rsync on boot (Debian)
   register: rsyncsetup
   replace:
     dest: /etc/default/rsync
     regexp: RSYNC_ENABLE=false
     replace: RSYNC_ENABLE=true
+  when: ansible_os_family == 'Debian'
+
+- name: Create /etc/default/rsyncd file (RedHat)
+  copy:
+    src: etc/default/rsyncd
+    dest: /etc/default/rsyncd
+    force: no
+  when: ansible_os_family == 'RedHat'
+
+- name: Set up rsync on boot (RedHat)
+  register: rsyncsetup
+  replace:
+    dest: /etc/default/rsyncd
+    regexp: RSYNC_ENABLE=false
+    replace: RSYNC_ENABLE=true
+  when: ansible_os_family == 'RedHat'
 
 - name: rsync config file
   copy:
@@ -84,10 +105,17 @@
     regexp: user = <your-user-name>
     replace: user = swift
 
-- name: start rsync
+- name: start rsync (Debian)
   service:
     name: rsync
     state: restarted
+  when: ansible_os_family == 'Debian'
+
+- name: start rsyncd (RedHat)
+  service:
+    name: rsyncd
+    state: restarted
+  when: ansible_os_family == 'RedHat'
 
 - include: setup_swift_logging.yaml
 
@@ -119,6 +147,17 @@
     # - python-dnspython
     # mock should be installed with pip instead. apt version is too old
     # - python-mock
+  when: ansible_os_family == 'Debian'
+
+- name: install dependencies
+  register: swiftdependenciesinstalled
+  yum: name={{item}} state=installed
+  with_items:
+    - curl
+    - gcc
+    - memcached
+    - sqlite
+  when: ansible_os_family == 'RedHat'
 
 - name: update pip
   pip:

@@ -10,8 +10,8 @@
 #   apt: name=liberasurecode-dev state=installed
 #   register: libec_installed
 
-- name: install build tools
-  when: libec_stat.stat.exists and libec_stat.stat.isdir
+- name: install build tools (Debian)
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and ansible_os_family == 'Debian'
   register: build_tools_installed
   apt: name={{item}} state=installed
   with_items:
@@ -20,9 +20,33 @@
     - automake
     - libtool
 
+- name: install build tools (RedHat)
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and ansible_os_family == 'RedHat'
+  register: build_tools_installed
+  yum: name={{item}} state=installed
+  with_items:
+    - autoconf
+    - automake
+    - libtool
+    - make
+
+- name: Download and Install liberasurecode
+  yum:
+    name: http://www.rpmfind.net/linux/fedora/linux/releases/23/Everything/x86_64/os/Packages/l/liberasurecode-1.0.9-3.fc23.x86_64.rpm
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Download and Install liberasurecode-devel
+  yum:
+    name: http://www.rpmfind.net/linux/fedora/linux/releases/23/Everything/x86_64/os/Packages/l/liberasurecode-devel-1.0.9-3.fc23.x86_64.rpm
+    state: present
+  when: ansible_os_family == 'RedHat'
+  register: libec_installed
+
 - name: install from source
-  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed|success
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed|success and ansible_os_family == 'Debian'
   register: libec_installed
   shell: ./autogen.sh && ./configure && make && make install && ldconfig
   args:
     chdir: /home/swift/code/liberasurecode
+

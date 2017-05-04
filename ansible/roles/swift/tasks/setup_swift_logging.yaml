@@ -19,6 +19,7 @@
     owner: syslog
     group: adm
     recurse: yes
+  when: ansible_os_family == 'Debian'
 
 - name: make combined logs
   replace:

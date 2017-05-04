@@ -8,3 +8,5 @@ guest_workspaces/*
 
 # .vagrant
 .vagrant/
+
+.idea

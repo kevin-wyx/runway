@@ -18,11 +18,57 @@
   user:
     name: swift
     group: swift
-    groups: sudo
     # password is "password"
     password: $6$EgUVKk/vDpZbfJ$gtzFx.iN.iVbglXGBWaOeptejT3phyjmQWW.YeX5F75EMuNzqvOh1icDOHUlYapBiXna4pVNK5Zg6ZYPraXRm/
     shell: /bin/bash
   register: swiftusercreated
+
+
+- name: Add swift user to sudo group
+  user:
+    name: swift
+    groups: sudo
+    append: yes
+  when: swiftgroupcreated|success and ansible_os_family == 'Debian'
+
+
+- name: Add swift user to wheel group
+  user:
+    name: swift
+    groups: wheel
+    append: yes
+  when: swiftgroupcreated|success and ansible_os_family == 'RedHat'
+
+
+- name: yum install anticipated packages for building/running swift
+  yum: name={{ item }} state=present
+  with_items:
+    - openssl-devel
+    - rsync
+    - xfsprogs
+    - git-core
+    - python-devel
+    - libffi-devel
+    - libxml2-devel
+    - libxml2
+    - libxslt-devel
+  when: ansible_os_family == 'RedHat'
+
+- name: apt install anticipated packages for building/running swift
+  apt: name={{ item }} state=present
+  with_items:
+    - liberasurecode-dev
+    - libssl-dev
+    - rsync
+    - xfsprogs
+    - git-core
+    - build-essential
+    - python-dev
+    - libffi-dev
+    - libxml2-dev
+    - libxml2
+    - libxslt1-dev
+  when: ansible_os_family == 'Debian'
 
 
 - name: Make filesystems on disks

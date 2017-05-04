@@ -24,8 +24,10 @@ installer=`type -P yum`
 if [ -z "$installer" ]; then
   installer=`which apt-get`
   distro="Debian"
-  # the update step is needed to make sure package sources are available
-  $installer update
+fi
+
+if [ $distro=="RHEL" ]; then
+  $installer install -y epel-release
 fi
 
 if [ -z "$installer" ]; then
@@ -33,7 +35,16 @@ if [ -z "$installer" ]; then
   exit 1
 fi
 
-$installer install -y python-pip build-essential gcc libssl-dev python-dev libffi-dev
+# the update step is needed to make sure package sources are available
+$installer update
 
+PACKAGELIST="python-pip build-essential gcc libssl-dev python-dev libffi-dev"
+if [ $distro=="RHEL" ]; then
+  PACKAGELIST="python-pip gcc openssl-devel python-devel libffi-devel"
+fi
 
+$installer install -y $PACKAGELIST
+
+pip install --upgrade pip
 pip install ansible
+

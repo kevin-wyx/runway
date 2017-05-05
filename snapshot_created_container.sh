@@ -4,7 +4,7 @@ set -e
 
 CNAME=$1
 if [ -z "$CNAME" ]; then
-  echo "usage: $0 <container-name> [BASEIMAGE name] [--debug]"
+  echo "usage: $0 <container-name> [BASEIMAGE name] [--debug] [--delete-container]"
   exit 1
 fi
 shift
@@ -23,4 +23,8 @@ fi
 
 lxc stop $CNAME
 lxc publish $CNAME --alias $BASEIMAGE description="Created by swift runway"
-lxc start $CNAME
+if [[ " $* " =~ " --delete-container " ]]; then
+    lxc delete $CNAME
+else
+    lxc start $CNAME
+fi

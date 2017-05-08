@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 # Directory containing the script, so that we can call other scripts
 #DIR="$(dirname "$(readlink -f "${0}")")" # not supported on OSX

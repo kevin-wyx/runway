@@ -42,7 +42,7 @@ else
 fi
 
 # snapshot the components directory into a container-specific working dir
-working_dir=guest_workspaces/${CNAME}_shared_code/
+working_dir=$DIR/guest_workspaces/${CNAME}_shared_code/
 mkdir -p $working_dir
 rsync -a $DIR/components/ $working_dir
 

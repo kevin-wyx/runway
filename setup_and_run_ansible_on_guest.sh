@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -x
 
 # Directory containing the script, so that we can call other scripts
 #DIR="$(dirname "$(readlink -f "${0}")")" # not supported on OSX
@@ -25,9 +24,7 @@ fi
 # lxc file push ./ansible/ $CNAME/root/
 # unfortunately, lxc doesn't support directly pushing a whole directory
 # https://github.com/lxc/lxd/issues/1218
-cd $DIR
-tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/
-cd -
+cd $DIR && tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/ && cd -
 
 
 # install ansible

@@ -44,7 +44,7 @@ fi
 # snapshot the components directory into a container-specific working dir
 working_dir=guest_workspaces/${CNAME}_shared_code/
 mkdir -p $working_dir
-rsync -a components/ $working_dir
+rsync -a $DIR/components/ $working_dir
 
 # assume well-known lvm volume group on host
 #   ...later we'll figure out how to make this dynamic

@@ -30,7 +30,7 @@ template_vars = {}
 template_vars.update(dev_numbers)
 template_vars['path_to_shared_code'] = path_to_repo + '/guest_workspaces/%s_shared_code/' % CNAME
 
-template_file = 'container_base/swift-runway-v1.tmpl'
+template_file = path_to_repo + '/container_base/swift-runway-v1.tmpl'
 raw = open(template_file).read()
 formatted = raw.format(name="%s-profile" % CNAME, **template_vars)
 print(formatted)

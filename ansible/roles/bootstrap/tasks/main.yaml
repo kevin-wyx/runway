@@ -44,6 +44,7 @@
     path: /home/swift
     owner: swift
     group: swift
+    recurse: yes
 
 - name: yum install anticipated packages for building/running swift
   yum: name={{ item }} state=present

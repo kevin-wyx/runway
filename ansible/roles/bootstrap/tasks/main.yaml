@@ -39,6 +39,11 @@
     append: yes
   when: swiftgroupcreated|success and ansible_os_family == 'RedHat'
 
+- name: Make sure swift user's home directory is own by swift
+  file:
+    path: /home/swift
+    owner: swift
+    group: swift
 
 - name: yum install anticipated packages for building/running swift
   yum: name={{ item }} state=present

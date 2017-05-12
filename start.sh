@@ -53,10 +53,10 @@ $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 # look for the common install script and run it on the container
 
 PROXYFS_INSTALLER=/home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install_proxyfs_runway.sh
-if lxc exec $CNAME -- ls $PROXYFS_INSTALLER; then
-    # TODO: Uncomment next line to install ProxyFS!
-    # lxc exec $CNAME -- $PROXYFS_INSTALLER
-fi
+# TODO: Uncomment this code to install ProxyFS
+#if lxc exec $CNAME -- ls $PROXYFS_INSTALLER; then
+    #lxc exec $CNAME -- $PROXYFS_INSTALLER
+#fi
 
 DELETE_CONTAINER=''
 if [[ " $* " =~ " --delete-container " ]]; then

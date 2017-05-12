@@ -54,7 +54,8 @@ $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
 PROXYFS_INSTALLER=/home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install_proxyfs_runway.sh
 if lxc exec $CNAME -- ls $PROXYFS_INSTALLER; then
-    lxc exec $CNAME -- $PROXYFS_INSTALLER
+    # TODO: Uncomment next line to install ProxyFS!
+    # lxc exec $CNAME -- $PROXYFS_INSTALLER
 fi
 
 DELETE_CONTAINER=''

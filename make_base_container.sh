@@ -41,11 +41,6 @@ else
     BASEIMAGE=$3
 fi
 
-# snapshot the components directory into a container-specific working dir
-working_dir=$DIR/guest_workspaces/${CNAME}_shared_code/
-mkdir -p $working_dir
-rsync -a $DIR/components/ $working_dir
-
 # assume well-known lvm volume group on host
 #   ...later we'll figure out how to make this dynamic
 VG_NAME=swift-runway-vg01
@@ -56,3 +51,9 @@ $DIR/make_lxc_profile.py $CNAME $VG_NAME | lxc profile edit $CNAME-profile
 
 # launch the new container
 lxc launch $BASEIMAGE $CNAME -p $CNAME-profile || lxc launch $DEFAULTIMAGE $CNAME -p $CNAME-profile
+
+# get all the guest-executed stuff pushed over
+# lxc file push ./components/ $CNAME/root/
+# unfortunately, lxc doesn't support directly pushing a whole directory
+# https://github.com/lxc/lxd/issues/1218
+cd $DIR && tar cf - components | lxc exec $CNAME -- tar xf - -C /root/ && cd -

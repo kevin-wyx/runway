@@ -48,11 +48,25 @@ try:
 except FileNotFoundError:
     print('No volumes to delete')
 else:
+    num_deleted = 0
     for logical_volume in lvlist:
         delete_command = 'lvremove --yes /dev/%s/%s' % (VOLUME_GROUP, logical_volume)
-        p = subprocess.run(shlex.split(delete_command), stdout=subprocess.PIPE)
+        try:
+            p = subprocess.run(
+                shlex.split(delete_command),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                check=True)
+        except subprocess.CalledProcessError as err:
+            print('Error deleting /dev/%s/%s:\n%s' % (VOLUME_GROUP,
+                                                      logical_volume,
+                                                      err.stderr.rstrip()),
+                  file=sys.stderr)
+        else:
+            num_deleted += 1
     else:
-        print('%d volumes deleted' % len(lvlist))
+        print('%d volumes deleted' % num_deleted)
 
 # delete associated lxc profiles
 profile_list_command = 'lxc profile list'

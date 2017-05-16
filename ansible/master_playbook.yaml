@@ -2,13 +2,6 @@
 ---
 - name: The whole shebang
   hosts: localhost
-  pre_tasks:
-    - name: Check for ProxyFS
-      stat:
-        path: /home/swift/code/ProxyFS
-      register: proxyfs_stat
   roles:
     - bootstrap
-    - swift
-    - python-swiftclient
-    - { role: proxy-fs, when: proxyfs_stat.stat.exists and proxyfs_stat.stat.isdir }
+    - generic

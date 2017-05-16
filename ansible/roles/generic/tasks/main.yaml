@@ -1,0 +1,12 @@
+# install anything that's found in the components directory
+---
+- name: finder
+  register: code_dirs
+  find:
+    paths: "/home/swift/code/"
+    file_type: directory
+
+- name: installer
+  when: code_dirs|success
+  with_items: "{{ code_dirs.stdout_lines }}"
+  command: "{{ item }}"/install.sh

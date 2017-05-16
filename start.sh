@@ -55,14 +55,6 @@ $DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $VOLSIZE $DEBUG
 
 $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
-#TODO: for anything in the components directory (other than some well-known stuff)
-# look for the common install script and run it on the container
-
-PROXYFS_INSTALLER=/home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install_proxyfs_runway.sh
-if lxc exec $CNAME -- ls $PROXYFS_INSTALLER; then
-    lxc exec $CNAME -- $PROXYFS_INSTALLER
-fi
-
 DELETE_CONTAINER=''
 if [[ " $* " =~ " --delete-container " ]]; then
     DELETE_CONTAINER='--delete-container'

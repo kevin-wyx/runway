@@ -8,13 +8,17 @@ import os.path
 
 CNAME = sys.argv[1]
 VOLUME_GROUP = sys.argv[2]
+try:
+    DRIVE_SIZE = sys.argv[3]
+except IndexError:
+    DRIVE_SIZE = '10G'
 
 dev_numbers = {}
 
 for i in range(8):
-    # TODO: make the 10g size configurable
-    create_command = "lvcreate -y --size 10G --name '%s-vol%s' %s" % (CNAME, i, VOLUME_GROUP)
+    create_command = "lvcreate -y --size %s --name '%s-vol%s' %s" % (DRIVE_SIZE, CNAME, i, VOLUME_GROUP)
     p = subprocess.run(shlex.split(create_command), stdout=subprocess.PIPE)
+    #TODO: check return code for errors
     display_command = "lvdisplay '/dev/%s/%s-vol%s'" % (VOLUME_GROUP, CNAME, i)
     p = subprocess.run(shlex.split(display_command), stdout=subprocess.PIPE)
     for line in p.stdout.decode().split('\n'):

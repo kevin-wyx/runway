@@ -26,7 +26,7 @@ if [ -z "$installer" ]; then
   distro="Debian"
 fi
 
-if [ $distro=="RHEL" ]; then
+if [ $distro = "RHEL" ]; then
   $installer install -y epel-release
 fi
 
@@ -39,7 +39,7 @@ fi
 $installer update
 
 PACKAGELIST="python-pip build-essential gcc libssl-dev python-dev libffi-dev"
-if [ $distro=="RHEL" ]; then
+if [ $distro = "RHEL" ]; then
   PACKAGELIST="python-pip gcc openssl-devel python-devel libffi-devel"
 fi
 

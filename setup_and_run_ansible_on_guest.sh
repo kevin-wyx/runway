@@ -24,7 +24,7 @@ fi
 # lxc file push ./ansible/ $CNAME/root/
 # unfortunately, lxc doesn't support directly pushing a whole directory
 # https://github.com/lxc/lxd/issues/1218
-cd $DIR && tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/ && cd -
+tar cf - ./ansible | lxc exec $CNAME -- tar xf - -C /root/
 
 
 # install ansible

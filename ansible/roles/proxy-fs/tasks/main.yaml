@@ -1,5 +1,0 @@
-# install proxyfs
----
-- name: temp
-  stat:
-    path: /etc/passwd

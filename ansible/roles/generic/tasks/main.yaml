@@ -1,0 +1,15 @@
+# install anything that's found in the components directory
+---
+- name: finder
+  register: code_dirs
+  find:
+    paths: "/home/swift/code/"
+    file_type: directory
+
+#TODO: some sort of better error/success output?
+- name: installer
+  when: code_dirs|success
+  with_items: "{{ code_dirs.files }}"
+  command: "{{ item['path'] }}/install.sh"
+  register: install_cmd
+  failed_when: install_cmd.rc != 2 and install_cmd != 0

@@ -15,14 +15,14 @@ DISTRO=$1
 if [ -z "$DISTRO" ];  then
     echo "Required DISTRO variable is not specified"
     echo
-    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE] [VOLSIZE]"
     exit 1
 fi
 
 if [ -z $2 ]; then
     echo "Required CNAME variable is not specified"
     echo
-    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE] [VOLSIZE]"
     exit 1
 else
     CNAME=$2
@@ -36,9 +36,15 @@ DEFAULTIMAGE=$BASEIMAGE
 if [ -z $3 ]; then
     echo "Optional BASEIMAGE variable is not specified. Using $BASEIMAGE"
     echo
-    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE]"
+    echo "usage: $0 [--debug] DISTRO CNAME [BASEIMAGE] [VOLSIZE]"
 else
     BASEIMAGE=$3
+fi
+
+if [ -z $4 ]; then
+    VOLSIZE=10G
+else
+    VOLSIZE=$4
 fi
 
 # assume well-known lvm volume group on host
@@ -47,7 +53,7 @@ VG_NAME=swift-runway-vg01
 
 # make a container profile that maps 8 block devices to the guest
 lxc profile create $CNAME-profile
-$DIR/make_lxc_profile.py $CNAME $VG_NAME | lxc profile edit $CNAME-profile
+$DIR/make_lxc_profile.py $CNAME $VG_NAME $VOLSIZE | lxc profile edit $CNAME-profile
 
 # launch the new container
 lxc launch $BASEIMAGE $CNAME -p $CNAME-profile || lxc launch $DEFAULTIMAGE $CNAME -p $CNAME-profile

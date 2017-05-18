@@ -4,4 +4,6 @@
   hosts: localhost
   roles:
     - bootstrap
+    - swift
+    - python-swiftclient
     - generic

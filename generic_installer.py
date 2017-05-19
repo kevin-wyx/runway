@@ -30,12 +30,9 @@ for repo_path in found_repos:
                        stderr=subprocess.PIPE, check=True)
 
         # catch/log errors
-        print('stdout:\n%s' % p.stdout.decode())
-        print('\n\nstderr:\n%s' % p.stderr.decode())
+        print('stdout:\n{}'.format(p.stdout.decode()))
+        print('\n\nstderr:\n{}'.format(p.stderr.decode()))
     except subprocess.CalledProcessError as e:
-        # catch/log errors
-        print('stdout:\n%s' % p.stdout.decode())
-        print('\n\nstderr:\n%s' % p.stderr.decode())
-
+        print("{} installer script exited with return code {}".format(
+            repo_path, e.returncode))
         print(e.output)
-        exit(e.returncode)

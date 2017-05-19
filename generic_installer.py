@@ -14,7 +14,7 @@ import subprocess
 container_name = sys.argv[1]
 
 found_repos = []
-for entry in os.scandir('components' % container_name):
+for entry in os.scandir('components'):
     if entry.is_dir() and entry.name not in ('swift', 'python-swiftclient', 'liberasurecode'):
         found_repos.append(entry.name)
 

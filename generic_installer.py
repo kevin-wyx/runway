@@ -33,7 +33,8 @@ for repo_path in found_repos:
         print('stdout:\n{}'.format(p.stdout.decode()))
         print('\n\nstderr:\n{}'.format(p.stderr.decode()))
     except subprocess.CalledProcessError as e:
-        print("{} installer script exited with return code {}".format(
+        print("{} installer script exited with non-zero status {}".format(
             repo_path, e.returncode))
-        print(e.output)
+        print('stdout:\n{}'.format(e.stdout.decode()))
+        print('\n\nstderr:\n{}'.format(e.stderr.decode()))
         sys.exit(e.returncode)

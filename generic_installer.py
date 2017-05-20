@@ -36,3 +36,4 @@ for repo_path in found_repos:
         print("{} installer script exited with return code {}".format(
             repo_path, e.returncode))
         print(e.output)
+        sys.exit(e.returncode)

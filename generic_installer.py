@@ -31,10 +31,10 @@ for repo_path in found_repos:
 
         # catch/log errors
         print('stdout:\n{}'.format(p.stdout.decode()))
-        print('\n\nstderr:\n{}'.format(p.stderr.decode()))
+        print('\nstderr:\n{}'.format(p.stderr.decode()))
     except subprocess.CalledProcessError as e:
-        print("{} installer script exited with non-zero status {}".format(
+        print("ERROR: {} installer script exited with non-zero status {}".format(
             repo_path, e.returncode))
         print('stdout:\n{}'.format(e.stdout.decode()))
-        print('\n\nstderr:\n{}'.format(e.stderr.decode()))
+        print('\nstderr:\n{}'.format(e.stderr.decode()))
         sys.exit(e.returncode)

@@ -119,8 +119,22 @@
     path: "{{ item.mp }}"
     src: /dev/{{ item.drive }}
     fstype: xfs
-    state: mounted
+    state: present
     opts: noatime,nodiratime,logbufs=2
+
+- name: Create directories to mount disks
+  file:
+    path: /srv/{{item.0}}/node/{{item.1}}
+    state: directory
+  with_nested:
+    - ['1', 'd1']
+    - ['2', 'd2']
+    - ['3', 'd3']
+    - ['4', 'd4']
+    - ['1', 'd5']
+    - ['2', 'd6']
+    - ['3', 'd7']
+    - ['4', 'd8']
 
 - name: Mount disks
   register: drivesmounted
@@ -128,7 +142,6 @@
   when: fstab_update|success
   args:
     warn: no
-
 
 - name: Set permissions
   register: permissionsset

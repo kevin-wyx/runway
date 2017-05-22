@@ -103,8 +103,8 @@
     force: no
 
 
-- name: Mount disks
-  register: drivesmounted
+- name: Update fstab
+  register: fstab_update
   when: filesystemscreated|success
   with_items:
     - { drive: sdb, mp: /srv/1/node/d1 }
@@ -116,11 +116,18 @@
     - { drive: sdh, mp: /srv/3/node/d7 }
     - { drive: sdi, mp: /srv/4/node/d8 }
   mount:
-    name: "{{ item.mp }}"
+    path: "{{ item.mp }}"
     src: /dev/{{ item.drive }}
     fstype: xfs
-    state: mounted
+    state: present
     opts: noatime,nodiratime,logbufs=2
+
+- name: Mount disks
+  register: drivesmounted
+  command: mount -a
+  when: fstab_update|success
+  args:
+    warn: no
 
 
 - name: Set permissions

@@ -119,7 +119,7 @@
     path: "{{ item.mp }}"
     src: /dev/{{ item.drive }}
     fstype: xfs
-    state: present
+    state: mounted
     opts: noatime,nodiratime,logbufs=2
 
 - name: Mount disks

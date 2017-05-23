@@ -21,7 +21,8 @@ if [[ " $* " =~ " --debug " ]]; then
     DEBUG="--debug"
 fi
 
-lxc stop $CNAME
+lxc exec $CNAME -- shutdown -h now
+lxc stop $CNAME || true
 lxc publish $CNAME --alias $BASEIMAGE description="Created by swift runway"
 if [[ " $* " =~ " --delete-container " ]]; then
     lxc delete $CNAME

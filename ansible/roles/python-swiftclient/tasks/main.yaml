@@ -9,7 +9,7 @@
     name: pip
     state: latest
 
-- name: install pip dependencies
+- name: Install pip dependencies
   pip:
     requirements: "{{item}}"
     chdir: /home/swift/code/python-swiftclient
@@ -25,7 +25,7 @@
   become_user: swift
   when: swiftclient_stat.stat.exists
 
-- name: intall swiftclient from pip
+- name: Install swiftclient from pip
   pip:
     name: python-swiftclient
   when: not swiftclient_stat.stat.exists

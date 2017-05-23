@@ -45,7 +45,14 @@
   register: components_stat
 
 - name: Move components directory to /home/swift/code
-  command: mv /root/components /home/swift/code
+  synchronize:
+    src: /root/components/
+    dest: /home/swift/code/
+    delete: yes
+    checksum: yes
+    archive: yes
+    compress: no
+    recursive: yes
   when: components_stat.stat.exists
 
 - name: Make sure swift user's home directory is owned by swift
@@ -120,7 +127,7 @@
     src: /dev/{{ item.drive }}
     fstype: xfs
     state: present
-    opts: noatime,nodiratime,logbufs=2
+    opts: auto,noatime,nodiratime,logbufs=2
 
 - name: Create directories to mount disks
   file:

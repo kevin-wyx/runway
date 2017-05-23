@@ -124,17 +124,17 @@
 
 - name: Create directories to mount disks
   file:
-    path: /srv/{{item.0}}/node/{{item.1}}
+    path: "{{item}}"
     state: directory
-  with_nested:
-    - ['1', 'd1']
-    - ['2', 'd2']
-    - ['3', 'd3']
-    - ['4', 'd4']
-    - ['1', 'd5']
-    - ['2', 'd6']
-    - ['3', 'd7']
-    - ['4', 'd8']
+  with_items:
+    - '/srv/1/node/d1'
+    - '/srv/2/node/d2'
+    - '/srv/3/node/d3'
+    - '/srv/4/node/d4'
+    - '/srv/1/node/d5'
+    - '/srv/2/node/d6'
+    - '/srv/3/node/d7'
+    - '/srv/4/node/d8'
 
 - name: Mount disks
   register: drivesmounted

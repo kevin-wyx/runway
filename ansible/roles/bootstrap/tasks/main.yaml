@@ -108,6 +108,19 @@
     dev: /dev/{{ item }}
     force: no
 
+- name: Create directories to mount disks
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+    - '/srv/1/node/d1'
+    - '/srv/2/node/d2'
+    - '/srv/3/node/d3'
+    - '/srv/4/node/d4'
+    - '/srv/1/node/d5'
+    - '/srv/2/node/d6'
+    - '/srv/3/node/d7'
+    - '/srv/4/node/d8'
 
 - name: Update fstab
   register: fstab_update
@@ -125,22 +138,8 @@
     path: "{{ item.mp }}"
     src: /dev/{{ item.drive }}
     fstype: xfs
-    state: present
+    state: mounted
     opts: auto,noatime,nodiratime,logbufs=2
-
-- name: Create directories to mount disks
-  file:
-    path: "{{item}}"
-    state: directory
-  with_items:
-    - '/srv/1/node/d1'
-    - '/srv/2/node/d2'
-    - '/srv/3/node/d3'
-    - '/srv/4/node/d4'
-    - '/srv/1/node/d5'
-    - '/srv/2/node/d6'
-    - '/srv/3/node/d7'
-    - '/srv/4/node/d8'
 
 - name: Mount disks
   register: drivesmounted

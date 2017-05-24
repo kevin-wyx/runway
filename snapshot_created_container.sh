@@ -28,4 +28,5 @@ if [[ " $* " =~ " --delete-container " ]]; then
     lxc delete $CNAME
 else
     lxc start $CNAME
+    lxc exec $CNAME -- mount -a
 fi

@@ -5,12 +5,7 @@
     path: /home/swift/code/liberasurecode
   register: libec_stat
 
-# - name: install from distro
-#   when: not libec_stat.stat.exists
-#   apt: name=liberasurecode-dev state=installed
-#   register: libec_installed
-
-- name: install build tools (Debian)
+- name: Libec - install build tools (Debian)
   when: libec_stat.stat.exists and libec_stat.stat.isdir and ansible_os_family == 'Debian'
   register: build_tools_installed
   apt: name={{item}} state=installed
@@ -20,33 +15,33 @@
     - automake
     - libtool
 
-- name: install build tools (RedHat)
+- name: Libec - install build tools (RedHat)
   when: libec_stat.stat.exists and libec_stat.stat.isdir and ansible_os_family == 'RedHat'
   register: build_tools_installed
   yum: name={{item}} state=installed
   with_items:
+    - gcc
+    - make
     - autoconf
     - automake
     - libtool
-    - make
 
 - name: Download and Install liberasurecode
   yum:
-    name: http://www.rpmfind.net/linux/fedora/linux/releases/23/Everything/x86_64/os/Packages/l/liberasurecode-1.0.9-3.fc23.x86_64.rpm
+    name: http://www.rpmfind.net/linux/fedora/linux/releases/25/Everything/x86_64/os/Packages/l/liberasurecode-1.1.1-1.fc25.x86_64.rpm
     state: present
   when: ansible_os_family == 'RedHat'
 
 - name: Download and Install liberasurecode-devel
   yum:
-    name: http://www.rpmfind.net/linux/fedora/linux/releases/23/Everything/x86_64/os/Packages/l/liberasurecode-devel-1.0.9-3.fc23.x86_64.rpm
+    name: http://www.rpmfind.net/linux/fedora/linux/releases/25/Everything/x86_64/os/Packages/l/liberasurecode-devel-1.1.1-1.fc25.x86_64.rpm
     state: present
   when: ansible_os_family == 'RedHat'
   register: libec_installed
 
-- name: install from source
+- name: Libec - install from source
   when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed|success and ansible_os_family == 'Debian'
   register: libec_installed
-  shell: ./autogen.sh && ./configure && make && make install && ldconfig
+  shell: ./autogen.sh && ./configure && make && make test && sudo make install && ldconfig
   args:
     chdir: /home/swift/code/liberasurecode
-

@@ -1,19 +1,34 @@
 #!/bin/bash
 
+# this runs on the host and is called by a remote machine, given the name of
+# the code directory and the container to put it in
+
 # Directory containing the script, so that we can call other scripts
 #DIR="$(dirname "$(readlink -f "${0}")")" # not supported on OSX
 DIR="$( cd "$( dirname "${0}" )" && pwd )"
 
+#TODO: rewrite in python, because ... wow
+
 SRC=$1
-DESTCNAME=$2
+CNAME=$2
 
-#TODO: handle special cases of DESTCNAME (NEW and CURRENT)
-#TODO: handle errors when the CNAME doesn't exist (check if DESTDIR exists or not)
+#TODO: add a "NEW" special name?
 
-# rsync the src directory to the appropriate workspace for the given container
-DESTDIR=$DIR/../guest_workspaces/${DESTCNAME}_shared_code/
+if [ $CNAME == "CURRENT" ]; then
+    CNAME=`lxc list | grep swift-runway | cut -d '|' -f2 | awk '{$1=$1;print}' | tail -1`
+fi
 
-#TODO: maybe add in the necessary excludes?
-rsync -a --delete $SRC $DESTDIR
+if [ -z $CNAME ]; then
+    # no currently running containers
+    exit 1
+    # alternatively could put it in components and make a container
+fi
 
-#TODO: start/restart processes in the container? probably not
+#TODO: filter off "CURRENT_" prefix of $SRC
+
+cd `dirname $SRC`
+tar cf - `basename $SRC` | lxc exec $CNAME -- tar xf - -C /home/swift/code/
+cd -
+
+
+#TODO: a reinstall/restart flag to redo setup maybe? but how do we know how to do that?

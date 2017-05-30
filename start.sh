@@ -53,20 +53,23 @@ fi
 
 $DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $VOLSIZE $DEBUG
 
-$DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
+if [[ " $* " != *"--no-install"* ]]; then
+    $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
 
-# Now find code repos in the guest and install them.
-# At this point, all the code is on the guest in `/home/swift/code/`.
-# We need to find repos there (excluding stuff like swift itself) and
-# call the install.sh command (not finding it is ok).
-#probably write this in python so it's a lot easier to parse? copy the py code to the container and run it there
-$DIR/generic_installer.py $CNAME $DEBUG
+    # Now find code repos in the guest and install them.
+    # At this point, all the code is on the guest in `/home/swift/code/`.
+    # We need to find repos there (excluding stuff like swift itself) and
+    # call the install.sh command (not finding it is ok).
+    #probably write this in python so it's a lot easier to parse? copy the py code to the container and run it there
+    $DIR/generic_installer.py $CNAME $DEBUG
 
-DELETE_CONTAINER=''
-if [[ " $* " =~ " --delete-container " ]]; then
-    DELETE_CONTAINER='--delete-container'
-fi
 
-if [[ ! " $* " =~ " --no-snapshot " ]]; then
-    $DIR/snapshot_created_container.sh $CNAME $BASEIMAGE $DEBUG $DELETE_CONTAINER
+    DELETE_CONTAINER=''
+    if [[ " $* " =~ " --delete-container " ]]; then
+        DELETE_CONTAINER='--delete-container'
+    fi
+
+    if [[ ! " $* " =~ " --no-snapshot " ]]; then
+        $DIR/snapshot_created_container.sh $CNAME $BASEIMAGE $DEBUG $DELETE_CONTAINER
+    fi
 fi

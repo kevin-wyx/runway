@@ -13,6 +13,7 @@
 #         print(x, '=> lxc.list_containers(active=%s, defined=%s)' % (active, defined))
 
 
+import argparse
 import json
 import subprocess
 import shlex
@@ -25,7 +26,19 @@ if os.geteuid() != 0:
     print('must be run as root')
     sys.exit(1)
 
-delete_everything = '--all' in sys.argv[1:]
+DEFAULT_PREFIX = 'swift-runway-'
+parser = argparse.ArgumentParser()
+parser.add_argument('-a', '--all', action='store_true', default=False,
+                    help="Delete everything")
+
+parser.add_argument('-p', '--prefix', default=DEFAULT_PREFIX,
+                    help="Prefix to look for when deleting. Default: "
+                         "'{}'".format(DEFAULT_PREFIX))
+
+args = parser.parse_args()
+
+delete_everything = args.all
+prefix = args.prefix
 
 VOLUME_GROUP = 'swift-runway-vg01'
 
@@ -33,7 +46,7 @@ list_command = 'lxc list --format=json'
 p = subprocess.run(shlex.split(list_command), stdout=subprocess.PIPE)
 
 containers = json.loads(p.stdout.decode())
-to_delete = [x['name'] for x in containers if x['name'].startswith('swift-runway-')]
+to_delete = [x['name'] for x in containers if x['name'].startswith(prefix)]
 
 if to_delete:
     delete_command = 'lxc delete --force %s' % ' '.join(to_delete)
@@ -72,7 +85,7 @@ else:
 profile_list_command = 'lxc profile list'
 p = subprocess.run(shlex.split(profile_list_command), stdout=subprocess.PIPE)
 profiles = p.stdout.decode().split('\n')
-to_delete = [x for x in profiles if x.startswith('swift-runway-')]
+to_delete = [x for x in profiles if x.startswith(prefix)]
 if to_delete:
     for profile in to_delete:
         delete_command = 'lxc profile delete %s' % profile

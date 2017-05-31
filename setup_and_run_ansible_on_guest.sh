@@ -20,15 +20,23 @@ if [[ " $* " =~ " --debug " ]]; then
     DEBUG="--debug"
 fi
 
-# get all the guest-executed stuff pushed over
-# lxc file push ./ansible/ $CNAME/root/
-# unfortunately, lxc doesn't support directly pushing a whole directory
-# https://github.com/lxc/lxd/issues/1218
-cd $DIR && tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/ && cd -
+# check if we're in "no install" mode
+if [[ " $* " != *"--no-install"* ]]; then
+    # get all the guest-executed stuff pushed over
+    # lxc file push ./ansible/ $CNAME/root/
+    # unfortunately, lxc doesn't support directly pushing a whole directory
+    # https://github.com/lxc/lxd/issues/1218
+    cd $DIR && tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/ && cd -
 
+    # install ansible
+    lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG
+fi
 
-# install ansible
-lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG
+# run the bootstrap playbook
+lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/bootstrap.yaml
 
-# run ansible playbook to bootstrap container
-lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/master_playbook.yaml
+# check if we're in "no install" mode
+if [[ " $* " != *"--no-install"* ]]; then
+    # run ansible playbook to bootstrap container
+    lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/master_playbook.yaml
+fi

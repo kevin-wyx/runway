@@ -53,9 +53,12 @@ fi
 
 $DIR/make_base_container.sh $DISTRO $CNAME $BASEIMAGE $VOLSIZE $DEBUG
 
-if [[ " $* " != *"--no-install"* ]]; then
-    $DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG
+INSTALLMODE=$(if [[ " $* " =~ " --no-install " ]]; then echo "--no-install"; fi)
+$DIR/setup_and_run_ansible_on_guest.sh $CNAME $DEBUG $INSTALLMODE
 
+# if we're in a "no install" mode, skip the rest
+# we assume it's already all set up (ie started from a snapshot)
+if [[ " $* " != *"--no-install"* ]]; then
     # Now find code repos in the guest and install them.
     # At this point, all the code is on the guest in `/home/swift/code/`.
     # We need to find repos there (excluding stuff like swift itself) and

@@ -7,7 +7,6 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Create etc swift
-  when: swiftusercreated|success
   file:
     path: /etc/swift
     state: directory

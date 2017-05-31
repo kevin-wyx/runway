@@ -1,7 +1,6 @@
 # starting point for ansible deploy
 ---
-- name: Most of the shebang
+- name: Bootstrap the shebang
   hosts: localhost
   roles:
-    - swift
-    - python-swiftclient
+    - bootstrap

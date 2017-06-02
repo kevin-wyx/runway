@@ -74,7 +74,7 @@
     path: /root/components
   register: components_stat
 
-- name: Move components directory to /home/swift/code
+- name: Sync components directory to /home/swift/code
   synchronize:
     src: /root/components/
     dest: /home/swift/code/
@@ -86,7 +86,7 @@
     rsync_opts:
       - "--exclude=*.pyc"
       - "--exclude=*.egg-info"
-  when: components_stat.stat.exists
+  when: components_stat.stat.exists and (no_install is undefined or not no_install)
 
 - name: Make sure swift user's home directory is owned by swift
   file:

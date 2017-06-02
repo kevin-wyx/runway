@@ -30,10 +30,13 @@ if [[ " $* " != *"--no-install"* ]]; then
 
     # install ansible
     lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG
+    EXTRA_VARS="-e no_install=no"
+else
+    EXTRA_VARS="-e no_install=yes"
 fi
 
 # run the bootstrap playbook
-lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/bootstrap.yaml
+lxc exec $CNAME -- ansible-playbook -i "localhost," -c local $EXTRA_VARS /root/ansible/bootstrap.yaml
 
 # check if we're in "no install" mode
 if [[ " $* " != *"--no-install"* ]]; then

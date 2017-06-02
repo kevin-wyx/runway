@@ -12,6 +12,9 @@ DIR="$( cd "$( dirname "${0}" )" && pwd )"
 SRC=$1
 CNAME=$2
 
+base=`basename $SRC`
+base_no_prefix=`echo ${base} | sed "s/${CNAME}_//g"`
+
 #TODO: add a "NEW" special name?
 
 if [ $CNAME == "CURRENT" ]; then
@@ -24,10 +27,9 @@ if [ -z $CNAME ]; then
     # alternatively could put it in components and make a container
 fi
 
-#TODO: filter off "CURRENT_" prefix of $SRC
-
 cd `dirname $SRC`
-tar cf - `basename $SRC` | lxc exec $CNAME -- tar xf - -C /home/swift/code/
+tar cf - $base | lxc exec $CNAME -- tar xf - -C /home/swift/code/
+lxc exec $CNAME -- mv /home/swift/code/${base} /home/swift/code/${base_no_prefix}
 cd -
 
 

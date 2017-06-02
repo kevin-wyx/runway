@@ -83,6 +83,9 @@
     archive: yes
     compress: no
     recursive: yes
+    rsync_opts:
+      - "--exclude=*.pyc"
+      - "--exclude=*.egg-info"
   when: components_stat.stat.exists
 
 - name: Make sure swift user's home directory is owned by swift

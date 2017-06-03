@@ -83,7 +83,7 @@
     archive: yes
     compress: no
     recursive: yes
-  when: components_stat.stat.exists and (no_install is undefined or not no_install)
+  when: components_stat.stat.exists and (do_install is undefined or do_install)
 
 - name: Make sure swift user's home directory is owned by swift
   file:

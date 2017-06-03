@@ -1,6 +1,8 @@
 # starting point for ansible deploy
 ---
 - name: Bootstrap the shebang
+  vars:
+    do_install: "{{ not no_install|bool }}"
   hosts: localhost
   roles:
     - bootstrap

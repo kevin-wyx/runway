@@ -36,7 +36,7 @@ if [ -z "$installer" ]; then
 fi
 
 # the update step is needed to make sure package sources are available
-$installer update
+$installer update -y
 
 PACKAGELIST="python-pip build-essential gcc libssl-dev python-dev libffi-dev"
 if [ $distro = "RHEL" ]; then

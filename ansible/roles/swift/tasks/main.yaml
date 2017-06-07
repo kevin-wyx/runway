@@ -188,9 +188,3 @@
   command: ./remakerings
   args:
     chdir: /home/swift/bin/
-
-- name: Start swift
-  register: swiftstarted
-  when: ringssetup|success
-  command: swift-init main start
-  become_user: swift

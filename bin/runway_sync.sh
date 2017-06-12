@@ -7,7 +7,7 @@ if [ -z "$RUNWAYHOST" ]; then
 fi
 
 if [ -z "$RUNWAYCNAME" ]; then
-    RUNWAYCNAME=CURRENT
+    RUNWAYCNAME="CURRENT"
 fi
 
 BN=`basename $PWD`;

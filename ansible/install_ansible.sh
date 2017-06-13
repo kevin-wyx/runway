@@ -38,7 +38,7 @@ fi
 # the update step is needed to make sure package sources are available
 $installer update -y
 
-PACKAGELIST="python-pip build-essential gcc libssl-dev python-dev libffi-dev"
+PACKAGELIST="python-pip build-essential gcc libssl-dev python-dev libffi-dev libsodium"
 if [ $distro = "RHEL" ]; then
   PACKAGELIST="python-pip gcc openssl-devel python-devel libffi-devel"
 fi

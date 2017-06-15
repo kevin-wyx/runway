@@ -25,7 +25,7 @@ fi
 
 if [ $RUNWAYCNAME == "CURRENT" ]; then
     # get the last container in the list
-    RUNWAYCNAME=`ssh ${VAGRANTOPTIONS} ${RUNWAYHOST} sudo lxc list | grep swift-runway | cut -d '|' -f2 | awk '{$1=$1;print}' | tail -1`
+    RUNWAYCNAME=`ssh ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc list | grep swift-runway | cut -d '|' -f2 | awk '{$1=$1;print}' | tail -1`
 fi
 
 if [ -z $RUNWAYCNAME ]; then
@@ -34,4 +34,4 @@ if [ -z $RUNWAYCNAME ]; then
     exit 1
 fi
 
-ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} sudo lxc exec ${RUNWAYCNAME} -- bash
+ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- bash

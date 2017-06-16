@@ -101,5 +101,4 @@ if __name__ == "__main__":
     install_components(config)
 
     run_command("vagrant up", cwd=RUNWAY_DIR)
-    run_command("vagrant halt", cwd=RUNWAY_DIR)
     print("This is a WIP. TODO: setup LVM and run runway itself.")

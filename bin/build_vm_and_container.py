@@ -83,22 +83,24 @@ def install_components(config):
             run_command(checkout_info["post_cmd"], cwd=COMPONENTS_DIR)
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--config', default=DEFAULT_CONFIG_FILE_PATH,
-                    help="Path to components config file. Default: '/path/to"
-                         "/runway/{}'".format(DEFAULT_CONFIG_FILE_NAME))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', default=DEFAULT_CONFIG_FILE_PATH,
+                        help="Path to components config file. Default: '/path"
+                             "/to/runway/{}'".format(DEFAULT_CONFIG_FILE_NAME))
 
-args = parser.parse_args()
-config_file = os.path.abspath(args.config)
+    args = parser.parse_args()
+    config_file = os.path.abspath(args.config)
 
-if not os.path.isfile(config_file):
-    print("Error: file {} does not exist.".format(config_file))
-    sys.exit(1)
+    if not os.path.isfile(config_file):
+        print("Error: file {} does not exist.".format(config_file))
+        sys.exit(1)
 
-config = ConfigParser.ConfigParser()
-config.read(config_file)
-install_components(config)
+    config = ConfigParser.ConfigParser()
+    config.read(config_file)
+    install_components(config)
 
-run_command("vagrant up", cwd=RUNWAY_DIR)
-run_command("vagrant halt", cwd=RUNWAY_DIR)
-print("This is a WIP. TODO: add disk with Vagrantfile, setup LVM and run runway itself.")
+    run_command("vagrant up", cwd=RUNWAY_DIR)
+    run_command("vagrant halt", cwd=RUNWAY_DIR)
+    print("This is a WIP. TODO: add disk with Vagrantfile, setup LVM and run "
+          "runway itself.")

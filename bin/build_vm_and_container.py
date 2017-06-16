@@ -38,18 +38,25 @@ def run_command(cmd, cwd=None):
     print cmd
     env_vars, stripped_cmd = extract_env_vars(cmd)
     try:
-        output = subprocess.check_output(shlex.split(stripped_cmd),
-                                         stderr=subprocess.STDOUT,
-                                         cwd=cwd,
-                                         env=env_vars)
-        print(u"{}".format(output))
+        p = subprocess.Popen(shlex.split(stripped_cmd),
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT,
+                             cwd=cwd,
+                             env=env_vars,
+                             bufsize=1)
+        for line in iter(p.stdout.readline, ""):
+            print(line.decode('utf-8').rstrip())
     except CalledProcessError as e:
-        print("Error running '{}':\n{}".format(cmd, e.output))
-        print("If you want to cleanup your runway installation, run {}".format(os.path.join(RUNWAY_DIR, 'bin', 'cleanup_runway.sh')))
+        print("Error running '{}':\n{}\n{}".format(cmd, e.output, e.message))
+        print("If you want to cleanup your runway installation, run "
+              "{}".format(os.path.join(RUNWAY_DIR, 'bin',
+                                       'cleanup_runway.sh')))
         sys.exit(1)
     except Exception as e:
         print("Error running '{}':\n{}".format(cmd, e.message))
-        print("If you want to cleanup your runway installation, run {}".format(os.path.join(RUNWAY_DIR, 'bin', 'cleanup_runway.sh')))
+        print("If you want to cleanup your runway installation, run "
+              "{}".format(os.path.join(RUNWAY_DIR, 'bin',
+                                       'cleanup_runway.sh')))
         sys.exit(1)
 
 
@@ -77,9 +84,6 @@ def install_components(config):
 
 
 parser = argparse.ArgumentParser()
-# parser.add_argument('-a', '--all', action='store_true', default=False,
-#                     help="Delete everything")
-
 parser.add_argument('-c', '--config', default=DEFAULT_CONFIG_FILE_PATH,
                     help="Path to components config file. Default: '/path/to"
                          "/runway/{}'".format(DEFAULT_CONFIG_FILE_NAME))

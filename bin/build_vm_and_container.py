@@ -101,12 +101,18 @@ if __name__ == "__main__":
     install_components(config)
 
     run_command("vagrant up", cwd=RUNWAY_DIR)
+
     # Set up LV
     run_command("vagrant ssh -c \"sudo pvcreate /dev/sdc; "
                 "sudo vgcreate swift-runway-vg01 /dev/sdc\"", cwd=RUNWAY_DIR)
+
     # Generate LXD certificate for unprivileged user and initializing LXD
-    # run_command("vagrant ssh -c \"lxc list; sudo lxd init\"", cwd=RUNWAY_DIR)
-    # run_command("vagrant ssh -c \"sudo ./start.sh RHEL runway-base "
+    # run_command("vagrant ssh -c \"lxc list\"", cwd=RUNWAY_DIR)
+    # run_command("vagrant ssh -c \"sudo lxd init\"", cwd=RUNWAY_DIR)
+
+    # Start runway
+    # run_command("vagrant ssh -c \"cd /vagrant && sudo ./start.sh RHEL runway-base "
     #             "swift-runway-`date +%F-%H-%M-%S-%N` 1G\"", cwd=RUNWAY_DIR)
-    # run_command("vagrant ssh -c \"\"", cwd=RUNWAY_DIR)
-    print("This is a WIP. TODO: setup LVM and run runway itself.")
+
+    # Log into our brand new container
+    # run_command("./bin/bash_on_current_container.sh", cwd=RUNWAY_DIR)

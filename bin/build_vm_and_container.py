@@ -102,5 +102,4 @@ if __name__ == "__main__":
 
     run_command("vagrant up", cwd=RUNWAY_DIR)
     run_command("vagrant halt", cwd=RUNWAY_DIR)
-    print("This is a WIP. TODO: add disk with Vagrantfile, setup LVM and run "
-          "runway itself.")
+    print("This is a WIP. TODO: setup LVM and run runway itself.")

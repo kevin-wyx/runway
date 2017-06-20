@@ -69,6 +69,24 @@
     append: yes
   when: swiftgroupcreated|success and ansible_os_family == 'RedHat'
 
+- name: Allow 'sudo' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+  when: ansible_os_family == 'Debian'
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+  when: ansible_os_family == 'RedHat'
+
 - name: Check components dir exists
   stat:
     path: /root/components

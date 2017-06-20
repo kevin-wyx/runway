@@ -34,4 +34,4 @@ if [ -z $RUNWAYCNAME ]; then
     exit 1
 fi
 
-ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- bash
+ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- 'sudo su - swift'

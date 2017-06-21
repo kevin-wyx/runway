@@ -9,7 +9,7 @@ fi
 
 # Directory containing the script, so that we can call other scripts
 #DIR="$(dirname "$(readlink -f "${0}")")" # not supported on OSX
-DIR="$( cd "$( dirname "${0}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 DISTRO=$1
 if [ -z "$DISTRO" ];  then

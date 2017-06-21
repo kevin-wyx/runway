@@ -12,6 +12,7 @@
     - libxml2-devel
     - libxml2
     - libxslt-devel
+    - sudo
   when: ansible_os_family == 'RedHat'
 
 - name: apt install anticipated packages for building/running swift
@@ -78,6 +79,9 @@
     validate: visudo -cf %s
   when: ansible_os_family == 'Debian'
 
+#
+# /etc/sudoers will not exist until after sudo has been installed.
+#
 - name: Allow 'wheel' group to have passwordless sudo
   lineinfile:
     dest: /etc/sudoers

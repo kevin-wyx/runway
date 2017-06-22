@@ -28,7 +28,6 @@ if [[ " $* " != *"--no-install"* ]]; then
     # https://github.com/lxc/lxd/issues/1218
     cd $DIR
     tar cf - ansible | lxc exec $CNAME -- tar xf - -C /root/
-    cd -
 
     # install ansible
     lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG

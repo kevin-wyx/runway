@@ -24,5 +24,3 @@ cd `dirname $SRC`
 tar cf - $base | lxc exec $CNAME -- tar xf - -C /home/swift/code/
 lxc exec $CNAME -- rsync -a --delete /home/swift/code/${base}/ /home/swift/code/${base_no_prefix}/
 lxc exec $CNAME -- rm -rf /home/swift/code/${base}/
-cd -
-

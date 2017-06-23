@@ -100,7 +100,7 @@ if __name__ == "__main__":
     config.read(config_file)
     install_components(config)
 
-    # We will keep updating the box until we get a stable release
+    print("We will keep updating the box until we get a stable release...")
     run_command("vagrant box update", cwd=RUNWAY_DIR)
     run_command("vagrant up", cwd=RUNWAY_DIR)
 

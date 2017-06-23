@@ -102,6 +102,7 @@ if __name__ == "__main__":
 
     print("We will keep updating the box until we get a stable release...")
     run_command("vagrant box update", cwd=RUNWAY_DIR)
+    run_command("vagrant box prune --name ubuntu/xenial64", cwd=RUNWAY_DIR)
     run_command("vagrant up", cwd=RUNWAY_DIR)
 
     # Generate LXD certificate for unprivileged user and initializing LXD

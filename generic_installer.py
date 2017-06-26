@@ -12,13 +12,16 @@ import shlex
 import subprocess
 
 container_name = sys.argv[1]
+SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+COMPONENTS_DIR = os.path.join(SCRIPT_DIR, 'components')
 
 found_repos = []
-for entry in os.scandir('components'):
+for entry in os.scandir(COMPONENTS_DIR):
     if entry.is_dir() and entry.name not in ('swift',
                                              'python-swiftclient',
                                              'liberasurecode') and \
-            os.path.isfile('components/{}/install.sh'.format(entry.name)):
+            os.path.isfile('{}/{}/install.sh'.format(COMPONENTS_DIR,
+                                                     entry.name)):
         found_repos.append(entry.name)
 
 for repo_path in found_repos:

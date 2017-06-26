@@ -16,6 +16,32 @@ COMPONENTS_DIR = os.path.join(RUNWAY_DIR, 'components')
 DEFAULT_CONFIG_FILE_NAME = 'default_components.cfg'
 DEFAULT_CONFIG_FILE_PATH = os.path.join(RUNWAY_DIR, DEFAULT_CONFIG_FILE_NAME)
 
+class bcolors:
+    PINK = '\033[95m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+def colorize(text, color):
+    return "{}{}{}".format(color, text, bcolors.ENDC)
+
+
+def info(text):
+    print colorize(text, bcolors.BOLD)
+
+
+def success(text):
+    print colorize(text, bcolors.GREEN)
+
+
+def warning(text):
+    print colorize(text, bcolors.YELLOW)
+
 
 def extract_env_vars(cmd):
     env_vars = {}
@@ -100,18 +126,19 @@ if __name__ == "__main__":
     config.read(config_file)
     install_components(config)
 
-    print("We will keep updating the box until we get a stable release...")
+    info("We will keep updating the box until we get a stable release...")
     run_command("vagrant box update", cwd=RUNWAY_DIR)
+    info("But we will keep our disks free of old boxes. ;)")
     run_command("vagrant box prune --name ubuntu/xenial64", cwd=RUNWAY_DIR)
+    if os.environ.get('CONTROLLER_NAME') is None:
+        warning("WARNING: CONTROLLER_NAME env var hasn't been set. If you fail"
+                " to 'vagrant up' your VM, open VirtualBox, check the name of "
+                "your SCSI Controller and provide it in the CONTROLLER_NAME "
+                "env var.")
     run_command("vagrant up", cwd=RUNWAY_DIR)
 
-    # Generate LXD certificate for unprivileged user and initializing LXD
-    # run_command("vagrant ssh -c \"lxc list\"", cwd=RUNWAY_DIR)
-    # run_command("vagrant ssh -c \"sudo lxd init\"", cwd=RUNWAY_DIR)
-
-    # Start runway
-    # run_command("vagrant ssh -c \"cd /vagrant && sudo ./start.sh RHEL runway-base "
-    #             "swift-runway-`date +%F-%H-%M-%S-%N` 1G\"", cwd=RUNWAY_DIR)
-
-    # Log into our brand new container
+    # Log into our brand new container?
     # run_command("./bin/bash_on_current_container.sh", cwd=RUNWAY_DIR)
+    success("Your new container is now up and running! If you want to log into"
+            " it, just run the following command from the runway directory:"
+            "\n\n\tbin/bash_on_current_container.sh")

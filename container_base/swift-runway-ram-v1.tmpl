@@ -1,0 +1,18 @@
+# profile for guest container
+name: {name}
+config:
+  raw.lxc: |-
+    lxc.aa_profile = unconfined
+    lxc.cgroup.devices.allow = b 252:* rwm
+  security.privileged: "true"
+description: Swift object storage all-in-one
+devices:
+  eth0:
+    name: eth0
+    nictype: bridged
+    parent: lxdbr0
+    type: nic
+  disk0:
+    path: /dev/sdb
+    source: {host_tmpfs_mount}
+    type: disk

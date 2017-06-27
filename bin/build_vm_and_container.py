@@ -31,16 +31,24 @@ def colorize(text, color):
     return "{}{}{}".format(color, text, bcolors.ENDC)
 
 
-def info(text):
-    print colorize(text, bcolors.BOLD)
+def print_debug(text):
+    print(colorize(text, bcolors.BLUE))
 
 
-def success(text):
-    print colorize(text, bcolors.GREEN)
+def print_error(text):
+    print(colorize(text, bcolors.RED))
 
 
-def warning(text):
-    print colorize(text, bcolors.YELLOW)
+def print_info(text):
+    print(colorize(text, bcolors.BOLD))
+
+
+def print_success(text):
+    print(colorize(text, bcolors.GREEN))
+
+
+def print_warning(text):
+    print(colorize(text, bcolors.YELLOW))
 
 
 def extract_env_vars(cmd):
@@ -72,17 +80,30 @@ def run_command(cmd, cwd=None):
                              bufsize=1)
         for line in iter(p.stdout.readline, ""):
             print(line.decode('utf-8').rstrip())
+        exit_code = p.wait()
+        if exit_code != 0:
+            print_error("Command '{}' responded with a non-zero exit status "
+                        "({}).".format(cmd, exit_code))
+            print_error("An error for this command might have been printed "
+                        "above these lines. Please read the output in order "
+                        "to check what went wrong.")
+            print_error("If you want to cleanup your runway installation, run "
+                        "'{}'".format(os.path.join(RUNWAY_DIR, 'bin',
+                                                   'cleanup_runway.sh')))
+            sys.exit(1)
     except CalledProcessError as e:
-        print("Error running '{}':\n{}\n{}".format(cmd, e.output, e.message))
-        print("If you want to cleanup your runway installation, run "
-              "{}".format(os.path.join(RUNWAY_DIR, 'bin',
-                                       'cleanup_runway.sh')))
+        print_error("Error running '{}':\n{}\n{}".format(cmd, e.output,
+                                                         e.message))
+        print_error("If you want to cleanup your runway installation, run "
+                    "'{}'".format(os.path.join(RUNWAY_DIR, 'bin',
+                                               'cleanup_runway.sh')))
         sys.exit(1)
     except Exception as e:
-        print("Error running '{}':\n{}".format(cmd, e.message))
-        print("If you want to cleanup your runway installation, run "
-              "{}".format(os.path.join(RUNWAY_DIR, 'bin',
-                                       'cleanup_runway.sh')))
+        print_error("Error running '{}':\n{}".format(cmd, e.message))
+        print_error(e)
+        print_error("If you want to cleanup your runway installation, run "
+                    "'{}'".format(os.path.join(RUNWAY_DIR, 'bin',
+                                               'cleanup_runway.sh')))
         sys.exit(1)
 
 
@@ -114,9 +135,12 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--config', default=DEFAULT_CONFIG_FILE_PATH,
                         help="Path to components config file. Default: '/path"
                              "/to/runway/{}'".format(DEFAULT_CONFIG_FILE_NAME))
+    parser.add_argument('-u', '--do_not_update_box', action='store_true',
+                        default=False, help="Do not try to update Vagrant box")
 
     args = parser.parse_args()
     config_file = os.path.abspath(args.config)
+    update_box = not args.do_not_update_box
 
     if not os.path.isfile(config_file):
         print("Error: file {} does not exist.".format(config_file))
@@ -126,19 +150,23 @@ if __name__ == "__main__":
     config.read(config_file)
     install_components(config)
 
-    info("We will keep updating the box until we get a stable release...")
-    run_command("vagrant box update", cwd=RUNWAY_DIR)
-    info("But we will keep our disks free of old boxes. ;)")
-    run_command("vagrant box prune --name ubuntu/xenial64", cwd=RUNWAY_DIR)
+    if update_box:
+        print_info("We will keep updating the box until we get a stable "
+                   "release...")
+        run_command("vagrant box update --box ubuntu/xenial64", cwd=RUNWAY_DIR)
+        print_info("But we will keep our disks free of old boxes. ;)")
+        run_command("vagrant box prune --name ubuntu/xenial64", cwd=RUNWAY_DIR)
+    else:
+        print_info("Skipping box update")
     if os.environ.get('CONTROLLER_NAME') is None:
-        warning("WARNING: CONTROLLER_NAME env var hasn't been set. If you fail"
-                " to 'vagrant up' your VM, open VirtualBox, check the name of "
-                "your SCSI Controller and provide it in the CONTROLLER_NAME "
-                "env var.")
+        print_warning("WARNING: CONTROLLER_NAME env var hasn't been set. If "
+                      "you fail to 'vagrant up' your VM, open VirtualBox, "
+                      "check the name of your SCSI Controller and provide it "
+                      "in the CONTROLLER_NAME env var.")
     run_command("vagrant up", cwd=RUNWAY_DIR)
 
     # Log into our brand new container?
     # run_command("./bin/bash_on_current_container.sh", cwd=RUNWAY_DIR)
-    success("Your new container is now up and running! If you want to log into"
-            " it, just run the following command from the runway directory:"
-            "\n\n\tbin/bash_on_current_container.sh")
+    print_success("Your new container is now up and running! If you want to "
+                  "log into it, just run the following command from the "
+                  "runway directory:\n\n\tbin/bash_on_current_container.sh")

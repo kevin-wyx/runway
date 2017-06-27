@@ -1,7 +1,16 @@
 #!/bin/bash
 
+set -e
+
 pvcreate /dev/sdc -y
 vgcreate swift-runway-vg01 /dev/sdc -y
+
+# We need LXD version 2.14 or higher in order to pre-seed lxd init.
+# Our xenial box comes with LXD 2.0.10, so we'll have to install the backport
+# version.
+# We could just do:
+#     apt-get install lxd/xenial-backports -y
+# But we would risk getting a version that breaks our current config.
 
 ## This works:
 apt-get install lxd-client=2.14-0ubuntu3~16.04.1 lxd=2.14-0ubuntu3~16.04.1 -y

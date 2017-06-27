@@ -1,6 +1,6 @@
 A project to help you take flight with a storage system (get it?).
 
-This sets up a swift-all-in-one (SAIO) dev environmen in an lxc container.
+This sets up a swift-all-in-one (SAIO) dev environment in an lxc container.
 Eventially it will also include projects like swift3, metadata searching,
 and filesystem access.
 
@@ -9,8 +9,8 @@ This project has three target use cases:
  - Developers looking for an API test target against which to write apps
  - Something easily consumable for CI to integrate into a QA process
 
-Requires a lvm volume group named "swift-runway-vg01" and assumes it's
-running on an Ubuntu 16.04 host.
+Requires a lvm volume group named "swift-runway-vg01", LXD version 2.14 or
+higher and assumes it's running on an Ubuntu 16.04 host.
 
 Start with `start.sh`. Clean everything up with
 `delete_all_runway_containers.py`. Because of the lvm commands, these

@@ -69,7 +69,7 @@ def extract_env_vars(cmd):
 
 
 def run_command(cmd, cwd=None):
-    print cmd
+    print("$ {}".format(cmd))
     env_vars, stripped_cmd = extract_env_vars(cmd)
     try:
         p = subprocess.Popen(shlex.split(stripped_cmd),
@@ -133,47 +133,67 @@ def validate_config_options(config_options, section):
         sys.exit(1)
 
 
+def get_dest_path(config_options):
+    if "dest_path" in config_options:
+        return os.path.join(COMPONENTS_DIR, config_options["dest_path"])
+    else:
+        return os.path.join(COMPONENTS_DIR, get_repo_name_from_url(
+            config_options["url"]))
+
+
+def git_clone_component(config_options):
+    # Clone
+    git_cmd = "git clone"
+    if "branch" in config_options:
+        git_cmd += " -b {}".format(config_options["branch"])
+    git_cmd += " {}".format(config_options["url"])
+    if "dest_path" in config_options:
+        dest_path = os.path.join(COMPONENTS_DIR, config_options["dest_path"])
+        git_cmd += " {}".format(dest_path)
+
+    run_command(git_cmd, cwd=COMPONENTS_DIR)
+
+
+def git_checkout_and_pull_component(config_options, dest_path):
+    git_cmd = "git checkout "
+    if "tag" in config_options:
+        git_cmd += "tags/{}".format(config_options["tag"])
+    elif "sha" in config_options:
+        git_cmd += config_options["sha"]
+    elif "branch" in config_options:
+        git_cmd += config_options["branch"]
+
+    run_command(git_cmd, dest_path)
+    run_command("git pull", dest_path)
+
+
 def install_components(config):
     for section in config.sections():
-        print("Installing {}...".format(section))
-        checkout_info = get_config_options(config.items(section))
-        validate_config_options(checkout_info, section)
+        print_info("Installing {}...".format(section))
+        config_options = get_config_options(config.items(section))
+        validate_config_options(config_options, section)
+        dest_path = get_dest_path(config_options)
+        component_exists = os.path.isdir(dest_path)
 
         # Run any needed command BEFORE cloning
-        if "pre_cmd" in checkout_info:
-            run_command(checkout_info["pre_cmd"], cwd=COMPONENTS_DIR)
+        if not component_exists and "pre_cmd" in config_options:
+            run_command(config_options["pre_cmd"], cwd=COMPONENTS_DIR)
 
-        # Clone
-        git_cmd = "git clone"
-        if "branch" in checkout_info:
-            git_cmd += " -b {}".format(checkout_info["branch"])
-        git_cmd += " {}".format(checkout_info["url"])
-        if "destname" in checkout_info:
-            destpath = os.path.join(COMPONENTS_DIR, checkout_info["destname"])
-            git_cmd += " {}".format(destpath)
+        if not component_exists:
+            git_clone_component(config_options)
 
-        run_command(git_cmd, cwd=COMPONENTS_DIR)
-
-        # Git checkout in case "sha" or "tag" option is present
-        if "sha" in checkout_info or "tag" in checkout_info:
-            if not "destname" in checkout_info:
-                destpath = os.path.join(COMPONENTS_DIR,
-                                        get_repo_name_from_url(
-                                            checkout_info["url"]))
-            git_cmd = "git checkout "
-            if "tag" in checkout_info:
-                tag = checkout_info["tag"]
-                git_cmd += "tags/{}".format(tag)
-            else:
-                git_cmd += checkout_info["sha"]
-
-            print_debug(git_cmd)
-            print_debug(destpath)
-            run_command(git_cmd, destpath)
+        # Git checkout + pull in case "sha" or "tag" option is present or if
+        # the component directory already existed.
+        if component_exists or "sha" in config_options or \
+                        "tag" in config_options:
+            git_checkout_and_pull_component(config_options, dest_path)
 
         # Run any needed command AFTER cloning
-        if "post_cmd" in checkout_info:
-            run_command(checkout_info["post_cmd"], cwd=COMPONENTS_DIR)
+        if not component_exists and "post_cmd" in config_options:
+            run_command(config_options["post_cmd"], cwd=COMPONENTS_DIR)
+
+        # Just print a new line to keep components' output separated
+        print("")
 
 
 if __name__ == "__main__":

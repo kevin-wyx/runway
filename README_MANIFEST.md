@@ -21,12 +21,12 @@ branch = master
 
 [proxyfs-functional-tests]
 url = git@github.com:swiftstack/proxyfs-functional-tests.git
-destname = functional-tests
+dest_path = functional-tests
 
 [ProxyFS]
 url = git@github.com:swiftstack/ProxyFS.git
 branch = development
-post_cmd = DO_NOT_INSTALL=1 ./ProxyFS/ci.sh
+dest_path = ProxyFS/src/github.com/swiftstack/ProxyFS
 
 ```
 
@@ -38,12 +38,12 @@ there are a lot of other options you can specify on order to exactly tell
 runway where in the source tree you want to be. Here's a list of available
 options:
 
-* `branch`: branch to checkout. Can't be used with `sha` or `tag`
-* `destname`: name for the directory where the repo will be cloned
-* `pre_cmd`: command to run *before* we get the repo. It will be run from the
-`components` directory.
+* `branch`: branch to checkout. Can't be used together with `sha` or `tag`.
+* `dest_path`: name for the directory where the repo will be cloned.
+* `pre_cmd`: command to run *before* we clone the repo. It will be run from the
+`components` directory. It won't be run if the repo had already been cloned.
 * `post_cmd`: command to run *after* we get the repo. It will be run from the
-`components` directory.
-* `sha`: sha to checkout. Can't be used with `branch` or `tag`
-* `tag`: tag to checkout. Can't be used with `branch` or `sha`
-* `url` (mandatory): URL for the repo you want to use
+`components` directory. It won't be run if the repo had already been cloned.
+* `sha`: sha to checkout. Can't be used together with `branch` or `tag`.
+* `tag`: tag to checkout. Can't be used together with `branch` or `sha`.
+* `url` (mandatory): URL for the repo you want to use.

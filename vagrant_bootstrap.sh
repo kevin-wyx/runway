@@ -47,4 +47,4 @@ EOF
 
 /vagrant/start.sh RHEL runway-base swift-runway-`date +%F-%H-%M-%S-%N` 1G
 su ubuntu
-lxc profile list
+lxc list

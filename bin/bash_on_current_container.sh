@@ -2,6 +2,10 @@
 
 # run external to the runway host
 
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $SCRIPTDIR/..
+eval RUNWAYDIR=`pwd`
+
 if [ -z "$RUNWAYHOST" ]; then
     if vagrant ssh-config >/dev/null 2>&1; then
         echo "Connecting to Vagrant VM..."

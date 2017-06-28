@@ -13,7 +13,7 @@ from subprocess import CalledProcessError
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 COMPONENTS_DIR = os.path.join(RUNWAY_DIR, 'components')
-DEFAULT_CONFIG_FILE_NAME = 'default_components.cfg'
+DEFAULT_CONFIG_FILE_NAME = 'default_manifest.cfg'
 DEFAULT_CONFIG_FILE_PATH = os.path.join(RUNWAY_DIR, DEFAULT_CONFIG_FILE_NAME)
 
 class bcolors:
@@ -107,25 +107,71 @@ def run_command(cmd, cwd=None):
         sys.exit(1)
 
 
+def get_repo_name_from_url(url):
+    result = re.match('^.+\/(.+)\.git$', url)
+    if result is None:
+        print_error("Couldn't get the name of the repo.")
+        sys.exit(1)
+    return result.group(1)
+
+
+def get_config_options(config_items):
+    checkout_info = {}
+    for (key, value) in config_items:
+        checkout_info[key] = value
+    return checkout_info
+
+
+def validate_config_options(config_options, section):
+    if sum(["branch" in config_options, "sha" in config_options,
+            "tag" in config_options]) > 1:
+        print_error("You can only specify one of these options: branch, "
+                    "sha, tag")
+        sys.exit(1)
+    if not "url" in config_options:
+        print("Error: url not found for {}".format(section))
+        sys.exit(1)
+
+
 def install_components(config):
     for section in config.sections():
         print("Installing {}...".format(section))
-        checkout_info = {}
-        for (key, value) in config.items(section):
-            checkout_info[key] = value
-        if not "url" in checkout_info:
-            print("Error: url not found for {}".format(section))
-            sys.exit(1)
+        checkout_info = get_config_options(config.items(section))
+        validate_config_options(checkout_info, section)
+
+        # Run any needed command BEFORE cloning
         if "pre_cmd" in checkout_info:
             run_command(checkout_info["pre_cmd"], cwd=COMPONENTS_DIR)
+
+        # Clone
         git_cmd = "git clone"
         if "branch" in checkout_info:
             git_cmd += " -b {}".format(checkout_info["branch"])
         git_cmd += " {}".format(checkout_info["url"])
         if "destname" in checkout_info:
-            git_cmd += " {}".format(os.path.join(COMPONENTS_DIR,
-                                                 checkout_info["destname"]))
+            destpath = os.path.join(COMPONENTS_DIR, checkout_info["destname"])
+            git_cmd += " {}".format(destpath)
+
         run_command(git_cmd, cwd=COMPONENTS_DIR)
+
+        # Git checkout in case "sha" or "tag" option is present
+        if "sha" in checkout_info or "tag" in checkout_info:
+            if not "destname" in checkout_info:
+                destpath = os.path.join(COMPONENTS_DIR,
+                                        get_repo_name_from_url(
+                                            checkout_info["url"]))
+            git_cmd = "git checkout "
+            if "tag" in checkout_info:
+                tag = checkout_info["tag"]
+                git_cmd += "tags/{}".format(tag)
+            else:
+                git_cmd += checkout_info["sha"]
+
+            print_debug(git_cmd)
+            print_debug(destpath)
+            run_command(git_cmd, destpath)
+
+        # Run any needed command AFTER cloning
         if "post_cmd" in checkout_info:
             run_command(checkout_info["post_cmd"], cwd=COMPONENTS_DIR)
 

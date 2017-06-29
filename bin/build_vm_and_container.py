@@ -167,9 +167,9 @@ def git_checkout_and_pull_component(config_options, dest_path):
     run_command("git pull", dest_path)
 
 
-def install_components(config):
+def get_components(config):
     for section in config.sections():
-        print_info("Installing {}...".format(section))
+        print_info("Getting {}...".format(section))
         config_options = get_config_options(config.items(section))
         validate_config_options(config_options, section)
         dest_path = get_dest_path(config_options)
@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
     config = ConfigParser.ConfigParser()
     config.read(config_file)
-    install_components(config)
+    get_components(config)
 
     if update_box:
         print_info("We will keep updating the box until we get a stable "

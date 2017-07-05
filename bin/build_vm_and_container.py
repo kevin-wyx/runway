@@ -13,8 +13,8 @@ from subprocess import CalledProcessError
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 COMPONENTS_DIR = os.path.join(RUNWAY_DIR, 'components')
-DEFAULT_CONFIG_FILE_NAME = 'default_manifest.cfg'
-DEFAULT_CONFIG_FILE_PATH = os.path.join(RUNWAY_DIR, DEFAULT_CONFIG_FILE_NAME)
+DEFAULT_MANIFEST_NAME = 'default_manifest.cfg'
+DEFAULT_MANIFEST_PATH = os.path.join(RUNWAY_DIR, DEFAULT_MANIFEST_NAME)
 
 class bcolors:
     PINK = '\033[95m'
@@ -115,11 +115,27 @@ def get_repo_name_from_url(url):
     return result.group(1)
 
 
-def get_config_options(config_items):
-    checkout_info = {}
-    for (key, value) in config_items:
-        checkout_info[key] = value
-    return checkout_info
+def get_config_options(config, section):
+    config_options = {}
+    boolean_options = ["local"]
+    for (key, value) in config.items(section):
+        if key in boolean_options:
+            try:
+                config_options[key] = config.getboolean(section, key)
+            except ValueError:
+                print_error("Component '{}' has an invalid value for boolean "
+                            "option '{}'.\nValid values for 'true' are: '1', "
+                            "'yes', 'true', and 'on'.\nValid values for "
+                            "'false' are: '0', 'no', 'false', and 'off'.\nThe "
+                            "values are case insensitive.".format(section,
+                                                                  key))
+                sys.exit(22)  # EINVAL (22): Invalid argument. Is that ok?
+        else:
+            config_options[key] = value
+    for option in boolean_options:
+        if not option in config_options:
+            config_options[option] = False
+    return config_options
 
 
 def validate_config_options(config_options, section):
@@ -128,8 +144,12 @@ def validate_config_options(config_options, section):
         print_error("You can only specify one of these options: branch, "
                     "sha, tag")
         sys.exit(1)
-    if not "url" in config_options:
-        print("Error: url not found for {}".format(section))
+    if config_options["local"] and not "dest_path" in config_options:
+        print_error("You need to specify a 'dest_path' for local '{}' "
+                    "component.".format(section))
+        sys.exit(1)
+    if not config_options["local"] and not "url" in config_options:
+        print_error("Error: url not found for {}".format(section))
         sys.exit(1)
 
 
@@ -170,7 +190,7 @@ def git_checkout_and_pull_component(config_options, dest_path):
 def get_components(config):
     for section in config.sections():
         print_info("Getting {}...".format(section))
-        config_options = get_config_options(config.items(section))
+        config_options = get_config_options(config, section)
         validate_config_options(config_options, section)
         dest_path = get_dest_path(config_options)
         component_exists = os.path.isdir(dest_path)
@@ -179,14 +199,21 @@ def get_components(config):
         if not component_exists and "pre_cmd" in config_options:
             run_command(config_options["pre_cmd"], cwd=COMPONENTS_DIR)
 
-        if not component_exists:
-            git_clone_component(config_options)
+        if not config_options["local"]:
+            if not component_exists:
+                git_clone_component(config_options)
 
-        # Git checkout + pull in case "sha" or "tag" option is present or if
-        # the component directory already existed.
-        if component_exists or "sha" in config_options or \
-                        "tag" in config_options:
-            git_checkout_and_pull_component(config_options, dest_path)
+            # Git checkout + pull in case "sha" or "tag" option is present or
+            # if the component directory already existed.
+            if component_exists or "sha" in config_options or \
+                            "tag" in config_options:
+                git_checkout_and_pull_component(config_options, dest_path)
+        else:
+            if not component_exists:
+                print_error("Component '{}' has been marked as local, but it "
+                            "doesn't exist.".format(section))
+            else:
+                print("Component '{}' is locally managed.".format(section))
 
         # Run any needed command AFTER cloning
         if not component_exists and "post_cmd" in config_options:
@@ -198,9 +225,9 @@ def get_components(config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', default=DEFAULT_CONFIG_FILE_PATH,
-                        help="Path to components config file. Default: '/path"
-                             "/to/runway/{}'".format(DEFAULT_CONFIG_FILE_NAME))
+    parser.add_argument('-c', '--config', default=DEFAULT_MANIFEST_PATH,
+                        help="Path to manifest file. Default: '/path"
+                             "/to/runway/{}'".format(DEFAULT_MANIFEST_NAME))
     parser.add_argument('-u', '--do_not_update_box', action='store_true',
                         default=False, help="Do not try to update Vagrant box")
 
@@ -232,7 +259,6 @@ if __name__ == "__main__":
     run_command("vagrant up", cwd=RUNWAY_DIR)
 
     # Log into our brand new container?
-    # run_command("./bin/bash_on_current_container.sh", cwd=RUNWAY_DIR)
     print_success("Your new container is now up and running! If you want to "
                   "log into it, just run the following command from the "
                   "runway directory:\n\n\tbin/bash_on_current_container.sh")

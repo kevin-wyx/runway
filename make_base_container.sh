@@ -57,9 +57,3 @@ $DIR/make_lxc_profile.py $CNAME $VG_NAME $VOLSIZE | lxc profile edit $CNAME-prof
 
 # launch the new container
 lxc launch $BASEIMAGE $CNAME -p $CNAME-profile || lxc launch $DEFAULTIMAGE $CNAME -p $CNAME-profile
-
-# get all the guest-executed stuff pushed over
-# lxc file push ./components/ $CNAME/root/
-# unfortunately, lxc doesn't support directly pushing a whole directory
-# https://github.com/lxc/lxd/issues/1218
-cd $DIR && tar cf - components | lxc exec $CNAME -- tar xf - -C /root/

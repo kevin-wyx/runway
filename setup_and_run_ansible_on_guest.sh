@@ -39,6 +39,9 @@ fi
 # run the bootstrap playbook
 lxc exec $CNAME -- ansible-playbook -i "localhost," -c local $EXTRA_VARS /root/ansible/bootstrap.yaml
 
+# Create shared components/code folder
+lxc config device add $CNAME sharedcomponents disk path=/home/swift/code source=$DIR/components
+
 # check if we're in "no install" mode
 if [[ " $* " != *"--no-install"* ]]; then
     # run ansible playbook to bootstrap container

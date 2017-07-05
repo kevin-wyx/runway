@@ -91,22 +91,6 @@
     validate: visudo -cf %s
   when: ansible_os_family == 'RedHat'
 
-- name: Check components dir exists
-  stat:
-    path: /root/components
-  register: components_stat
-
-- name: Sync components directory to /home/swift/code
-  synchronize:
-    src: /root/components/
-    dest: /home/swift/code/
-    delete: yes
-    checksum: yes
-    archive: yes
-    compress: no
-    recursive: yes
-  when: components_stat.stat.exists and (do_install is undefined or do_install)
-
 - name: Make sure swift user's home directory is owned by swift
   file:
     path: /home/swift

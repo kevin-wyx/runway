@@ -11,9 +11,27 @@ vgcreate swift-runway-vg01 /dev/sdc -y
 # We could just do:
 #     apt-get install lxd/xenial-backports -y
 # But we would risk getting a version that breaks our current config.
+#
+# On the other hand, using a specific version has proven to be wrong, as there
+# is only one backport version, and it keeps changing. The way we used to do
+# that was:
+#     apt-get install lxd-client=2.15-0ubuntu6~ubuntu16.04.1 lxd=2.15-0ubuntu6~ubuntu16.04.1 -y
+# And this is how we checked the currently available backports version:
+#     apt-cache policy lxd
 
-## This works:
-apt-get install lxd-client=2.14-0ubuntu3~16.04.1 lxd=2.14-0ubuntu3~16.04.1 -y
+# So what we'll do is install whatever backport is available only if our
+# current version is lower than 2.14
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+current_lxd_version=`lxd --version`
+if version_gt "2.14" $current_lxd_version; then
+    apt-get install lxd/xenial-backports -y
+else
+    echo "************************************"
+    echo " Current LXD version is new enough!"
+    echo " $current_lxd_version"
+    echo "************************************"
+fi
+
 lxd init --auto
 cat <<EOF | lxd init --preseed
 networks:

@@ -5,10 +5,13 @@ import re
 import colorprint
 from cli import run_command
 
+RUNWAY_CONFIG_SECTION = "runway"
+
 
 class Manifest(object):
     sections = []
-    config_options = {}
+    components_options = {}
+    runway_options = {}
 
     def __init__(self, config_file, workspace_dir):
         if not os.path.isfile(config_file):
@@ -18,18 +21,21 @@ class Manifest(object):
         config = ConfigParser.ConfigParser()
         config.read(config_file)
         for section in config.sections():
-            self.sections.append(section)
             section_options = self.get_config_options_for_section(config,
                                                                   section)
             self.validate_config_options_for_section(section_options, section)
-            self.config_options[section] = section_options
+            if section == RUNWAY_CONFIG_SECTION:
+                self.runway_options = section_options
+            else:
+                self.sections.append(section)
+                self.components_options[section] = section_options
 
         self.workspace_dir = workspace_dir
 
     def retrieve_components(self):
         for section in self.sections:
             colorprint.info("Getting {}...".format(section))
-            section_options = self.config_options[section]
+            section_options = self.components_options[section]
             has_custom_dest_path = "dest_path" in section_options
             dest_path = self.get_dest_path_for_section(section)
             component_exists = os.path.isdir(dest_path)
@@ -52,8 +58,10 @@ class Manifest(object):
                                                          dest_path)
             else:
                 if not component_exists:
-                    raise Exception("Component '{}' has been marked as local, "
-                                    "but it doesn't exist.".format(section))
+                    colorprint.warning("Component '{}' has been marked as "
+                                       "local, but it doesn't exist. You'll "
+                                       "most probably want to add it before "
+                                       "doing anything else.".format(section))
                 else:
                     print("Component '{}' is locally managed.".format(section))
 
@@ -89,11 +97,16 @@ class Manifest(object):
             else:
                 config_options[key] = value
         for option in boolean_options:
-            if option not in config_options:
+            if option not in config_options and \
+                            section != RUNWAY_CONFIG_SECTION:
                 config_options[option] = False
         return config_options
 
     def validate_config_options_for_section(self, config_options, section):
+        if section == RUNWAY_CONFIG_SECTION:
+            # All options for runway are optional, so no need to check them
+            return
+
         if sum(["branch" in config_options, "sha" in config_options,
                 "tag" in config_options]) > 1:
             raise Exception("Invalid configuration for component '{}': you can"
@@ -107,7 +120,7 @@ class Manifest(object):
                             ".".format(section))
 
     def get_dest_path_for_section(self, section):
-        section_options = self.config_options[section]
+        section_options = self.components_options[section]
         if "dest_path" in section_options:
             return os.path.join(self.workspace_dir,
                                 section_options["dest_path"])
@@ -117,7 +130,7 @@ class Manifest(object):
                                     section_options["url"]))
 
     def git_clone_component(self, section, dest_path=None):
-        section_options = self.config_options[section]
+        section_options = self.components_options[section]
         git_cmd = "git clone"
         if "branch" in section_options:
             git_cmd += " -b {}".format(section_options["branch"])
@@ -130,7 +143,7 @@ class Manifest(object):
         run_command(git_cmd, cwd=self.workspace_dir)
 
     def git_checkout_and_pull_component(self, section, dest_path):
-        section_options = self.config_options[section]
+        section_options = self.components_options[section]
         git_cmd = "git checkout "
         if "tag" in section_options:
             git_cmd += "tags/{}".format(section_options["tag"])
@@ -141,3 +154,27 @@ class Manifest(object):
 
         run_command(git_cmd, dest_path)
         run_command("git pull", dest_path)
+
+    # Getters for both runway's and components' options
+
+    def get_config_options(self):
+        return self.runway_options
+
+    def get_config_option(self, option):
+        if option in self.runway_options:
+            return self.runway_options[option]
+        else:
+            return None
+
+    def get_component_options(self, component):
+        if component in self.components_options:
+            return self.components_options[component]
+        else:
+            return None
+
+    def get_component_option(self, component, option):
+        if component in self.components_options and \
+                        option in self.components_options[component]:
+            return self.components_options[component][option]
+        else:
+            return None

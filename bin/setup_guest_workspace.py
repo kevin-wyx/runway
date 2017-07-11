@@ -67,8 +67,6 @@ def create_workspace_dir(workspace_name=None):
     else:
         user_provided_workspace = True
 
-    colorprint.info("\nRetrieving components into workspace '{}'..."
-                    "\n".format(workspace_name))
     new_workspace_path = os.path.join(WORKSPACE_DIR, workspace_name)
     try:
         os.mkdir(new_workspace_path)
@@ -97,6 +95,9 @@ if __name__ == "__main__":
     # Create new workspace directory
     new_workspace_path = create_workspace_dir(workspace_name)
 
+    colorprint.info("\nRetrieving components into workspace at '{}'..."
+                    "\n".format(new_workspace_path))
+
     # Copy manifest into workspace
     copyfile(manifest_file, os.path.join(new_workspace_path,
                                          MANIFEST_COPY_NAME))
@@ -108,5 +109,5 @@ if __name__ == "__main__":
     except Exception as e:
         exit_on_error(e.message)
 
-    colorprint.success("Guest workspace successfully created at "
+    colorprint.success("Guest workspace successfully set up at "
                        "'{}'.".format(new_workspace_path))

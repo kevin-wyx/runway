@@ -40,7 +40,8 @@ if __name__ == "__main__":
     workspace_name = args.workspace
 
     # Setup workspace
-    cmd = "./setup_guest_workspace.py"
+    # TODO: Remove the '-c' that forces us to use the components directory
+    cmd = "./setup_guest_workspace.py -c"
     if manifest_file is not None:
         cmd += " -m {}".format(manifest_file)
     if workspace_name is not None:

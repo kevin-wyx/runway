@@ -11,6 +11,7 @@ from shutil import copyfile
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
+COMPONENTS_DIR = os.path.join(RUNWAY_DIR, 'components')
 WORKSPACE_DIR = os.path.join(RUNWAY_DIR, 'guest_workspaces')
 WORKSPACE_PREFIX = 'runway-'
 DEFAULT_MANIFEST_NAME = 'default_manifest.cfg'
@@ -82,6 +83,12 @@ def create_workspace_dir(workspace_name=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    # TODO: Remove -c option. It's only been created to make all of this usable
+    # in the master branch before we get the whole workspaces thing working
+    parser.add_argument('-c', '--use_components_dir', action='store_true',
+                        default=False, help="Install components into "
+                                            "components directory instead of "
+                                            "creating a workspace")
     parser.add_argument('-m', '--manifest', default=DEFAULT_MANIFEST_PATH,
                         help="Path to manifest file. Default: '/path"
                              "/to/runway/{}'".format(DEFAULT_MANIFEST_NAME))
@@ -90,10 +97,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     manifest_file = os.path.abspath(args.manifest)
+    use_components_dir = args.use_components_dir
     workspace_name = args.workspace
 
-    # Create new workspace directory
-    new_workspace_path = create_workspace_dir(workspace_name)
+    if use_components_dir:
+        new_workspace_path = COMPONENTS_DIR
+    else:
+        # Create new workspace directory
+        new_workspace_path = create_workspace_dir(workspace_name)
 
     colorprint.info("\nRetrieving components into workspace at '{}'..."
                     "\n".format(new_workspace_path))

@@ -14,8 +14,9 @@ devices:
     type: nic
   disk0:
     path: /dev/sdb
-    source: {host_tmpfs_mount}
-    type: disk
+    major: {major0}
+    minor: {minor0}
+    type: unix-block
   root:
     path: /
     pool: default

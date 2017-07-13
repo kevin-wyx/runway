@@ -5,35 +5,34 @@ import shlex
 import sys
 import os.path
 
-'''
-create a rofile for a lightweight guest. This will be used for test targets
-which will only have a single `-replica policy. This profile sets up one drive,
-meaning that the drive set up here is the total space that can be used for
-storage in the test target. Since we're setting it up in /tmp (ie tmpfs),
-there is no persistence but also no extra drive space required. The only
-storage is RAM.
-'''
 
 CNAME = sys.argv[1]
-VOLUME_GROUP = sys.argv[2]  # unused
+VOLUME_GROUP = sys.argv[2]
 try:
     DRIVE_SIZE = sys.argv[3]
 except IndexError:
     DRIVE_SIZE = '1G'
 
+dev_numbers = {}
+
+for i in range(1):
+    create_command = "lvcreate -y --size %s --name '%s-vol%s' %s" % (DRIVE_SIZE, CNAME, i, VOLUME_GROUP)
+    p = subprocess.run(shlex.split(create_command), stdout=subprocess.PIPE)
+    #TODO: check return code for errors
+    display_command = "lvdisplay '/dev/%s/%s-vol%s'" % (VOLUME_GROUP, CNAME, i)
+    p = subprocess.run(shlex.split(display_command), stdout=subprocess.PIPE)
+    for line in p.stdout.decode().split('\n'):
+        if 'Block device' in line:
+            maj_min = line.split()[2].strip()
+            major, minor = maj_min.split(':')
+            dev_numbers['minor%d' % i] = minor
+            dev_numbers['major%d' % i] = major
+
 path_to_repo = os.path.dirname(os.path.realpath(__file__))
 
-# put it in /tmp so it's only in the host's memory, not disk
-diskfile = '/tmp/%s-disk' % CNAME
-
-truncate_command = 'truncate --size=%s %s' % (DRIVE_SIZE, diskfile)
-p = subprocess.run(shlex.split(truncate_command), stdout=subprocess.PIPE)
-
-make_fs_command = 'mkfs.xfs %s' % diskfile
-p = subprocess.run(shlex.split(make_fs_command), stdout=subprocess.PIPE)
-
 template_vars = {}
-template_vars['host_tmpfs_mount'] = diskfile
+template_vars.update(dev_numbers)
+template_vars['path_to_shared_code'] = path_to_repo + '/guest_workspaces/%s_shared_code/' % CNAME
 
 template_file = path_to_repo + '/container_base/swift-runway-ram-v1.tmpl'
 raw = open(template_file).read()

@@ -15,36 +15,45 @@
     group: swift
   register: etcswiftcreated
 
-- name: Create swift config files
+# - name: Create swift config files
+#   register: swiftconfigscreated
+#   when: etcswiftcreated|success
+#   copy:
+#     src: /home/swift/code/swift/doc/saio/swift/
+#     dest: /etc/swift/
+#     owner: swift
+#     group: swift
+
+- name: Create tiny swift config files
   register: swiftconfigscreated
   when: etcswiftcreated|success
   copy:
-    src: /home/swift/code/swift/doc/saio/swift/
+    src: single_replica_policy/etc/swift/
     dest: /etc/swift/
     owner: swift
     group: swift
 
-- name: Create swift test config file
-  when: etcswiftcreated|success
-  copy:
-    src: /home/swift/code/swift/test/sample.conf
-    dest: /etc/swift/test.conf
-    owner: swift
-    group: swift
+# - name: Create swift test config file
+#   when: etcswiftcreated|success
+#   copy:
+#     src: /home/swift/code/swift/test/sample.conf
+#     dest: /etc/swift/test.conf
+#     owner: swift
+#     group: swift
 
-- name: list of the .conf files and store it in register
-  raw: find /etc/swift -type f -name "*.conf"
-  register: swift_conf_files
-  when: swiftconfigscreated|success
+# - name: list of the .conf files and store it in register
+#   raw: find /etc/swift -type f -name "*.conf"
+#   register: swift_conf_files
+#   when: swiftconfigscreated|success
 
-- name: Set swift user in configs
-  register: configsed
-  when: swift_conf_files|success
-  with_items: "{{ swift_conf_files.stdout_lines }}"
-  replace:
-    dest: "{{ item }}"
-    regexp: user = <your-user-name>
-    replace: user = swift
+# - name: Set swift user in configs
+#   register: configsed
+#   when: swift_conf_files|success
+#   with_items: "{{ swift_conf_files.stdout_lines }}"
+#   replace:
+#     dest: "{{ item }}"
+#     regexp: user = <your-user-name>
+#     replace: user = swift
 
 - name: Move SAIO bin scripts
   register: bin_scripts
@@ -56,9 +65,17 @@
     group: swift
     mode: 0775
 
-- name: Copy modified remakerings
+# - name: Copy modified remakerings
+#   copy:
+#     src: remakerings
+#     dest: /home/swift/bin/remakerings
+#     owner: swift
+#     group: swift
+#     mode: 0775
+
+- name: Copy modified remakerings for tiny
   copy:
-    src: remakerings
+    src: single_replica_policy/remakerings
     dest: /home/swift/bin/remakerings
     owner: swift
     group: swift
@@ -71,53 +88,53 @@
     owner: root
     group: root
 
-- name: Set up rsync on boot (Debian)
-  register: rsyncsetup
-  replace:
-    dest: /etc/default/rsync
-    regexp: RSYNC_ENABLE=false
-    replace: RSYNC_ENABLE=true
-  when: ansible_os_family == 'Debian'
+# - name: Set up rsync on boot (Debian)
+#   register: rsyncsetup
+#   replace:
+#     dest: /etc/default/rsync
+#     regexp: RSYNC_ENABLE=false
+#     replace: RSYNC_ENABLE=true
+#   when: ansible_os_family == 'Debian'
 
-- name: Create /etc/default/rsyncd file (RedHat)
-  copy:
-    src: etc/default/rsyncd
-    dest: /etc/default/rsyncd
-    force: no
-  when: ansible_os_family == 'RedHat'
+# - name: Create /etc/default/rsyncd file (RedHat)
+#   copy:
+#     src: etc/default/rsyncd
+#     dest: /etc/default/rsyncd
+#     force: no
+#   when: ansible_os_family == 'RedHat'
 
-- name: Set up rsync on boot (RedHat)
-  register: rsyncsetup
-  replace:
-    dest: /etc/default/rsyncd
-    regexp: RSYNC_ENABLE=false
-    replace: RSYNC_ENABLE=true
-  when: ansible_os_family == 'RedHat'
+# - name: Set up rsync on boot (RedHat)
+#   register: rsyncsetup
+#   replace:
+#     dest: /etc/default/rsyncd
+#     regexp: RSYNC_ENABLE=false
+#     replace: RSYNC_ENABLE=true
+#   when: ansible_os_family == 'RedHat'
 
-- name: rsync config file
-  copy:
-    src: /home/swift/code/swift/doc/saio/rsyncd.conf
-    dest: /etc/rsyncd.conf
+# - name: rsync config file
+#   copy:
+#     src: /home/swift/code/swift/doc/saio/rsyncd.conf
+#     dest: /etc/rsyncd.conf
 
-- name: set swift user in rsync config
-  replace:
-    dest: /etc/rsyncd.conf
-    regexp: user = <your-user-name>
-    replace: user = swift
+# - name: set swift user in rsync config
+#   replace:
+#     dest: /etc/rsyncd.conf
+#     regexp: user = <your-user-name>
+#     replace: user = swift
 
-- name: start rsync (Debian)
-  service:
-    name: rsync
-    state: restarted
-  when: ansible_os_family == 'Debian'
+# - name: start rsync (Debian)
+#   service:
+#     name: rsync
+#     state: restarted
+#   when: ansible_os_family == 'Debian'
 
-- name: start rsyncd (RedHat)
-  systemd:
-    name: rsyncd
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-  when: ansible_os_family == 'RedHat'
+# - name: start rsyncd (RedHat)
+#   systemd:
+#     name: rsyncd
+#     state: restarted
+#     daemon_reload: yes
+#     enabled: yes
+#   when: ansible_os_family == 'RedHat'
 
 - include: setup_swift_logging.yaml
 

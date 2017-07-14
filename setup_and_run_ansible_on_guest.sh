@@ -31,9 +31,9 @@ if [[ " $* " != *"--no-install"* ]]; then
 
     # install ansible
     lxc exec $CNAME -- /bin/bash /root/ansible/install_ansible.sh $DEBUG
-    EXTRA_VARS="-e no_install=false"
+    EXTRA_VARS="-e no_install=false -e tiny_install=true"
 else
-    EXTRA_VARS="-e no_install=true"
+    EXTRA_VARS="-e no_install=true -e tiny_install=true"
 fi
 
 # run the bootstrap playbook
@@ -45,5 +45,5 @@ lxc config device add $CNAME sharedcomponents disk path=/home/swift/code source=
 # check if we're in "no install" mode
 if [[ " $* " != *"--no-install"* ]]; then
     # run ansible playbook to bootstrap container
-    lxc exec $CNAME -- ansible-playbook -i "localhost," -c local /root/ansible/master_playbook.yaml
+    lxc exec $CNAME -- ansible-playbook -i "localhost," -c local $EXTRA_VARS /root/ansible/master_playbook.yaml
 fi

@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
     controller_name = (ENV['CONTROLLER_NAME'] || "SCSI")
     file_to_disk = File.join(File.dirname(File.expand_path(__FILE__)), "SwiftDisk.vmdk")
     unless File.exist?(file_to_disk)
-      vb.customize [ "createmedium", "disk", "--filename", file_to_disk, "--format", "vmdk", "--size", 1024 * 10 ]
+      vb.customize [ "createmedium", "disk", "--filename", file_to_disk, "--format", "vmdk", "--size", 1024 * 8 * 2 ]  # 8 devices x 2 (max) containers
     end
     vb.customize [ "storageattach", :id , "--storagectl", controller_name, "--port", 2, "--device", 0, "--type", "hdd", "--medium", file_to_disk]
   end

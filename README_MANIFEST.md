@@ -7,6 +7,9 @@ component that you want to checkout (with Git).
 A typical manifest file might look like this:
 
 ```ini
+[runway]
+family = ProxyFS
+
 [swift]
 url = git@github.com:swiftstack/swift.git
 branch = master
@@ -27,7 +30,7 @@ dest_path = functional-tests
 url = git@github.com:swiftstack/ProxyFS.git
 branch = development
 dest_path = ProxyFS/src/github.com/swiftstack/ProxyFS
-post_cmd = cp -rf ./ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install_proxyfs_runway.sh ./ProxyFS/install.sh
+install = ci/ansible/install_proxyfs.sh runway
 
 [conf]
 url = git@github.com:swiftstack/conf.git
@@ -44,7 +47,31 @@ dest_path = ProxyFS/src/github.com/swiftstack/sortedmap
 [my-local-component]
 local = true
 dest_path = my-super-secret-project
+
+[ProxyFSAlternative]
+url = git@github.com:swiftstack/ProxyFS.git
+branch = development
+dest_path = ProxyFSAlternative/src/github.com/swiftstack/ProxyFS
+post_cmd = cp -rf ./ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install_proxyfs_runway.sh ./ProxyFS/install.sh
 ```
+
+
+Runway options
+--------------
+
+Any configuration option that affects how runway runs, will be included in the
+`runway` section. Adding a `runway` section is completely optional, and so is
+adding any configuration options inside this section.
+
+\* For now, we only have one option, but the set of possible options will grow in
+the future.
+
+Here's a list of available options:
+
+* `family` (string): If this option is provided, runway will try to create
+containers based on a snapshot using that same family name. If none is found,
+it will create a new container from scratch and a new snapshot based on it.
+
 
 Components options
 ------------------
@@ -61,8 +88,13 @@ Here's a list of available options:
 the component's directory. It is mandatory when `local` is `true`.
 * `local` (boolean): Whether or not the component is a local component. Local
 components won't be automatically managed. It's the user's responsability to
-keep them up to date. Runway will try to install it anyway if it has an
-`install.sh` script in its root directory. The default value is `false`.
+keep them up to date. Runway will try to install it anyway. The default value
+is `false`.
+* `install` (string): Command to run to install the component. It will be run
+from the component's top level directory. If `install` option is not specified,
+Runway will try to find an `install.sh` script in the component's root
+directory. If no installation is needed, you can just not provide an install
+command/script.
 * `pre_cmd` (string): Command to run *before* we clone the repo. It will be run
 from the `components` directory. It won't be run if the repo had already been
 cloned or if it's a local component.

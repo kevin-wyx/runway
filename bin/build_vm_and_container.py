@@ -3,9 +3,11 @@
 import argparse
 import os
 import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                '..')))
 
-from runway_utils import colorprint
-from runway_utils.cli import run_command
+from libs import colorprint
+from libs.cli import run_command
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
@@ -40,8 +42,7 @@ if __name__ == "__main__":
     workspace_name = args.workspace
 
     # Setup workspace
-    # TODO: Remove the '-c' that forces us to use the components directory
-    cmd = "./setup_guest_workspace.py -c"
+    cmd = "./setup_guest_workspace.py"
     if manifest_file is not None:
         cmd += " -m {}".format(manifest_file)
     if workspace_name is not None:

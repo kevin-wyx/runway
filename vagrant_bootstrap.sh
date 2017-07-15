@@ -63,6 +63,6 @@ EOF
 #lxc network attach-profile lxdbr0 default eth0
 ## End of what also seems to work
 
-/vagrant/start.sh RHEL runway-base swift-runway-`date +%F-%H-%M-%S-%N` 1G
-su ubuntu
-lxc list
+lxc list > /dev/null
+sudo -H -u ubuntu bash -c 'lxc list > /dev/null'
+/vagrant/start.py -d RHEL -v 1G

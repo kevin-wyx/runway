@@ -1,11 +1,12 @@
-import ConfigParser
 import os
 import re
+from six.moves import configparser
 
-import colorprint
-from cli import run_command
+from libs import colorprint
+from libs.cli import run_command
 
 RUNWAY_CONFIG_SECTION = "runway"
+DOWNLOAD_LOG_FILE_NAME = "download.log"
 
 
 class Manifest(object):
@@ -18,7 +19,7 @@ class Manifest(object):
             raise Exception("Error: file {} does not "
                             "exist.".format(config_file))
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
         for section in config.sections():
             section_options = self.get_config_options_for_section(config,
@@ -33,42 +34,44 @@ class Manifest(object):
         self.workspace_dir = workspace_dir
 
     def retrieve_components(self):
+        logfile_path = os.path.abspath(os.path.join(self.workspace_dir,
+                               DOWNLOAD_LOG_FILE_NAME))
         for section in self.sections:
-            colorprint.info("Getting {}...".format(section))
+            colorprint.info("Getting {}...".format(section), logfile_path)
             section_options = self.components_options[section]
-            has_custom_dest_path = "dest_path" in section_options
-            dest_path = self.get_dest_path_for_section(section)
+            dest_path = self.get_absolute_dest_path_for_section(section)
             component_exists = os.path.isdir(dest_path)
 
             # Run any needed command BEFORE cloning
             if not component_exists and "pre_cmd" in section_options:
-                run_command(section_options["pre_cmd"], cwd=self.workspace_dir)
+                run_command(section_options["pre_cmd"], cwd=self.workspace_dir,
+                            logfile_path=logfile_path)
 
             if not section_options["local"]:
                 if not component_exists:
                     self.git_clone_component(section,
-                                             dest_path if has_custom_dest_path
-                                             else None)
+                                             logfile_path=logfile_path)
 
                 # Git checkout + pull in case "sha" or "tag" option is present
                 # or if the component directory already existed.
                 if component_exists or "sha" in section_options or \
                         "tag" in section_options:
-                    self.git_checkout_and_pull_component(section,
-                                                         dest_path)
+                    self.git_checkout_and_pull_component(
+                        section, dest_path, logfile_path=logfile_path)
             else:
                 if not component_exists:
                     colorprint.warning("Component '{}' has been marked as "
                                        "local, but it doesn't exist. You'll "
                                        "most probably want to add it before "
-                                       "doing anything else.".format(section))
+                                       "doing anything else.".format(section),
+                                       logfile_path)
                 else:
                     print("Component '{}' is locally managed.".format(section))
 
             # Run any needed command AFTER cloning
             if not component_exists and "post_cmd" in section_options:
                 run_command(section_options["post_cmd"],
-                            cwd=self.workspace_dir)
+                            cwd=self.workspace_dir, logfile_path=logfile_path)
 
             # Just print a new line to keep components' output separated
             print("")
@@ -119,17 +122,18 @@ class Manifest(object):
             raise Exception("URL not found in config for component '{}'"
                             ".".format(section))
 
-    def get_dest_path_for_section(self, section):
+    def get_absolute_dest_path_for_section(self, section):
+        return os.path.join(self.workspace_dir,
+                            self.get_relative_dest_path_for_section(section))
+
+    def get_relative_dest_path_for_section(self, section):
         section_options = self.components_options[section]
         if "dest_path" in section_options:
-            return os.path.join(self.workspace_dir,
-                                section_options["dest_path"])
+            return section_options["dest_path"]
         else:
-            return os.path.join(self.workspace_dir,
-                                self.get_repo_name_from_url(
-                                    section_options["url"]))
+            return self.get_repo_name_from_url(section_options["url"])
 
-    def git_clone_component(self, section, dest_path=None):
+    def git_clone_component(self, section, logfile_path=None):
         section_options = self.components_options[section]
         git_cmd = "git clone"
         if "branch" in section_options:
@@ -140,9 +144,10 @@ class Manifest(object):
                                      section_options["dest_path"])
             git_cmd += " {}".format(dest_path)
 
-        run_command(git_cmd, cwd=self.workspace_dir)
+        run_command(git_cmd, cwd=self.workspace_dir, logfile_path=logfile_path)
 
-    def git_checkout_and_pull_component(self, section, dest_path):
+    def git_checkout_and_pull_component(self, section, dest_path,
+                                        logfile_path=None):
         section_options = self.components_options[section]
         git_cmd = "git checkout "
         if "tag" in section_options:
@@ -152,8 +157,8 @@ class Manifest(object):
         elif "branch" in section_options:
             git_cmd += section_options["branch"]
 
-        run_command(git_cmd, dest_path)
-        run_command("git pull", dest_path)
+        run_command(git_cmd, dest_path, logfile_path=logfile_path)
+        run_command("git pulls", dest_path, logfile_path=logfile_path)
 
     # Getters for both runway's and components' options
 
@@ -178,3 +183,6 @@ class Manifest(object):
             return self.components_options[component][option]
         else:
             return None
+
+    def get_components(self):
+        return self.sections

@@ -56,4 +56,5 @@ lxc profile create $CNAME-profile
 $DIR/make_lxc_profile.py $CNAME $VG_NAME $VOLSIZE | lxc profile edit $CNAME-profile
 
 # launch the new container
+echo "Trying to launch container from base image $BASEIMAGE"
 lxc launch $BASEIMAGE $CNAME -p $CNAME-profile || lxc launch $DEFAULTIMAGE $CNAME -p $CNAME-profile

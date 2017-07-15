@@ -40,7 +40,7 @@ fi
 lxc exec $CNAME -- ansible-playbook -i "localhost," -c local $EXTRA_VARS /root/ansible/bootstrap.yaml
 
 # Create shared components/code folder
-lxc config device add $CNAME sharedcomponents disk path=/home/swift/code source=$DIR/components
+lxc config device add $CNAME sharedcomponents disk path=/home/swift/code source=$DIR/guest_workspaces/$CNAME
 
 # check if we're in "no install" mode
 if [[ " $* " != *"--no-install"* ]]; then

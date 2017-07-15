@@ -15,7 +15,7 @@ This project has three target use cases:
 Requires a lvm volume group named "swift-runway-vg01", LXD version 2.14 or
 higher and assumes it's running on an Ubuntu 16.04 host.
 
-Start with `start.sh`. Clean everything up with
+Start with `start.py`. Clean everything up with
 `delete_all_runway_containers.py`. Because of the lvm commands, these
 need to be run as root.
 
@@ -25,13 +25,10 @@ Project plans:
  - allow the host to be something other than Ubuntu 16.04
  - allow the guest containers to be something other than Ubuntu
 
-Clone the appropriate code repos into the `components` directory.
-
-The `components` directory is where the source repos for the
-constituent parts go. This is what's installed on the guest
-containers. However, it's not directly installed from there. It's
-first copied into a unique directory in the `guest_workspaces`
-directory, and those are in turn bind-mounted to the guest container.
+Use `bin/setup_guest_workspace.py` together with a manifest file (read
+`README_MANIFEST.md` for further details) to get your components or manually
+clone the appropriate code repos into `guest_workspaces\<your-workspace-name>`
+directory by hand. Your workspace directory will be shared with your container.
 This allows for easily having different versions of the source running
 at the same time in different guest containers.
 

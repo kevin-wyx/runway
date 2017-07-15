@@ -15,11 +15,22 @@
 
 import argparse
 import json
-import subprocess
-import shlex
 import os
-import sys
+import re
+import shlex
 import shutil
+import subprocess
+import sys
+
+
+def parse_profiles_list(cli_output):
+    profiles = []
+    lines = cli_output.split('\n')
+    for line in lines:
+        result = re.match('(^\|\s{1}|^)([\w-]+)', line)
+        if result is not None:
+            profiles.append(result.group(2))
+    return profiles
 
 
 if os.geteuid() != 0:
@@ -84,7 +95,7 @@ else:
 # delete associated lxc profiles
 profile_list_command = 'lxc profile list'
 p = subprocess.run(shlex.split(profile_list_command), stdout=subprocess.PIPE)
-profiles = p.stdout.decode().split('\n')
+profiles = parse_profiles_list(p.stdout.decode())
 to_delete = [x for x in profiles if x.startswith(prefix)]
 if to_delete:
     for profile in to_delete:

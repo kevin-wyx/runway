@@ -54,7 +54,7 @@ if __name__ == "__main__":
         colorprint.info("\nWe will keep updating the box until we get a "
                         "stable release...")
         try:
-            run_command("vagrant box update --box {}".format(VAGRANT_BOX_NAME),
+            run_command("vagrant box update --box {} || true".format(VAGRANT_BOX_NAME),
                         cwd=RUNWAY_DIR)
         except Exception as e:
             exit_on_error(e.message)

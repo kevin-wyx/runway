@@ -210,6 +210,14 @@
   args:
     chdir: /home/swift/bin/
 
+- name: Set /etc/swift permissions
+  file:
+    group: swift
+    owner: swift
+    path: /etc/swift/
+    recurse: yes
+    state: directory
+
 - name: Start Swift
   when: tiny_install
   command: ./swift-init main start && ./swift-init container-updater start

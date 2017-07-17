@@ -209,3 +209,9 @@
   command: ./remakerings
   args:
     chdir: /home/swift/bin/
+
+- name: Start Swift
+  when: tiny_install
+  command: ./swift-init main start && ./swift-init container-updater start
+  args:
+    chdir: /home/swift/code/swift/bin

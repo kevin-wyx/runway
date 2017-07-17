@@ -20,7 +20,5 @@ fi
 
 cd $SCRIPTDIR
 vagrant destroy --force
-cd $RUNWAYDIR/components
-ls | grep -v README | xargs rm -rf
 cd $RUNWAYDIR/guest_workspaces
 ls | grep -v README | xargs rm -rf

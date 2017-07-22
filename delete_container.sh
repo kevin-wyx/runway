@@ -1,3 +1,8 @@
+# This script deletes a single container together with its profile and all its
+# volumes without deleting its workspace.
+#
+# Please note this script doesn't delete any images.
+
 #!/bin/bash
 
 if [ `id -u` -ne 0 ]; then

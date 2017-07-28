@@ -107,20 +107,21 @@
   with_items:
     - sdb
 
-# - name: Make filesystems on rest of disks
-#   register: filesystemscreated
-#   filesystem:
-#     fstype: xfs
-#     dev: /dev/{{ item }}
-#     force: no
-#   with_items:
-#     - sdc
-#     - sdd
-#     - sde
-#     - sdf
-#     - sdg
-#     - sdh
-#     - sdi
+- name: Make filesystems on rest of disks
+  register: filesystemscreated
+  when: not tiny_install
+  filesystem:
+    fstype: xfs
+    dev: /dev/{{ item }}
+    force: no
+  with_items:
+    - sdc
+    - sdd
+    - sde
+    - sdf
+    - sdg
+    - sdh
+    - sdi
 
 - name: Create first directory to mount disks
   file:
@@ -129,18 +130,19 @@
   with_items:
     - '/srv/1/node/d1'
 
-# - name: Create rest of directories to mount disks
-#   file:
-#     path: "{{item}}"
-#     state: directory
-#   with_items:
-#     - '/srv/2/node/d2'
-#     - '/srv/3/node/d3'
-#     - '/srv/4/node/d4'
-#     - '/srv/1/node/d5'
-#     - '/srv/2/node/d6'
-#     - '/srv/3/node/d7'
-#     - '/srv/4/node/d8'
+- name: Create rest of directories to mount disks
+  when: not tiny_install
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+    - '/srv/2/node/d2'
+    - '/srv/3/node/d3'
+    - '/srv/4/node/d4'
+    - '/srv/1/node/d5'
+    - '/srv/2/node/d6'
+    - '/srv/3/node/d7'
+    - '/srv/4/node/d8'
 
 - name: Update fstab with first disk
   register: fstab_update
@@ -154,23 +156,23 @@
   with_items:
     - { drive: sdb, mp: /srv/1/node/d1 }
 
-# - name: Update fstab with rest of disks
-#   register: fstab_update
-#   when: filesystemscreated|success
-#   mount:
-#     path: "{{ item.mp }}"
-#     src: /dev/{{ item.drive }}
-#     fstype: xfs
-#     state: mounted
-#     opts: auto,noatime,nodiratime,logbufs=2
-#   with_items:
-#     - { drive: sdc, mp: /srv/2/node/d2 }
-#     - { drive: sdd, mp: /srv/3/node/d3 }
-#     - { drive: sde, mp: /srv/4/node/d4 }
-#     - { drive: sdf, mp: /srv/1/node/d5 }
-#     - { drive: sdg, mp: /srv/2/node/d6 }
-#     - { drive: sdh, mp: /srv/3/node/d7 }
-#     - { drive: sdi, mp: /srv/4/node/d8 }
+- name: Update fstab with rest of disks
+  register: fstab_update
+  when: filesystemscreated|success and not tiny_install
+  mount:
+    path: "{{ item.mp }}"
+    src: /dev/{{ item.drive }}
+    fstype: xfs
+    state: mounted
+    opts: auto,noatime,nodiratime,logbufs=2
+  with_items:
+    - { drive: sdc, mp: /srv/2/node/d2 }
+    - { drive: sdd, mp: /srv/3/node/d3 }
+    - { drive: sde, mp: /srv/4/node/d4 }
+    - { drive: sdf, mp: /srv/1/node/d5 }
+    - { drive: sdg, mp: /srv/2/node/d6 }
+    - { drive: sdh, mp: /srv/3/node/d7 }
+    - { drive: sdi, mp: /srv/4/node/d8 }
 
 - name: Mount disks
   register: drivesmounted

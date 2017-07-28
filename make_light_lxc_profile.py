@@ -47,7 +47,6 @@ path_to_repo = os.path.dirname(os.path.realpath(__file__))
 
 template_vars = {}
 template_vars.update(dev_numbers)
-# template_vars['path_to_shared_code'] = path_to_repo + '/guest_workspaces/%s_shared_code/' % CNAME
 template_vars['drive_sections'] = '\n'.join(template_drive_sections)
 
 template_file = path_to_repo + '/container_base/swift-runway-ram-v1.tmpl'

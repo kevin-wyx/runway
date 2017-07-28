@@ -11,6 +11,7 @@ from libs.manifest import Manifest
 from libs import workspaces
 from libs import colorprint
 from libs.cli import run_command
+import setup_and_run_ansible_on_guest
 
 if __name__ == '__main__':
     usage = '%s manifest_file' % sys.argv[0]
@@ -45,15 +46,17 @@ if __name__ == '__main__':
     try:
         vol_size = man.runway_options['drive_size']
         base_image = 'runway-base-%s' % man.runway_options['family']
-        debug_string = " --debug" if man.runway_options.get('debug') == 'True' else ""
+        debug = man.runway_options.get('debug') == 'True'
+        debug_string = " --debug" if debug else ""
         vol_count = man.runway_options['number_of_drives']
         distro = man.runway_options.get('distro', 'ubuntu')
 
         run_command("./make_base_container.sh "
                     "{} {} {} {} {}{}".format(distro, container_name, base_image,
                                               vol_size, vol_count, debug_string), RUNWAY_DIR)
-        run_command("./setup_and_run_ansible_on_guest.sh "
-                    "{}{}".format(container_name, debug_string), RUNWAY_DIR)
+        # run_command("./setup_and_run_ansible_on_guest.sh "
+        #             "{}{}".format(container_name, debug_string), RUNWAY_DIR)
+        setup_and_run_ansible_on_guest.setup_and_run_ansible(container_name, debug=debug)
         # can we determine if we should install based on the manifest
         # or based on the existing images?
         run_command("./generic_installer.py {}".format(container_name),

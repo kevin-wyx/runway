@@ -9,8 +9,8 @@ description: Swift object storage all-in-one
 devices:
   eth0:
     name: eth0
-    nictype: bridged
-    parent: lxdbr0
+    nictype: macvlan
+    parent: eno3
     type: nic
 {drive_sections}
   root:

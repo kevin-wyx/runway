@@ -20,3 +20,5 @@ TODO
 .envrc
 
 .DS_Store
+
+.vscode/

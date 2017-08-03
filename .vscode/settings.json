@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "proto.h": "c",
+        "proxyfs.h": "c",
+        "vfs.h": "c",
+        "vfs_proxyfs.h": "c",
+        "param_local.h": "c",
+        "interfaces.h": "c",
+        "smb_acl.h": "c",
+        "locking.h": "c",
+        "globals.h": "c",
+        "smb2_ioctl_private.h": "c",
+        "smb_macros.h": "c",
+        "lsa.h": "c",
+        "samr.h": "c",
+        "svcctl.h": "c",
+        "eventlog.h": "c",
+        "eventlog6.h": "c",
+        "mdssvc.h": "c",
+        "spoolss.h": "c",
+        "winreg.h": "c",
+        "ldb.h": "c",
+        "reg_parse_internal.h": "c",
+        "registry.h": "c",
+        "libnet.h": "c",
+        "cifsposix.h": "c",
+        "vfs_posix.h": "c",
+        "svfs.h": "c",
+        "smb_server.h": "c",
+        "gpg-error.h": "c",
+        "time_utils.h": "c"
+    }
+}

@@ -24,6 +24,7 @@ vgcreate swift-runway-vg01 /dev/sdc -y
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 current_lxd_version=`lxd --version`
 if version_gt "2.14" $current_lxd_version; then
+    apt-get update
     apt-get install lxd/xenial-backports -y
 else
     echo "************************************"

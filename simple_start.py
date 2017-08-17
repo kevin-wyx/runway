@@ -48,19 +48,18 @@ if __name__ == '__main__':
         base_image = 'runway-base-%s' % man.runway_options['family']
         debug = man.runway_options.get('debug') == 'True'
         debug_string = " --debug" if debug else ""
-        vol_count = man.runway_options['number_of_drives']
+        vol_count = int(man.runway_options['number_of_drives'])
         distro = man.runway_options.get('distro', 'ubuntu')
 
         run_command("./make_base_container.sh "
                     "{} {} {} {} {}{}".format(distro, container_name, base_image,
                                               vol_size, vol_count, debug_string), RUNWAY_DIR)
-        # run_command("./setup_and_run_ansible_on_guest.sh "
-        #             "{}{}".format(container_name, debug_string), RUNWAY_DIR)
-        setup_and_run_ansible_on_guest.setup_and_run_ansible(container_name, debug=debug)
+        setup_and_run_ansible_on_guest.setup_and_run_ansible(container_name, debug=debug, drive_count=vol_count)
         # can we determine if we should install based on the manifest
         # or based on the existing images?
-        run_command("./generic_installer.py {}".format(container_name),
-                    RUNWAY_DIR)
+        #TODO configure doing the install and snapshot from the manifest
+        # run_command("./generic_installer.py {}".format(container_name),
+        #             RUNWAY_DIR)
         # run_command("./snapshot_created_container.sh "
         #             "{} {}{}".format(container_name, base_image, debug_string),
         #             RUNWAY_DIR)

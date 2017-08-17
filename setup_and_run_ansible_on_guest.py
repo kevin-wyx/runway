@@ -30,8 +30,8 @@ def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1):
                     return
                 yield '/srv/%d/node/d%d' % (i, total)
 
-    extra_vars = {'no_install': True,
-                  'tiny_install': True,
+    extra_vars = {'no_install': no_install,
+                  'tiny_install': drive_count == 1,
                  }
     drive_list = []
     all_mounts = available_mounts()

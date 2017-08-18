@@ -24,6 +24,7 @@ fi
 lxc exec $CNAME -- shutdown -h now
 lxc stop $CNAME || true
 echo "Trying to delete old image..."
+lxc image alias delete $BASEIMAGE || true
 lxc image delete $BASEIMAGE || true
 lxc publish -f $CNAME --alias $BASEIMAGE description="Created by swift runway"
 if [[ " $* " =~ " --delete-container " ]]; then

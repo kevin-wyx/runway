@@ -3,6 +3,7 @@
 - name: Bootstrap the shebang
   vars:
     do_install: "{{ not no_install|bool }}"
+    tiny_install: "{{ tiny_install|bool }}"
   hosts: localhost
   roles:
     - bootstrap

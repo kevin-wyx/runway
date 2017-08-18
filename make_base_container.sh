@@ -42,9 +42,15 @@ else
 fi
 
 if [ -z $4 ]; then
-    VOLSIZE=10G
+    VOLSIZE=1G
 else
     VOLSIZE=$4
+fi
+
+if [ -z $5 ]; then
+    DRIVECOUNT=8
+else
+    DRIVECOUNT=$5
 fi
 
 # assume well-known lvm volume group on host
@@ -53,7 +59,7 @@ VG_NAME=swift-runway-vg01
 
 # make a container profile that maps 8 block devices to the guest
 lxc profile create $CNAME-profile
-$DIR/make_lxc_profile.py $CNAME $VG_NAME $VOLSIZE | lxc profile edit $CNAME-profile
+$DIR/make_light_lxc_profile.py $CNAME $VG_NAME $VOLSIZE $DRIVECOUNT | lxc profile edit $CNAME-profile
 
 # launch the new container
 echo "Trying to launch container from base image $BASEIMAGE"

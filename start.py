@@ -9,6 +9,7 @@ from libs import colorprint
 from libs import workspaces
 from libs.cli import run_command
 from libs.manifest import Manifest
+import setup_and_run_ansible_on_guest
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = SCRIPT_DIR
@@ -90,13 +91,14 @@ if __name__ == "__main__":
 
     container_name = workspace_name
 
+    vol_count = int(manifest.runway_options['number_of_drives'])
+
     try:
         run_command("./make_base_container.sh "
                     "{} {} {} {}{}".format(distro, container_name, base_image,
                                            vol_size, debug_string), RUNWAY_DIR)
-        run_command("./setup_and_run_ansible_on_guest.sh "
-                    "{}{}{}".format(container_name, debug_string,
-                                    install_string), RUNWAY_DIR)
+        setup_and_run_ansible_on_guest.setup_and_run_ansible(
+            container_name, debug=debug, drive_count=vol_count)
         # If we're in a "no install" mode, skip the rest
         # we assume it's already all set up (ie started from a snapshot)
         if install_components:

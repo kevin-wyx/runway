@@ -22,7 +22,6 @@ if __name__ == '__main__':
         print('Usage: %s' % usage)
         sys.exit(1)
 
-
     RUNWAY_DIR = os.path.abspath(os.path.dirname(__file__))
 
     # need to parse the manifest file first to get the runway options (family)
@@ -51,23 +50,28 @@ if __name__ == '__main__':
         vol_count = int(man.runway_options['number_of_drives'])
         distro = man.runway_options.get('distro', 'ubuntu')
         tiny_deploy = vol_count == 1
-        no_install = tiny_deploy or man.runway_options.get('no_install') == 'True'
-        no_snap = no_install or man.runway_options.get('no_snapshot') == 'True'
+        no_install = tiny_deploy or \
+            man.runway_options.get('no_install') == 'True'
+        no_snap = no_install or \
+            man.runway_options.get('no_snapshot') == 'True'
 
         # starting from a base image doesn't work if the base image
         # has fewer drives than the current manifest you're loading
         run_command("./make_base_container.sh "
-                    "{} {} {} {} {}{}".format(distro, container_name, base_image,
-                                              vol_size, vol_count, debug_string), RUNWAY_DIR)
+                    "{} {} {} {} {}{}".format(
+                        distro, container_name, base_image, vol_size,
+                        vol_count, debug_string), RUNWAY_DIR)
 
-        setup_and_run_ansible_on_guest.setup_and_run_ansible(container_name, debug=debug, drive_count=vol_count)
+        setup_and_run_ansible_on_guest.setup_and_run_ansible(
+            container_name, debug=debug, drive_count=vol_count)
 
         if not no_install:
             run_command("./generic_installer.py {}".format(container_name),
                         RUNWAY_DIR)
         if not no_snap:
             run_command("./snapshot_created_container.sh "
-                        "{} {}{}".format(container_name, base_image, debug_string),
+                        "{} {}{}".format(
+                            container_name, base_image, debug_string),
                         RUNWAY_DIR)
     except Exception as e:
         colorprint.error(str(e))

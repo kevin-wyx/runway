@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     container_name = workspace_name
 
-    vol_count = int(manifest.runway_options['number_of_drives'])
+    vol_count = int(manifest.runway_options.get('number_of_drives', 8))
 
     try:
         run_command("./make_base_container.sh "

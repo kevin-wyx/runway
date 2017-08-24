@@ -22,6 +22,10 @@ if __name__ == '__main__':
         print('Usage: %s' % usage)
         sys.exit(1)
 
+    if os.geteuid() != 0:
+        print("This script must be run as root.")
+        sys.exit(1)s
+
     RUNWAY_DIR = os.path.abspath(os.path.dirname(__file__))
 
     # need to parse the manifest file first to get the runway options (family)
@@ -36,7 +40,7 @@ if __name__ == '__main__':
     # get manifest components into workspace
     man.retrieve_components()
 
-    # get a copy fo the manifest into the workspace directory
+    # get a copy of the manifest into the workspace directory
     copyfile(manifest_path, os.path.join(workspace_path, 'manifest.cfg'))
 
     # make guest etc etc
@@ -47,7 +51,7 @@ if __name__ == '__main__':
         base_image = 'runway-base-%s' % man.runway_options['family']
         debug = man.runway_options.get('debug') == 'True'
         debug_string = " --debug" if debug else ""
-        vol_count = int(man.runway_options['number_of_drives'])
+        vol_count = int(man.runway_options.get('number_of_drives', 8))
         distro = man.runway_options.get('distro', 'ubuntu')
         tiny_deploy = vol_count == 1
         no_install = tiny_deploy or \

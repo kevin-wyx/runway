@@ -158,7 +158,8 @@ class Manifest(object):
             git_cmd += section_options["branch"]
 
         run_command(git_cmd, dest_path, logfile_path=logfile_path)
-        run_command("git pull", dest_path, logfile_path=logfile_path)
+        if "branch" in section_options:
+            run_command("git pull", dest_path, logfile_path=logfile_path)
 
     # Getters for both runway's and components' options
 

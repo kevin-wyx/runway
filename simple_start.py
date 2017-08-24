@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     if os.geteuid() != 0:
         print("This script must be run as root.")
-        sys.exit(1)s
+        sys.exit(1)
 
     RUNWAY_DIR = os.path.abspath(os.path.dirname(__file__))
 

@@ -95,8 +95,15 @@ else:
 # delete associated lxc profiles
 profile_list_command = 'lxc profile list'
 p = subprocess.run(shlex.split(profile_list_command), stdout=subprocess.PIPE)
-profiles = parse_profiles_list(p.stdout.decode())
-to_delete = [x for x in profiles if x.startswith(prefix)]
+to_delete = []
+for line in p.stdout.decode().split('\n'):
+    parts = line.split('|')
+    try:
+        profile_name = parts[1].strip()
+        if profile_name.startswith(prefix):
+            to_delete.append(profile_name)
+    except IndexError:
+        pass
 if to_delete:
     for profile in to_delete:
         delete_command = 'lxc profile delete %s' % profile

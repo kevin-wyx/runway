@@ -100,52 +100,29 @@
 
 - name: Make filesystems on disks
   register: filesystemscreated
-  with_items:
-    - sdb
-    - sdc
-    - sdd
-    - sde
-    - sdf
-    - sdg
-    - sdh
-    - sdi
   filesystem:
     fstype: xfs
-    dev: /dev/{{ item }}
+    dev: /dev/{{ item.drive_letter }}
     force: no
+  with_items: "{{ drive_list }}"
 
 - name: Create directories to mount disks
+  when: not tiny_install
   file:
-    path: "{{item}}"
+    path: "{{ item.mount_point }}"
     state: directory
-  with_items:
-    - '/srv/1/node/d1'
-    - '/srv/2/node/d2'
-    - '/srv/3/node/d3'
-    - '/srv/4/node/d4'
-    - '/srv/1/node/d5'
-    - '/srv/2/node/d6'
-    - '/srv/3/node/d7'
-    - '/srv/4/node/d8'
+  with_items: "{{ drive_list }}"
 
-- name: Update fstab
+- name: Update fstab with disks
   register: fstab_update
   when: filesystemscreated|success
-  with_items:
-    - { drive: sdb, mp: /srv/1/node/d1 }
-    - { drive: sdc, mp: /srv/2/node/d2 }
-    - { drive: sdd, mp: /srv/3/node/d3 }
-    - { drive: sde, mp: /srv/4/node/d4 }
-    - { drive: sdf, mp: /srv/1/node/d5 }
-    - { drive: sdg, mp: /srv/2/node/d6 }
-    - { drive: sdh, mp: /srv/3/node/d7 }
-    - { drive: sdi, mp: /srv/4/node/d8 }
   mount:
-    path: "{{ item.mp }}"
-    src: /dev/{{ item.drive }}
+    path: "{{ item.mount_point }}"
+    src: /dev/{{ item.drive_letter }}
     fstype: xfs
     state: mounted
     opts: auto,noatime,nodiratime,logbufs=2
+  with_items: "{{ drive_list }}"
 
 - name: Mount disks
   register: drivesmounted
@@ -157,13 +134,9 @@
 - name: Set permissions
   register: permissionsset
   when: drivesmounted|success and swiftusercreated|success
-  with_items:
-    - /srv/1
-    - /srv/2
-    - /srv/3
-    - /srv/4
+  with_items: "{{ drive_list }}"
   file:
     recurse: yes
     owner: swift
     group: swift
-    path: "{{ item }}"
+    path: "{{ item.mount_point }}"

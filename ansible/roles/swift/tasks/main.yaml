@@ -17,15 +17,24 @@
 
 - name: Create swift config files
   register: swiftconfigscreated
-  when: etcswiftcreated|success
+  when: etcswiftcreated|success and not tiny_install
   copy:
     src: /home/swift/code/swift/doc/saio/swift/
     dest: /etc/swift/
     owner: swift
     group: swift
 
+- name: Create tiny swift config files
+  register: swiftconfigscreated
+  when: etcswiftcreated|success and tiny_install
+  copy:
+    src: single_replica_policy/etc/swift/
+    dest: /etc/swift/
+    owner: swift
+    group: swift
+
 - name: Create swift test config file
-  when: etcswiftcreated|success
+  when: etcswiftcreated|success and not tiny_install
   copy:
     src: /home/swift/code/swift/test/sample.conf
     dest: /etc/swift/test.conf
@@ -35,11 +44,11 @@
 - name: list of the .conf files and store it in register
   raw: find /etc/swift -type f -name "*.conf"
   register: swift_conf_files
-  when: swiftconfigscreated|success
+  when: swiftconfigscreated|success and not tiny_install
 
 - name: Set swift user in configs
   register: configsed
-  when: swift_conf_files|success
+  when: swift_conf_files|success and not tiny_install
   with_items: "{{ swift_conf_files.stdout_lines }}"
   replace:
     dest: "{{ item }}"
@@ -57,8 +66,18 @@
     mode: 0775
 
 - name: Copy modified remakerings
+  when: not tiny_install
   copy:
     src: remakerings
+    dest: /home/swift/bin/remakerings
+    owner: swift
+    group: swift
+    mode: 0775
+
+- name: Copy modified remakerings for tiny
+  when: tiny_install
+  copy:
+    src: single_replica_policy/remakerings
     dest: /home/swift/bin/remakerings
     owner: swift
     group: swift
@@ -77,14 +96,14 @@
     dest: /etc/default/rsync
     regexp: RSYNC_ENABLE=false
     replace: RSYNC_ENABLE=true
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and not tiny_install
 
 - name: Create /etc/default/rsyncd file (RedHat)
   copy:
     src: etc/default/rsyncd
     dest: /etc/default/rsyncd
     force: no
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' and not tiny_install
 
 - name: Set up rsync on boot (RedHat)
   register: rsyncsetup
@@ -92,14 +111,16 @@
     dest: /etc/default/rsyncd
     regexp: RSYNC_ENABLE=false
     replace: RSYNC_ENABLE=true
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' and not tiny_install
 
 - name: rsync config file
+  when: not tiny_install
   copy:
     src: /home/swift/code/swift/doc/saio/rsyncd.conf
     dest: /etc/rsyncd.conf
 
 - name: set swift user in rsync config
+  when: not tiny_install
   replace:
     dest: /etc/rsyncd.conf
     regexp: user = <your-user-name>
@@ -109,7 +130,7 @@
   service:
     name: rsync
     state: restarted
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and not tiny_install
 
 - name: start rsyncd (RedHat)
   systemd:
@@ -117,7 +138,7 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' and not tiny_install
 
 - include: setup_swift_logging.yaml
 
@@ -188,3 +209,17 @@
   command: ./remakerings
   args:
     chdir: /home/swift/bin/
+
+- name: Set /etc/swift permissions
+  file:
+    group: swift
+    owner: swift
+    path: /etc/swift/
+    recurse: yes
+    state: directory
+
+- name: Start Swift
+  when: tiny_install
+  command: ./swift-init main start && ./swift-init container-updater start
+  args:
+    chdir: /home/swift/code/swift/bin

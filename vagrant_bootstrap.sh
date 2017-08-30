@@ -25,7 +25,7 @@ function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$
 current_lxd_version=`lxd --version`
 if version_gt "2.14" $current_lxd_version; then
     apt-get update
-    apt-get install lxd/xenial-backports -y
+    apt-get install lxd/xenial-backports lxd-client/xenial-backports -y
 else
     echo "************************************"
     echo " Current LXD version is new enough!"

@@ -16,9 +16,10 @@ echo "*                                         *     |||||  "
 echo "*******************************************     |||||  "
 echo
 echo "Running this script will delete everything under '${WORKSPACES_PATH}',"
-echo "and will destroy your Vagrant VM along with all the containers it hosts."
+echo "which is where all the components' git working copies are."
+echo "This process will also destroy your Vagrant VM along with all the containers it hosts."
 echo
-echo "All your uncommitted work in Runway WILL BE LOST. FOREVER."
+echo "All your uncommitted work in any of the Runway components WILL BE LOST. FOREVER."
 echo
 read -p "Are you sure you want to continue? [y/N] " -r
 # If want the user to hit 'return' key, replace previous line with next one:

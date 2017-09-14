@@ -21,6 +21,9 @@ echo "This process will also destroy your Vagrant VM along with all the containe
 echo
 echo "All your uncommitted work in any of the Runway components WILL BE LOST. FOREVER."
 echo
+echo "If you only want to destroy your VM and containers, but you don't want to delete your components,"
+echo "just run 'vagrant destroy' and 'vagrant up' from your Runway directory."
+echo
 read -p "Are you sure you want to continue? [y/N] " -r
 # If want the user to hit 'return' key, replace previous line with next one:
 #read -p "your Vagrant VM. Are you sure you want to continue? [y/N] " -n 1 -r

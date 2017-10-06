@@ -135,7 +135,7 @@ class Manifest(object):
 
     def git_clone_component(self, section, logfile_path=None):
         section_options = self.components_options[section]
-        git_cmd = "git clone"
+        git_cmd = "git clone --recursive"
         if "branch" in section_options:
             git_cmd += " -b {}".format(section_options["branch"])
         git_cmd += " {}".format(section_options["url"])
@@ -160,6 +160,10 @@ class Manifest(object):
         run_command(git_cmd, dest_path, logfile_path=logfile_path)
         if "branch" in section_options:
             run_command("git pull", dest_path, logfile_path=logfile_path)
+
+        # Update submodules
+        git_cmd = "git submodule update --init --recursive"
+        run_command(git_cmd, dest_path, logfile_path=logfile_path)
 
     # Getters for both runway's and components' options
 

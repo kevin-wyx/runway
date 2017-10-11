@@ -187,6 +187,11 @@
     name: pip
     state: latest
 
+- name: update setuptools
+  pip:
+    name: setuptools
+    state: latest
+
 - name: install pip dependencies
   pip:
     requirements: "{{item}}"
@@ -194,11 +199,6 @@
   with_items:
     - requirements.txt
     - test-requirements.txt
-
-- name: upgrade setuptools
-  pip:
-    name: setuptools
-    chdir: /home/swift/code/swift
 
 - name: Install swift
   register: swiftinstalled

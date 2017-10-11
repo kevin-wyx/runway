@@ -195,6 +195,11 @@
     - requirements.txt
     - test-requirements.txt
 
+- name: upgrade setuptools
+  pip:
+    name: setuptools
+    chdir: /home/swift/code/swift
+
 - name: Install swift
   register: swiftinstalled
   when: swiftdependenciesinstalled|success and libec_installed|success

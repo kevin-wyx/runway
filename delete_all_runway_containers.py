@@ -127,7 +127,10 @@ for line in p.stdout.decode().split('\n'):
     if "Created by swift runway" in line:
         parts = line.split('|')
         fingerprint = parts[2].strip()
-        if delete_everything or 'runway-base' not in line:
+        alias = parts[1].strip()
+        # If we're not deleting everything, we ONLY delete images whose alias
+        # starts with the given prefix.
+        if delete_everything or (alias != "" and alias.startswith(prefix)):
             images_to_delete.append(fingerprint)
 if images_to_delete:
     print('Deleting %d images' % len(images_to_delete))

@@ -58,6 +58,8 @@ class Manifest(object):
                         "tag" in section_options:
                     self.git_checkout_and_pull_component(
                         section, dest_path, logfile_path=logfile_path)
+
+                self.git_submodule_update(dest_path, logfile_path=logfile_path)
             else:
                 if not component_exists:
                     colorprint.warning("Component '{}' has been marked as "
@@ -135,7 +137,7 @@ class Manifest(object):
 
     def git_clone_component(self, section, logfile_path=None):
         section_options = self.components_options[section]
-        git_cmd = "git clone --recursive"
+        git_cmd = "git clone"
         if "branch" in section_options:
             git_cmd += " -b {}".format(section_options["branch"])
         git_cmd += " {}".format(section_options["url"])
@@ -161,9 +163,9 @@ class Manifest(object):
         if "branch" in section_options:
             run_command("git pull", dest_path, logfile_path=logfile_path)
 
-        # Update submodules
-        git_cmd = "git submodule update --init --recursive"
-        run_command(git_cmd, dest_path, logfile_path=logfile_path)
+    def git_submodule_update(self, dest_path, logfile_path=None):
+        run_command("git submodule update --init --recursive", dest_path,
+                    logfile_path=logfile_path)
 
     # Getters for both runway's and components' options
 

@@ -66,5 +66,5 @@ EOF
 
 lxc list > /dev/null
 sudo -H -u ubuntu bash -c 'lxc list > /dev/null'
-apt-get install linux-generic
+apt-get install linux-generic -y
 /vagrant/start.py -d RHEL -v 1G

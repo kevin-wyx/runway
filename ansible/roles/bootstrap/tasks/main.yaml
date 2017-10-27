@@ -13,6 +13,7 @@
     - libxml2
     - libxslt-devel
     - sudo
+    - man
   when: ansible_os_family == 'RedHat'
 
 - name: apt install anticipated packages for building/running swift
@@ -29,6 +30,7 @@
     - libxml2-dev
     - libxml2
     - libxslt1-dev
+    - man
   when: ansible_os_family == 'Debian'
 
 - name: delete ubuntu user

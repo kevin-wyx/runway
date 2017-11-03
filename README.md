@@ -1,11 +1,11 @@
 Runway
 ======
 
-A project to help you take flight with a storage system (get it?).
+A project to help you take flight with OpenStack Swift.
 
-This sets up a swift-all-in-one (SAIO) dev environment in an lxc container.
-Eventually it will also include projects like swift3, metadata searching,
-and filesystem access.
+Runway sets up a swift-all-in-one (SAIO) dev environment in an lxc container.
+Eventually it will also include swift3, metadata searching,
+and other ecosystem projects.
 
 This project has three target use cases:
  - Developers looking to contribute code to any of the constituent projects
@@ -24,9 +24,10 @@ following requirements:
 - LXD version 2.14 or higher is installed.
 
 We anticipate that some developers' development environments won't meet these
-requirements, so Runway provides an easy way to create a VirtualBox VM that will.
+requirements by default. Runway additionally provides an easy way to create a
+VirtualBox VM that will meet them.
 
-In case you want to create the containers inside the Runway-provided VM, your
+If you do want to create the containers inside the Runway-provided VM, your
 development environment must satisfy these requirements:
 
 - VirtualBox version 5.1.22 or higher is installed.
@@ -36,13 +37,13 @@ development environment must satisfy these requirements:
 Manifests
 ---------
 
-Runway is meant to be used to run Swift, but besides that, not everybody has
-the same needs. For instance, if you want to work on ProxyFS, there are some
-repos that you will need to clone, but not everybody will need them. That's why
-we use manifests.
+Runway is meant to be used to run OpenStack Swift, but besides that, not everybody has
+the same needs. For instance, if you want to work on ProxyFS, there are several additional
+repos that you will need to clone.  Runway uses Manifest files to allow users to customize
+Runway for their needs. 
 
 You can read all the details on how to create a new manifest in [the manifest readme file](https://github.com/swiftstack/runway/blob/master/README_MANIFEST.md),
-but everything most users will need to know is what manifest file to use.
+but all most users will need to know is which manifest file to use.
 
 You can create your own manifests, but we've provided some sample manifests in
 the `manifests` directory that you can use:
@@ -53,7 +54,7 @@ will be used. It loads Swift, liberasurecode and python-swiftclient.
 manifest, this manifest includes ProxyFS and the ProxyFS functional tests.
 - `saio_manifest.cfg`: manifest for running Swift, optimized for SAIO
 development, with 8 10GB drives.
-- `tiny_manifest.cfg`: manifest for running Swift, optimized for app test
+- `tiny_manifest.cfg`: manifest for running Swift, optimized for an app test
 target, with 1 1GB drive.
 
 
@@ -267,8 +268,8 @@ After this, you can re-create your environment by following all the steps in
 section "Quick install".
 
 
-Use Runway without a VM (advanced usage)
-----------------------------------------
+How to use Runway without a VM 
+------------------------------
 
 Use `bin/setup_guest_workspace.py` together with a manifest file (read
 `README_MANIFEST.md` for further details) to get your components or manually

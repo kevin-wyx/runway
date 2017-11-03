@@ -191,10 +191,19 @@ cd /home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS
 ./regression_test.py
 ```
 
-Install pfs_middleware:
+Install/re-build pfs_middleware. You will need it if you add new .py files to
+the middleware:
 
 ```bash
 cd /home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS/pfs_middleware
+python setup.py develop
+```
+
+Install/re-build meta_middleware. You will need it if you add new .py files to
+the middleware:
+
+```bash
+cd /home/swift/code/ProxyFS/src/github.com/swiftstack/ProxyFS/meta_middleware
 python setup.py develop
 ```
 

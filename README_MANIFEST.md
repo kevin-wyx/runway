@@ -32,9 +32,9 @@ branch = development
 dest_path = ProxyFS/src/github.com/swiftstack/ProxyFS
 install = ci/ansible/install_proxyfs.sh runway
 
-[conf]
-url = git@github.com:swiftstack/conf.git
-dest_path = ProxyFS/src/github.com/swiftstack/conf
+[cstruct]
+url = git@github.com:swiftstack/cstruct.git
+dest_path = ProxyFS/src/github.com/swiftstack/cstruct
 
 [my-local-component]
 local = true

@@ -23,9 +23,8 @@ following requirements:
 - Have an lvm volume group named `swift-runway-vg01`.
 - LXD version 2.14 or higher is installed.
 
-We assume that most developers' development environments won't meet this
-criteria, so Runway provides an easy way to create a VirtualBox VM that does
-satisfy all the requirements listed above.
+We anticipate that some developers' development environments won't meet these
+requirements, so Runway provides an easy way to create a VirtualBox VM that will.
 
 In case you want to create the containers inside the Runway-provided VM, your
 development environment must satisfy these requirements:
@@ -87,7 +86,7 @@ _NOTE: bin/build_vm_and_container.py will try to update your ubuntu/xenial64
 box every time. If you don't want to update it, you can use the
 `-u` / `--do_not_update_box` option and it will skip this step._
 
-If everything goes as planned, `build_vm_andcontainer.py` should take quite
+If everything goes as planned, `build_vm_and_container.py` should take quite
 some time to finish (15-20 minutes).
 
 There's a good chance your SCSI controller name is different than our default

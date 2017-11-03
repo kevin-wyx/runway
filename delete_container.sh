@@ -2,6 +2,13 @@
 # volumes without deleting its workspace.
 #
 # Please note this script doesn't delete any images.
+#
+# WARNING: We've recently detected some information is being kept after just
+# deleting a single container, so use the following script at your own risk.
+# Until further notice, if you want to re-create your container without
+# deleting your workspace, we recommend you to run
+# `vagrant destroy && vagrant up` from your runway directory (outside your VM).
+# It's slower, but we know no data will be kept other than the workspace.
 
 #!/bin/bash
 

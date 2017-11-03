@@ -14,9 +14,10 @@ from shutil import copyfile
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
-COMPONENTS_DIR = os.path.join(RUNWAY_DIR, 'components')
+MANIFESTS_DIR_NAME = 'manifests'
+MANIFESTS_DIR = os.path.join(RUNWAY_DIR, MANIFESTS_DIR_NAME)
 DEFAULT_MANIFEST_NAME = 'default_manifest.cfg'
-DEFAULT_MANIFEST_PATH = os.path.join(RUNWAY_DIR, DEFAULT_MANIFEST_NAME)
+DEFAULT_MANIFEST_PATH = os.path.join(MANIFESTS_DIR, DEFAULT_MANIFEST_NAME)
 
 
 def exit_with_error(error_text):
@@ -33,7 +34,8 @@ if __name__ == "__main__":
     # in the master branch before we get the whole workspaces thing working
     parser.add_argument('-m', '--manifest', default=DEFAULT_MANIFEST_PATH,
                         help="Path to manifest file. Default: '/path"
-                             "/to/runway/{}'".format(DEFAULT_MANIFEST_NAME))
+                             "-to-runway/{}/{}'".format(MANIFESTS_DIR_NAME,
+                                                        DEFAULT_MANIFEST_NAME))
     parser.add_argument('-w', '--workspace', default=None,
                         help="Workspace name")
 
@@ -51,12 +53,13 @@ if __name__ == "__main__":
                     "\n".format(new_workspace_path))
 
     # Copy manifest into workspace
-    copyfile(manifest_file, os.path.join(new_workspace_path,
-                                         MANIFEST_COPY_NAME))
+    manifest_copy_path = os.path.join(new_workspace_path, MANIFEST_COPY_NAME)
+    if not os.path.isfile(manifest_copy_path):
+        copyfile(manifest_file, manifest_copy_path)
 
     # Retrieve contents
     try:
-        current_manifest = Manifest(manifest_file, new_workspace_path)
+        current_manifest = Manifest(manifest_copy_path, new_workspace_path)
         current_manifest.retrieve_components()
     except Exception as e:
         exit_with_error(e.message)

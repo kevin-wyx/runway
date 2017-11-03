@@ -36,14 +36,6 @@ install = ci/ansible/install_proxyfs.sh runway
 url = git@github.com:swiftstack/conf.git
 dest_path = ProxyFS/src/github.com/swiftstack/conf
 
-[cstruct]
-url = git@github.com:swiftstack/cstruct.git
-dest_path = ProxyFS/src/github.com/swiftstack/cstruct
-
-[sortedmap]
-url = git@github.com:swiftstack/sortedmap.git
-dest_path = ProxyFS/src/github.com/swiftstack/sortedmap
-
 [my-local-component]
 local = true
 dest_path = my-super-secret-project
@@ -56,15 +48,32 @@ post_cmd = cp -rf ./ProxyFS/src/github.com/swiftstack/ProxyFS/ci/ansible/install
 ```
 
 
+Workspaces
+----------
+
+A workspace is a directory where all your components will be stored. This
+directory will be shared with your container, so that you can edit files from
+your host environment while having all the changes immediately available inside
+the container.
+
+The contents of a workspace will be defined by the manifest you use.
+
+Unless you specify a custom name for your workspace, its name will look like
+`swift-runway-XXX`, where `XXX` is a number from 001 to 999 (usually 001).
+
+The workspaces will be placed in
+`<your-runway-path>/guest_workspaces/<your-workspace-name>`.
+
+
 Runway options
 --------------
 
-Any configuration option that affects how runway runs, will be included in the
+Any configuration option that affects how Runway runs, will be included in the
 `runway` section. Adding a `runway` section is completely optional, and so is
 adding any configuration options inside this section.
 
-\* For now, we only have one option, but the set of possible options will grow in
-the future.
+\* For now, we only have one option, but the set of possible options will grow
+in the future.
 
 Here's a list of available options:
 
@@ -84,8 +93,8 @@ Here's a list of available options:
 
 * `branch` (string): Branch to checkout. Can't be used together with `sha` or
 `tag`.
-* `dest_path` (string): Relative path from Runway's `components` directory to
-the component's directory. It is mandatory when `local` is `true`.
+* `dest_path` (string): Relative path from the root of your workspace directory
+to the component's directory. It is mandatory when `local` is `true`.
 * `local` (boolean): Whether or not the component is a local component. Local
 components won't be automatically managed. It's the user's responsability to
 keep them up to date. Runway will try to install it anyway. The default value
@@ -96,11 +105,11 @@ Runway will try to find an `install.sh` script in the component's root
 directory. If no installation is needed, you can just not provide an install
 command/script.
 * `pre_cmd` (string): Command to run *before* we clone the repo. It will be run
-from the `components` directory. It won't be run if the repo had already been
-cloned or if it's a local component.
+from the root of your workspace directory. It won't be run if the repo had
+already been cloned or if it's a local component.
 * `post_cmd` (string): Command to run *after* we get the repo. It will be run
-from the `components` directory. It won't be run if the repo had already been
-cloned or if it's a local component.
+from  the root of your workspace directory. It won't be run if the repo had
+already been cloned or if it's a local component.
 * `sha` (string): SHA to checkout. Can't be used together with `branch` or
 `tag`.
 * `tag` (string): Tag to checkout. Can't be used together with `branch` or

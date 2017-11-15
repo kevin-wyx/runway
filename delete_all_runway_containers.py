@@ -42,7 +42,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-a', '--all', action='store_true', default=False,
                     help="Delete everything")
 
-parser.add_argument('-p', '--prefix', default=DEFAULT_PREFIX,
+parser.add_argument('-p', '--prefix', default=None,
                     help="Prefix to look for when deleting. Default: "
                          "'{}'".format(DEFAULT_PREFIX))
 
@@ -50,6 +50,11 @@ args = parser.parse_args()
 
 delete_everything = args.all
 prefix = args.prefix
+if prefix is None:
+    prefix_was_provided = False
+    prefix = DEFAULT_PREFIX
+else:
+    prefix_was_provided = True
 
 VOLUME_GROUP = 'swift-runway-vg01'
 
@@ -68,7 +73,12 @@ else:
 
 # delete associated lvm volumes
 try:
-    lvlist = os.listdir('/dev/%s' % VOLUME_GROUP)
+
+    if prefix_was_provided:
+        lvlist = os.listdir('/dev/%s/%s*' % (VOLUME_GROUP, prefix))
+    else:
+        # We'll delete all the lvm volumes if a prefix was not provided
+        lvlist = os.listdir('/dev/%s' % VOLUME_GROUP)
 except FileNotFoundError:
     print('No volumes to delete')
 else:

@@ -34,6 +34,12 @@ def log(text, logfile_path):
                 datetime.datetime.now().strftime("%F %H:%M:%S"), text))
 
 
+def print_remaining_process_output(p, logfile_path=None):
+    remaining_output = p.stdout.read().decode('utf-8').strip()
+    if remaining_output != "":
+        print_and_log(p.stdout.read(), logfile_path)
+
+
 def run_command(cmd, cwd=None, logfile_path=None, shell=False):
     if cwd is not None:
         print_and_log("$ cd {}".format(cwd), logfile_path)
@@ -54,9 +60,7 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False):
         while p.poll() is None:
             l = p.stdout.readline()  # This blocks until it receives a newline.
             print_and_log(l.decode('utf-8').rstrip(), logfile_path)
-        remaining_output = p.stdout.read().decode('utf-8').strip()
-        if remaining_output != "":
-            print_and_log(p.stdout.read(), logfile_path)
+        print_remaining_process_output(p, logfile_path=logfile_path)
         exit_code = p.wait()
         if exit_code != 0:
             raise LoggedException(
@@ -65,12 +69,18 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False):
                 "these lines. Please read the output in order to check what "
                 "went wrong.".format(parsed_cmd, exit_code), logfile_path)
     except CalledProcessError as e:
+        if p:
+            print_remaining_process_output(p, logfile_path=logfile_path)
         raise LoggedException(
             "Error running '{}':\n{}\n{}".format(parsed_cmd, e.output, str(e)),
             logfile_path)
     except LoggedException:
+        if p:
+            print_remaining_process_output(p, logfile_path=logfile_path)
         raise
     except Exception as e:
+        if p:
+            print_remaining_process_output(p, logfile_path=logfile_path)
         raise LoggedException("Error running '{}':\n{}".format(cmd, str(e)),
                               logfile_path)
 

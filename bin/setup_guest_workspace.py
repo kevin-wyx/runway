@@ -30,8 +30,6 @@ def exit_with_error(error_text):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # TODO: Remove -c option. It's only been created to make all of this usable
-    # in the master branch before we get the whole workspaces thing working
     parser.add_argument('-m', '--manifest', default=DEFAULT_MANIFEST_PATH,
                         help="Path to manifest file. Default: '/path"
                              "-to-runway/{}/{}'".format(MANIFESTS_DIR_NAME,

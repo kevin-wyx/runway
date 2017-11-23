@@ -5,4 +5,4 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $SCRIPTDIR/lib/get_container_connection_options.sh
 
-ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- 'sudo su - swift'
+ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc stop ${RUNWAYCNAME} && echo "Done"

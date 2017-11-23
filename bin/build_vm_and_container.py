@@ -79,6 +79,13 @@ if __name__ == "__main__":
                            "env var.")
     try:
         run_command("vagrant up", cwd=RUNWAY_DIR)
+        colorprint.info("VM and container need to be rebooted after install.")
+        colorprint.info("Stopping container...")
+        run_command("./stop_container.sh", cwd=BIN_DIR)
+        colorprint.info("Restarting VM...")
+        run_command("vagrant reload", cwd=RUNWAY_DIR)
+        colorprint.info("Starting container...")
+        run_command("./start_container.sh", cwd=BIN_DIR)
     except Exception as e:
         exit_on_error(e.message)
 

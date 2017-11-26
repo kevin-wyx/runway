@@ -105,24 +105,6 @@ bin/cleanup_runway.sh
 CONTROLLER_NAME=<your-controller-name> bin/build_vm_and_container.py -m <path-to-manifest-file>
 ```
 
-After your VM and container are up and running but before you actually start
-using them, you'll need to manually restart them. We plan to do this
-automatically in the future, but for now this is what you need to do:
-
-```bash
-vagrant ssh
-lxc list
-lxc stop <your-container-name>
-exit
-vagrant reload
-vagrant ssh
-lxc start <your-container-name>
-exit
-```
-_NOTE: Your container name will typically be something like `swift-runway-XXX`,
-where `XXX` is a number from 001 to 999 (usually 001). To check your container
-name, you can run `lxc list` inside your VM (second step in the list above)._
-
 
 Using your container
 --------------------
@@ -133,9 +115,9 @@ This is how you log into your new container:
 bin/bash_on_current_container.sh
 ```
 
+
 Startup script for ProxyFS containers
 --------------------------------------
-
 
 Once you're in the container, the first thing you'll probably want to do is
 start Swift, ProxyFS, all of the related services and mount an SMB mount point
@@ -251,8 +233,22 @@ After this, you can re-create your environment just by running:
 vagrant up
 ```
 
-You will still need to restart your container and VM after their creation as
-explained in section "Quick install".
+After your VM and container are up and running with this method, but before you
+actually start using them, you'll need to manually restart them:
+
+```bash
+vagrant ssh
+lxc list
+lxc stop <your-container-name>
+exit
+vagrant reload
+vagrant ssh
+lxc start <your-container-name>
+exit
+```
+_NOTE: Your container name will typically be something like `swift-runway-XXX`,
+where `XXX` is a number from 001 to 999 (usually 001). To check your container
+name, you can run `lxc list` inside your VM (second step in the list above)._
 
 
 **Delete all your containers, your VM and all your code/components:**

@@ -40,7 +40,7 @@ Manifests
 Runway is meant to be used to run OpenStack Swift, but besides that, not everybody has
 the same needs. For instance, if you want to work on ProxyFS, there are several additional
 repos that you will need to clone.  Runway uses Manifest files to allow users to customize
-Runway for their needs. 
+Runway for their needs.
 
 You can read all the details on how to create a new manifest in [the manifest readme file](https://github.com/swiftstack/runway/blob/master/README_MANIFEST.md),
 but all most users will need to know is which manifest file to use.
@@ -194,9 +194,9 @@ Update your components
 ----------------------
 
 You could manually update all your components using Git, but the more
-components you have the tedious it gets. Runway provides a handy way to update
-all the components on your manifest with a single command. Additionally, it
-updates all your components' submodules in case they exist. From your runway
+components you have the more tedious it gets. Runway provides a handy way to
+update all the components on your manifest with a single command. Additionally,
+it updates all your components' submodules in case they exist. From your runway
 directory on your host, run:
 
 ```bash
@@ -204,11 +204,11 @@ bin/setup_guest_workspace.py -w <your-container-name>
 ```
 
 In case the container you specify doesn't exist, the script will just create a
-workspace in your `guest_workspaces` directory with all the components form the
+workspace in your `guest_workspaces` directory with all the components from the
 default manifest.
 
 Also, remember to periodically check for updates on Runway's code. From your
-Runway directory, tun:
+Runway directory, run:
 
 ```bash
 git pull
@@ -264,7 +264,7 @@ After this, you can re-create your environment by following all the steps in
 section "Quick install".
 
 
-How to use Runway without a VM 
+How to use Runway without a VM
 ------------------------------
 
 Use `bin/setup_guest_workspace.py` together with a manifest file (read

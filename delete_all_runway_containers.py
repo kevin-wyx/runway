@@ -14,6 +14,7 @@
 
 
 import argparse
+import glob
 import json
 import os
 import re
@@ -75,16 +76,16 @@ else:
 try:
 
     if prefix_was_provided:
-        lvlist = os.listdir('/dev/%s/%s*' % (VOLUME_GROUP, prefix))
+        lvlist = glob.glob('/dev/%s/%s*' % (VOLUME_GROUP, prefix))
     else:
         # We'll delete all the lvm volumes if a prefix was not provided
-        lvlist = os.listdir('/dev/%s' % VOLUME_GROUP)
+        lvlist = glob.glob('/dev/%s/*' % VOLUME_GROUP)
 except FileNotFoundError:
     print('No volumes to delete')
 else:
     num_deleted = 0
     for logical_volume in lvlist:
-        delete_command = 'lvremove --yes /dev/%s/%s' % (VOLUME_GROUP, logical_volume)
+        delete_command = 'lvremove --yes %s' % logical_volume
         try:
             p = subprocess.run(
                 shlex.split(delete_command),
@@ -93,9 +94,8 @@ else:
                 universal_newlines=True,
                 check=True)
         except subprocess.CalledProcessError as err:
-            print('Error deleting /dev/%s/%s:\n%s' % (VOLUME_GROUP,
-                                                      logical_volume,
-                                                      err.stderr.rstrip()),
+            print('Error deleting %s:\n%s' % (logical_volume,
+                                              err.stderr.rstrip()),
                   file=sys.stderr)
         else:
             num_deleted += 1

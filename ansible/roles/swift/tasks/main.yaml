@@ -140,9 +140,9 @@
     enabled: yes
   when: ansible_os_family == 'RedHat' and not tiny_install
 
-- include: setup_swift_logging.yaml
+- import_tasks: setup_swift_logging.yaml
 
-- include: install_libec.yaml
+- import_tasks: install_libec.yaml
 
 - name: install dependencies
   register: swiftdependenciesinstalled

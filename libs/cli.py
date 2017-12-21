@@ -49,6 +49,7 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False):
     else:
         parsed_cmd = shlex.split(stripped_cmd)
     print_and_log("$ {}".format(parsed_cmd), logfile_path)
+    p = None
     try:
         p = subprocess.Popen(parsed_cmd,
                              stdout=subprocess.PIPE,

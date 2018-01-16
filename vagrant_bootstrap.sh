@@ -64,7 +64,9 @@ EOF
 #lxc network attach-profile lxdbr0 default eth0
 ## End of what also seems to work
 
+usermod -G lxd vagrant
 lxc list > /dev/null
 sudo -H -u ubuntu bash -c 'lxc list > /dev/null'
+sudo -H -u vagrant bash -c 'lxc list > /dev/null'
 apt-get install linux-generic -y
 /vagrant/start.py -d RHEL -v 1G

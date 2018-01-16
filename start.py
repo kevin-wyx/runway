@@ -67,7 +67,6 @@ if __name__ == "__main__":
     distro = args.distro
     base_image = args.base_image
     install_components = not args.no_install
-    install_string = "" if install_components else " --no-install"
     delete_container = args.delete_container
     delete_container_string = "" if not delete_container \
         else " --delete-container"
@@ -98,7 +97,8 @@ if __name__ == "__main__":
                     "{} {} {} {}{}".format(distro, container_name, base_image,
                                            vol_size, debug_string), RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
-            container_name, debug=debug, drive_count=vol_count)
+            container_name, debug=debug, drive_count=vol_count,
+            no_install=args.no_install)
         # If we're in a "no install" mode, skip the rest
         # we assume it's already all set up (ie started from a snapshot)
         if install_components:

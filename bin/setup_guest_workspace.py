@@ -17,7 +17,8 @@ RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 MANIFESTS_DIR_NAME = 'manifests'
 MANIFESTS_DIR = os.path.join(RUNWAY_DIR, MANIFESTS_DIR_NAME)
 DEFAULT_MANIFEST_NAME = 'default_manifest.cfg'
-DEFAULT_MANIFEST_PATH = os.path.join(MANIFESTS_DIR, DEFAULT_MANIFEST_NAME)
+DEFAULT_MANIFEST_PATH = os.path.join(MANIFESTS_DIR, "templates",
+                                     DEFAULT_MANIFEST_NAME)
 
 
 def exit_with_error(error_text):

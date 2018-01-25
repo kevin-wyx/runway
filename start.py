@@ -94,8 +94,9 @@ if __name__ == "__main__":
 
     try:
         run_command("./make_base_container.sh "
-                    "{} {} {} {}{}".format(distro, container_name, base_image,
-                                           vol_size, debug_string), RUNWAY_DIR)
+                    "{} {} {} {} {}{}".format(distro, container_name,
+                                              base_image, vol_size, vol_count,
+                                              debug_string), RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,
             no_install=args.no_install)

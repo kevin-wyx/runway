@@ -15,10 +15,9 @@ from shutil import copyfile
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 MANIFESTS_DIR_NAME = 'manifests'
-MANIFESTS_DIR = os.path.join(RUNWAY_DIR, MANIFESTS_DIR_NAME)
+MANIFESTS_DIR = os.path.join(RUNWAY_DIR, MANIFESTS_DIR_NAME, "templates")
 DEFAULT_MANIFEST_NAME = 'default_manifest.cfg'
-DEFAULT_MANIFEST_PATH = os.path.join(MANIFESTS_DIR, "templates",
-                                     DEFAULT_MANIFEST_NAME)
+DEFAULT_MANIFEST_PATH = os.path.join(MANIFESTS_DIR, DEFAULT_MANIFEST_NAME)
 
 
 def exit_with_error(error_text):
@@ -32,9 +31,8 @@ def exit_with_error(error_text):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--manifest', default=DEFAULT_MANIFEST_PATH,
-                        help="Path to manifest file. Default: '/path"
-                             "-to-runway/{}/{}'".format(MANIFESTS_DIR_NAME,
-                                                        DEFAULT_MANIFEST_NAME))
+                        help="Path to manifest file. Default:"
+                            " '{}'".format(DEFAULT_MANIFEST_PATH))
     parser.add_argument('-w', '--workspace', default=None,
                         help="Workspace name")
 

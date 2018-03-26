@@ -118,9 +118,9 @@ if to_delete:
     for profile in to_delete:
         delete_command = 'lxc profile delete %s' % profile
         p = subprocess.run(shlex.split(delete_command))
-    print('%d profles deleted' % len(to_delete))
+    print('%d profiles deleted' % len(to_delete))
 else:
-    print('No profles to delete')
+    print('No profiles to delete')
 
 # delete container working spaces
 for dirname in os.listdir('guest_workspaces'):

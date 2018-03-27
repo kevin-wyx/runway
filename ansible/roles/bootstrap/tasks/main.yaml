@@ -47,7 +47,7 @@
 
 
 - name: Create swift user
-  when: swiftgroupcreated|success
+  when: swiftgroupcreated is success
   user:
     name: swift
     group: swift
@@ -62,7 +62,7 @@
     name: swift
     groups: sudo
     append: yes
-  when: swiftgroupcreated|success and ansible_os_family == 'Debian'
+  when: swiftgroupcreated is success and ansible_os_family == 'Debian'
 
 
 - name: Add swift user to wheel group
@@ -70,7 +70,7 @@
     name: swift
     groups: wheel
     append: yes
-  when: swiftgroupcreated|success and ansible_os_family == 'RedHat'
+  when: swiftgroupcreated is success and ansible_os_family == 'RedHat'
 
 - name: Allow 'sudo' group to have passwordless sudo
   lineinfile:
@@ -117,7 +117,7 @@
 
 - name: Update fstab with disks
   register: fstab_update
-  when: filesystemscreated|success
+  when: filesystemscreated is success
   mount:
     path: "{{ item.mount_point }}"
     src: /dev/{{ item.drive_letter }}
@@ -129,13 +129,13 @@
 - name: Mount disks
   register: drivesmounted
   command: mount -a
-  when: fstab_update|success
+  when: fstab_update is success
   args:
     warn: no
 
 - name: Set permissions
   register: permissionsset
-  when: drivesmounted|success and swiftusercreated|success
+  when: drivesmounted is success and swiftusercreated is success
   with_items: "{{ drive_list }}"
   file:
     recurse: yes

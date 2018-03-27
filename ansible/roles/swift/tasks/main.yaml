@@ -17,7 +17,7 @@
 
 - name: Create swift config files
   register: swiftconfigscreated
-  when: etcswiftcreated|success and not tiny_install
+  when: etcswiftcreated is success and not tiny_install
   copy:
     src: /home/swift/code/swift/doc/saio/swift/
     dest: /etc/swift/
@@ -26,7 +26,7 @@
 
 - name: Create tiny swift config files
   register: swiftconfigscreated
-  when: etcswiftcreated|success and tiny_install
+  when: etcswiftcreated is success and tiny_install
   copy:
     src: single_replica_policy/etc/swift/
     dest: /etc/swift/
@@ -34,7 +34,7 @@
     group: swift
 
 - name: Create swift test config file
-  when: etcswiftcreated|success and not tiny_install
+  when: etcswiftcreated is success and not tiny_install
   copy:
     src: /home/swift/code/swift/test/sample.conf
     dest: /etc/swift/test.conf
@@ -44,11 +44,11 @@
 - name: list of the .conf files and store it in register
   raw: find /etc/swift -type f -name "*.conf"
   register: swift_conf_files
-  when: swiftconfigscreated|success and not tiny_install
+  when: swiftconfigscreated is success and not tiny_install
 
 - name: Set swift user in configs
   register: configsed
-  when: swift_conf_files|success and not tiny_install
+  when: swift_conf_files is success and not tiny_install
   with_items: "{{ swift_conf_files.stdout_lines }}"
   replace:
     dest: "{{ item }}"
@@ -57,7 +57,7 @@
 
 - name: Move SAIO bin scripts
   register: bin_scripts
-  when: etcswiftcreated|success
+  when: etcswiftcreated is success
   copy:
     src: /home/swift/code/swift/doc/saio/bin/
     dest: /home/swift/bin
@@ -202,14 +202,14 @@
 
 - name: Install swift
   register: swiftinstalled
-  when: swiftdependenciesinstalled|success and libec_installed|success
+  when: swiftdependenciesinstalled is success and libec_installed is success
   command: /usr/bin/python ./setup.py develop
   args:
     chdir: /home/swift/code/swift
   become_user: swift
 
 - name: Build rings
-  when: swiftinstalled|success
+  when: swiftinstalled is success
   register: ringssetup
   command: ./remakerings
   args:

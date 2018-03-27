@@ -40,7 +40,7 @@
   register: libec_installed
 
 - name: Libec - install from source
-  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed|success and ansible_os_family == 'Debian'
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed is success and ansible_os_family == 'Debian'
   register: libec_installed
   shell: ./autogen.sh && ./configure && make && make test && sudo make install && ldconfig
   args:

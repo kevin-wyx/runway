@@ -7,7 +7,8 @@
 - name: update pip
   pip:
     name: pip
-    state: latest
+    state: present
+    version: 9.0.3
 
 - name: Install pip dependencies
   pip:

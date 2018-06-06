@@ -201,6 +201,12 @@
     - requirements.txt
     - test-requirements.txt
 
+# TODO: remove this as soon as a new version of eventlet is released
+- name: Skip faulty version of eventlet (0.23.0)
+  pip:
+    name: eventlet!=0.23.0
+    state: present
+
 - name: Install swift
   register: swiftinstalled
   when: swiftdependenciesinstalled is success and libec_installed is success

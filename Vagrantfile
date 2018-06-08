@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 DEFAULT_VOL_COUNT = "8"
-DEFAULT_VOL_SIZE = "10240"
+DEFAULT_VOL_SIZE = "20480"
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/bionic64"
@@ -10,8 +10,8 @@ Vagrant.configure(2) do |config|
   config.vm.box_check_update = false
   config.vm.provider :virtualbox do |vb|
     vb.name = "runway"
-    vb.cpus = Integer(ENV['VAGRANT_CPUS'] || 2)
-    vb.memory = Integer(ENV['VAGRANT_RAM'] || 4096)
+    vb.cpus = Integer(ENV['VAGRANT_CPUS'] || 6)
+    vb.memory = Integer(ENV['VAGRANT_RAM'] || 12288)
 
     # Disk management
     controller_name = (ENV['CONTROLLER_NAME'] || "SCSI")

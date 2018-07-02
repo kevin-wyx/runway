@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-# import datetime
 import os
 import sys
 
@@ -93,10 +92,10 @@ if __name__ == "__main__":
     vol_count = int(manifest.runway_options.get('number_of_drives', 8))
 
     try:
-        run_command("./make_base_container.sh "
-                    "{} {} {} {} {}{}".format(distro, container_name,
-                                              base_image, vol_size, vol_count,
-                                              debug_string), RUNWAY_DIR)
+        run_command("./make_base_container.py "
+                    "{} {} {} {} {}".format(distro, container_name,
+                                            base_image, vol_size, vol_count),
+                    RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,
             no_install=args.no_install)

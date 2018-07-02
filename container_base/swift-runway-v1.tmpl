@@ -2,7 +2,7 @@
 name: {name}
 config:
   raw.lxc: |-
-    lxc.aa_profile = unconfined
+    lxc.apparmor.profile = unconfined
     lxc.cgroup.devices.allow = b 252:* rwm
   security.privileged: "true"
 description: Swift object storage all-in-one

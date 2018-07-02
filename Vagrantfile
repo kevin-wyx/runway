@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "ubuntu/bionic64"
   config.vm.provider :virtualbox do |vb|
     vb.name = "runway"
     vb.cpus = Integer(ENV['VAGRANT_CPUS'] || 2)
@@ -18,5 +18,5 @@ Vagrant.configure(2) do |config|
   end
 
   # Bootstrapping
-  config.vm.provision "shell", path: "vagrant_bootstrap.sh"
+  config.vm.provision "shell", env: {'DISTRO' => ENV['DISTRO']}, path: "vagrant_bootstrap.sh"
 end

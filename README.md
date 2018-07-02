@@ -19,9 +19,9 @@ Requirements
 In order to create a Runway container, you need a host that satisfies the
 following requirements:
 
-- Run on Ubuntu 16.04.
+- Run on Ubuntu 18.04.
 - Have an lvm volume group named `swift-runway-vg01`.
-- LXD version 2.14 or higher is installed.
+- LXD version 3.0 or higher is installed.
 
 We anticipate that some developers' development environments won't meet these
 requirements by default. Runway additionally provides an easy way to create a

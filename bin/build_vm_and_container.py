@@ -14,6 +14,7 @@ RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 BIN_DIR = os.path.abspath(os.path.join(RUNWAY_DIR, 'bin'))
 SETUP_WORKSPACE_SCRIPT = 'setup_guest_workspace.py'
 VAGRANT_BOX_NAME = "ubuntu/xenial64"
+DEFAULT_CONTAINER_DISTRO = "centos7.5"
 
 
 def exit_on_error(error_text):
@@ -26,6 +27,9 @@ def exit_on_error(error_text):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--distro', default=DEFAULT_CONTAINER_DISTRO,
+                        help="Container distro (not the VM's). Default: "
+                             "{}".format(DEFAULT_CONTAINER_DISTRO))
     parser.add_argument('-m', '--manifest', default=None,
                         help="Path to manifest file. Run '{}/{} -h' to check "
                              "the default manifest "
@@ -36,6 +40,7 @@ if __name__ == "__main__":
                         help="Workspace name")
 
     args = parser.parse_args()
+    distro = args.distro
     manifest_file = os.path.abspath(args.manifest) \
         if args.manifest is not None else None
     update_box = not args.do_not_update_box
@@ -78,7 +83,7 @@ if __name__ == "__main__":
                            "Controller and provide it in the CONTROLLER_NAME "
                            "env var.")
     try:
-        run_command("vagrant up", cwd=RUNWAY_DIR)
+        run_command("vagrant up", cwd=RUNWAY_DIR, env={'DISTRO': distro})
         colorprint.info("VM and container need to be rebooted after install.")
         colorprint.info("Stopping container...")
         run_command("./stop_container.sh", cwd=BIN_DIR)

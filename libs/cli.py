@@ -1,4 +1,5 @@
 import datetime
+import os
 import re
 import shlex
 import subprocess
@@ -40,10 +41,15 @@ def print_remaining_process_output(p, logfile_path=None):
         print_and_log(p.stdout.read(), logfile_path)
 
 
-def run_command(cmd, cwd=None, logfile_path=None, shell=False):
+def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
+    envs_for_popen = os.environ.copy()
+    if env is not None:
+        envs_for_popen.update(env)
     if cwd is not None:
         print_and_log("$ cd {}".format(cwd), logfile_path)
     env_vars, stripped_cmd = None, cmd  #extract_env_vars(cmd)
+    if env_vars is not None:
+        envs_for_popen.update(env_vars)
     if shell:
         parsed_cmd = stripped_cmd
     else:
@@ -55,7 +61,7 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT,
                              cwd=cwd,
-                             env=env_vars,
+                             env=envs_for_popen,
                              bufsize=1,
                              shell=shell)
         while p.poll() is None:

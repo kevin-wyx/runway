@@ -105,6 +105,26 @@ bin/cleanup_runway.sh
 CONTROLLER_NAME=<your-controller-name> bin/build_vm_and_container.py -m <path-to-manifest-file>
 ```
 
+### Specifying your container distro ###
+
+When you build your VM and container, you have the option to specify what
+distro will be used on your container:
+
+```bash
+cd <your-runway-path>
+bin/build_vm_and_container.py -m <path-to-manifest-file> -d <distro>
+```
+
+The currently supported options are:
+- `ss-centos7.5` (default): CentOS 7.5. A copy of LXD's
+`images:centos/7/amd64`, hosted by SwiftStack, will be used. As opposite to
+regular `images:centos/7/amd64`, this image will always be pinned to
+CentOS 7.5.
+- `rhel`: CentOS 7. LXD's `images:centos/7/amd64` image will be used. At the
+time of this writing, it's CentOS 7.5, but it will most probably change once
+new versions of the operating system are released.
+- `ubuntu`: Ubuntu 16.04. LXD's `ubuntu:16.04` image will be used.
+
 
 Using your container
 --------------------

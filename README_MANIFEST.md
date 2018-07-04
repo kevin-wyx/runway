@@ -30,7 +30,7 @@ dest_path = functional-tests
 url = git@github.com:swiftstack/ProxyFS.git
 branch = development
 dest_path = ProxyFS/src/github.com/swiftstack/ProxyFS
-install = ci/ansible/install_proxyfs.sh runway
+install = ci/ansible/install_proxyfs.sh runway swiftstack
 
 [cstruct]
 url = git@github.com:swiftstack/cstruct.git

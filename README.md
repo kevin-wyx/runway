@@ -30,8 +30,8 @@ VirtualBox VM that will meet them.
 If you do want to create the containers inside the Runway-provided VM, your
 development environment must satisfy these requirements:
 
-- VirtualBox version 5.1.22 or higher is installed.
-- Vagrant version 1.9.0.3 or higher is installed.
+- VirtualBox version 5.2.8 or higher is installed.
+- Vagrant version 2.1.2 or higher is installed.
 
 
 Manifests

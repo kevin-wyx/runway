@@ -13,8 +13,8 @@ SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 BIN_DIR = os.path.abspath(os.path.join(RUNWAY_DIR, 'bin'))
 SETUP_WORKSPACE_SCRIPT = 'setup_guest_workspace.py'
-VAGRANT_BOX_NAME = "ubuntu/xenial64"
-DEFAULT_CONTAINER_DISTRO = "centos7.5"
+VAGRANT_BOX_NAME = "ubuntu/bionic64"
+DEFAULT_CONTAINER_DISTRO = "ss-centos7.5"
 
 
 def exit_on_error(error_text):

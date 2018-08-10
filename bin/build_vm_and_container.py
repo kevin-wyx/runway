@@ -7,7 +7,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '..')))
 
 from libs import colorprint
+from libs import workspaces
 from libs.cli import run_command
+from libs.manifest import Manifest
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 RUNWAY_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
@@ -25,6 +27,35 @@ def exit_on_error(error_text):
     sys.exit(1)
 
 
+def get_manifest(workspace_name):
+    if workspace_name is None:
+        exit_on_error("No workspace found.")
+    workspace_path = workspaces.get_workspace_path(workspace_name)
+    manifest_path = workspaces.get_manifest_path(workspace_name)
+    try:
+        return Manifest(manifest_path, workspace_path)
+    except Exception as e:
+        exit_on_error(e.message)
+
+
+def vol_size_in_mebibytes(size_str):
+    try:
+        return int(size_str) / 1024 / 1024
+    except Exception:
+        pass
+
+    if size_str.endswith("T"):
+        return int(size_str[:-1]) * 1024 * 1024
+    if size_str.endswith("G"):
+        return int(size_str[:-1]) * 1024
+    if size_str.endswith("M"):
+        return int(size_str[:-1])
+    if size_str.endswith("K"):
+        return int(size_str[:-1]) / 1024
+    if size_str.endswith("B"):
+        return int(size_str[:-1]) / 1024 / 1024
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--distro', default=DEFAULT_CONTAINER_DISTRO,
@@ -34,8 +65,6 @@ if __name__ == "__main__":
                         help="Path to manifest file. Run '{}/{} -h' to check "
                              "the default manifest "
                              "file.".format(BIN_DIR, SETUP_WORKSPACE_SCRIPT))
-    parser.add_argument('-u', '--do_not_update_box', action='store_true',
-                        default=False, help="Do not try to update Vagrant box")
     parser.add_argument('-w', '--workspace', default=None,
                         help="Workspace name")
 
@@ -43,37 +72,24 @@ if __name__ == "__main__":
     distro = args.distro
     manifest_file = os.path.abspath(args.manifest) \
         if args.manifest is not None else None
-    update_box = not args.do_not_update_box
     workspace_name = args.workspace
 
     # Setup workspace
-    cmd = "./setup_guest_workspace.py"
+    cmd = "./{}".format(SETUP_WORKSPACE_SCRIPT)
     if manifest_file is not None:
         cmd += " -m {}".format(manifest_file)
     if workspace_name is not None:
         cmd += " -w {}".format(workspace_name)
     run_command(cmd, cwd=BIN_DIR)
 
-    # Update Vagrant box
-    if update_box:
-        colorprint.info("\nWe will keep updating the box until we get a "
-                        "stable release...")
-        try:
-            run_command("vagrant box update --box {}".format(VAGRANT_BOX_NAME),
-                        cwd=RUNWAY_DIR)
-        except Exception as e:
-            colorprint.warning("Vagrant box update failed. If it's your first "
-                               "time running this script, it's ok because you "
-                               "didn't have the box yet. If it's not your "
-                               "first time, maybe we should worry...\n")
-        colorprint.info("But we will keep our disks free of old boxes. ;)")
-        try:
-            run_command("vagrant box prune --name {}".format(VAGRANT_BOX_NAME),
-                        cwd=RUNWAY_DIR)
-        except Exception as e:
-            exit_on_error(e.message)
-    else:
-        colorprint.info("Skipping box update")
+    # We need to know the number of drives and the drive size in order to
+    # create a Virtual Disk large enough for 2 containers when creating the VM
+    if workspace_name is None:
+        workspace_name = workspaces.get_last_workspace_name()
+    manifest = get_manifest(workspace_name)
+
+    vol_size = manifest.get_config_option("drive_size")
+    vol_count = int(manifest.get_config_option('number_of_drives'))
 
     # Vagrant up
     if os.environ.get('CONTROLLER_NAME') is None:
@@ -82,8 +98,13 @@ if __name__ == "__main__":
                            "VirtualBox, check the name of your SCSI "
                            "Controller and provide it in the CONTROLLER_NAME "
                            "env var.")
+    vagrant_env_vars = {
+        'DISTRO': distro,
+        'VOL_SIZE': "{}".format(vol_size_in_mebibytes(vol_size)),
+        'VOL_COUNT': "{}".format(vol_count),
+    }
     try:
-        run_command("vagrant up", cwd=RUNWAY_DIR, env={'DISTRO': distro})
+        run_command("vagrant up", cwd=RUNWAY_DIR, env=vagrant_env_vars)
         colorprint.info("VM and container need to be rebooted after install.")
         colorprint.info("Stopping container...")
         run_command("./stop_container.sh", cwd=BIN_DIR)

@@ -17,4 +17,4 @@ apt-get install linux-generic -y
 if [ -z "$DISTRO" ]; then
     DISTRO=centos7.5
 fi
-/vagrant/start.py -d $DISTRO -v 1G
+/vagrant/start.py -d $DISTRO

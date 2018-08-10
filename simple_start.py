@@ -51,7 +51,7 @@ if __name__ == '__main__':
         base_image = 'runway-base-%s' % man.runway_options['family']
         debug = man.runway_options.get('debug') == 'True'
         debug_string = " --debug" if debug else ""
-        vol_count = int(man.runway_options.get('number_of_drives', 8))
+        vol_count = int(man.runway_options['number_of_drives'])
         distro = man.runway_options.get('distro', 'ubuntu')
         tiny_deploy = vol_count == 1
         no_install = tiny_deploy or \
@@ -61,10 +61,10 @@ if __name__ == '__main__':
 
         # starting from a base image doesn't work if the base image
         # has fewer drives than the current manifest you're loading
-        run_command("./make_base_container.sh "
-                    "{} {} {} {} {}{}".format(
-                        distro, container_name, base_image, vol_size,
-                        vol_count, debug_string), RUNWAY_DIR)
+        run_command("./make_base_container.py "
+                    "{} {} {} {} {}".format(distro, container_name, vol_size,
+                                              vol_count, base_image),
+                    RUNWAY_DIR)
 
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count)

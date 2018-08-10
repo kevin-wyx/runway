@@ -7,6 +7,7 @@ import sys
 from libs import colorprint
 from libs import workspaces
 from libs.cli import run_command
+from libs.manifest import DEFAULTS as manifest_defaults
 from libs.manifest import Manifest
 import setup_and_run_ansible_on_guest
 
@@ -18,7 +19,6 @@ DEFAULT_BASE_IMAGE = "runway-base"
 # DEFAULT_CONTAINER_NAME = "swift-runway-{}".format(
 #     datetime.datetime.now().strftime("%F-%H-%M-%S-%f"))
 DEFAULT_DISTRO = "ubuntu"
-DEFAULT_VOL_SIZE = "10G"
 
 
 def exit_with_error(error_text):
@@ -53,8 +53,10 @@ if __name__ == "__main__":
                         default=False, help="Delete container after snapshot.")
     parser.add_argument('-s', '--no-snapshot', action='store_true',
                         default=False, help="Don't create snapshot.")
-    parser.add_argument('-v', '--vol-size', default=DEFAULT_VOL_SIZE,
-                        help="Vol size. Default: {}".format(DEFAULT_VOL_SIZE))
+    parser.add_argument('-v', '--vol-size', default=None,
+                        help="Vol size. This will override the manifest. "
+                             "Default: "
+                             "{}".format(manifest_defaults["drive_size"]))
     parser.add_argument('-w', '--workspace', default=None,
                         help="Workspace name. Default: last workspace with "
                              "name formatted like "
@@ -79,6 +81,10 @@ if __name__ == "__main__":
     if workspace_name is None:
         workspace_name = workspaces.get_last_workspace_name()
     manifest = get_manifest(workspace_name)
+
+    if vol_size is None:
+        vol_size = manifest.get_config_option("drive_size")
+
     family = manifest.get_config_option("family")
     if family is not None:
         if base_image != DEFAULT_BASE_IMAGE:
@@ -89,12 +95,12 @@ if __name__ == "__main__":
 
     container_name = workspace_name
 
-    vol_count = int(manifest.runway_options.get('number_of_drives', 8))
+    vol_count = int(manifest.get_config_option('number_of_drives'))
 
     try:
         run_command("./make_base_container.py "
-                    "{} {} {} {} {}".format(distro, container_name,
-                                            base_image, vol_size, vol_count),
+                    "{} {} {} {} {}".format(distro, container_name, vol_size,
+                                            vol_count, base_image),
                     RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,

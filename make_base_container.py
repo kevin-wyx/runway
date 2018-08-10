@@ -12,8 +12,6 @@ from libs.cli import run_command
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 # assume well-known lvm volume group on host
 #   ...later we'll figure out how to make this dynamic
-DEFAULT_VOL_SIZE = "1G"
-DEFAULT_VOL_COUNT = 8
 VG_NAME = "swift-runway-vg01"
 SWIFTSTACK_IMAGES_PREFIX = "ss-"
 SWIFTSTACK_IMAGES_BASE_URL = \
@@ -182,16 +180,11 @@ if __name__ == "__main__":
     parser.add_argument('distro', type=str, help='Container distro')
     parser.add_argument('cname', metavar='containername', help='Container '
                                                                'name')
+    parser.add_argument('volsize', help='Volume size')
+    parser.add_argument('volcount', type=int, help='Volume count')
     parser.add_argument('baseimage', nargs='?',
                         help='Base image. Defaults: \'images:centos/7/amd64\' '
                              'for RHEL distro, \'ubuntu:16.04\' otherwise')
-    parser.add_argument('volsize', nargs='?', default=DEFAULT_VOL_SIZE,
-                        help='Volume size. Default: '
-                             '{}'.format(DEFAULT_VOL_SIZE))
-    parser.add_argument('volcount', nargs='?', type=int,
-                        default=DEFAULT_VOL_COUNT,
-                        help='Volume count. Default: '
-                             '{}'.format(DEFAULT_VOL_COUNT))
 
     args = parser.parse_args()
     distro = args.distro

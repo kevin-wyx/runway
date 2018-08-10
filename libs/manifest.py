@@ -7,6 +7,10 @@ from libs.cli import run_command
 
 RUNWAY_CONFIG_SECTION = "runway"
 DOWNLOAD_LOG_FILE_NAME = "download.log"
+DEFAULTS = {
+    "drive_size": "10G",
+    "number_of_drives": 8,
+}
 
 
 class Manifest(object):
@@ -27,11 +31,17 @@ class Manifest(object):
             self.validate_config_options_for_section(section_options, section)
             if section == RUNWAY_CONFIG_SECTION:
                 self.runway_options = section_options
+                self.set_default_runway_options()
             else:
                 self.sections.append(section)
                 self.components_options[section] = section_options
 
         self.workspace_dir = workspace_dir
+
+    def set_default_runway_options(self):
+        for key, value in DEFAULTS.items():
+            if key not in self.runway_options:
+                self.runway_options[key] = value
 
     def retrieve_components(self):
         logfile_path = os.path.abspath(os.path.join(self.workspace_dir,

@@ -9,8 +9,11 @@ RUNWAY_CONFIG_SECTION = "runway"
 DOWNLOAD_LOG_FILE_NAME = "download.log"
 DEFAULTS = {
     "drive_size": "10G",
-    "number_of_drives": 8,
+    "drive_count": 8,
 }
+BOOLEAN_RUNWAY_OPTIONS = {"debug", "no_install", "no_snapshot", "proxyfs",
+                          "tiny"}
+BOOLEAN_OPTIONS = {"local"}
 
 
 class Manifest(object):
@@ -97,9 +100,14 @@ class Manifest(object):
 
     def get_config_options_for_section(self, config, section):
         config_options = {}
-        boolean_options = ["local"]
+
+        if section == RUNWAY_CONFIG_SECTION:
+            boolean_options_for_current_section = BOOLEAN_RUNWAY_OPTIONS
+        else:
+            boolean_options_for_current_section = BOOLEAN_OPTIONS
+
         for (key, value) in config.items(section):
-            if key in boolean_options:
+            if key in boolean_options_for_current_section:
                 try:
                     config_options[key] = config.getboolean(section, key)
                 except ValueError:
@@ -111,17 +119,15 @@ class Manifest(object):
                                     "case insensitive.".format(section, key))
             else:
                 config_options[key] = value
-        for option in boolean_options:
-            if option not in config_options and \
-                            section != RUNWAY_CONFIG_SECTION:
+
+        for option in boolean_options_for_current_section:
+            if option not in config_options:
                 config_options[option] = False
+
         return config_options
 
-    def validate_config_options_for_section(self, config_options, section):
-        if section == RUNWAY_CONFIG_SECTION:
-            # All options for runway are optional, so no need to check them
-            return
-
+    def validate_config_options_for_component_section(self, config_options,
+                                                      section):
         if sum(["branch" in config_options, "sha" in config_options,
                 "tag" in config_options]) > 1:
             raise Exception("Invalid configuration for component '{}': you can"
@@ -133,6 +139,17 @@ class Manifest(object):
         if not config_options["local"] and "url" not in config_options:
             raise Exception("URL not found in config for component '{}'"
                             ".".format(section))
+
+    def validate_config_options_for_runway_section(self, config_options):
+        # There's nothing to validate at the moment
+        pass
+
+    def validate_config_options_for_section(self, config_options, section):
+        if section == RUNWAY_CONFIG_SECTION:
+            self.validate_config_options_for_runway_section(config_options)
+        else:
+            self.validate_config_options_for_component_section(config_options,
+                                                               section)
 
     def get_absolute_dest_path_for_section(self, section):
         return os.path.join(self.workspace_dir,

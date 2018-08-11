@@ -47,17 +47,17 @@ if __name__ == '__main__':
     container_name = workspace_name
 
     try:
-        vol_size = man.runway_options['drive_size']
-        base_image = 'runway-base-%s' % man.runway_options['family']
-        debug = man.runway_options.get('debug') == 'True'
+        vol_size = man.get_config_option('drive_size')
+        base_image = 'runway-base-%s' % man.get_config_option('family')
+        debug = man.get_config_option('debug')
         debug_string = " --debug" if debug else ""
-        vol_count = int(man.runway_options['number_of_drives'])
+        vol_count = int(man.get_config_option('drive_count'))
         distro = man.runway_options.get('distro', 'ubuntu')
-        tiny_deploy = vol_count == 1
+        tiny_deploy = man.get_config_option('tiny')
         no_install = tiny_deploy or \
-            man.runway_options.get('no_install') == 'True'
+            man.get_config_option('no_install')
         no_snap = no_install or \
-            man.runway_options.get('no_snapshot') == 'True'
+            man.get_config_option('no_snapshot')
 
         # starting from a base image doesn't work if the base image
         # has fewer drives than the current manifest you're loading
@@ -67,7 +67,8 @@ if __name__ == '__main__':
                     RUNWAY_DIR)
 
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
-            container_name, debug=debug, drive_count=vol_count)
+            container_name, debug=debug, drive_count=vol_count,
+            tiny_install=tiny_deploy)
 
         if not no_install:
             run_command("./generic_installer.py {}".format(container_name),

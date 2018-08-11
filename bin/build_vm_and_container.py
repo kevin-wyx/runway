@@ -89,7 +89,7 @@ if __name__ == "__main__":
     manifest = get_manifest(workspace_name)
 
     vol_size = manifest.get_config_option("drive_size")
-    vol_count = int(manifest.get_config_option('number_of_drives'))
+    vol_count = int(manifest.get_config_option('drive_count'))
 
     # Vagrant up
     if os.environ.get('CONTROLLER_NAME') is None:

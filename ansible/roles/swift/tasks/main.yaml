@@ -24,6 +24,14 @@
     owner: swift
     group: swift
 
+- name: Copy custom swift.conf file for ProxyFS
+  when: etcswiftcreated is success and proxyfs
+  copy:
+    src: proxyfs/etc/swift/
+    dest: /etc/swift/
+    owner: swift
+    group: swift
+
 - name: Create tiny swift config files
   register: swiftconfigscreated
   when: etcswiftcreated is success and tiny_install
@@ -66,7 +74,7 @@
     mode: 0775
 
 - name: Copy modified remakerings
-  when: not tiny_install
+  when: not tiny_install and not proxyfs
   copy:
     src: remakerings
     dest: /home/swift/bin/remakerings
@@ -78,6 +86,15 @@
   when: tiny_install
   copy:
     src: single_replica_policy/remakerings
+    dest: /home/swift/bin/remakerings
+    owner: swift
+    group: swift
+    mode: 0775
+
+- name: Copy modified remakerings for ProxyFS
+  when: proxyfs
+  copy:
+    src: proxyfs/remakerings
     dest: /home/swift/bin/remakerings
     owner: swift
     group: swift

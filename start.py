@@ -19,6 +19,7 @@ DEFAULT_BASE_IMAGE = "runway-base"
 # DEFAULT_CONTAINER_NAME = "swift-runway-{}".format(
 #     datetime.datetime.now().strftime("%F-%H-%M-%S-%f"))
 DEFAULT_DISTRO = "ubuntu"
+PROXYFS_MANDATORY_VOL_COUNT = 8
 
 
 def exit_with_error(error_text):
@@ -95,7 +96,14 @@ if __name__ == "__main__":
 
     container_name = workspace_name
 
-    vol_count = int(manifest.get_config_option('number_of_drives'))
+    vol_count = int(manifest.get_config_option('drive_count'))
+    tiny = manifest.get_config_option('tiny')
+    proxyfs = manifest.get_config_option('proxyfs')
+    if proxyfs and vol_count != PROXYFS_MANDATORY_VOL_COUNT:
+        exit_with_error("ProxyFS configuration assumes {} drives are used. It "
+                        "will not work properly with current {} drives "
+                        "configuration.".format(PROXYFS_MANDATORY_VOL_COUNT,
+                                                vol_count))
 
     try:
         run_command("./make_base_container.py "
@@ -104,7 +112,7 @@ if __name__ == "__main__":
                     RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,
-            no_install=args.no_install)
+            no_install=args.no_install, tiny_install=tiny, proxyfs=proxyfs)
         # If we're in a "no install" mode, skip the rest
         # we assume it's already all set up (ie started from a snapshot)
         if install_components:

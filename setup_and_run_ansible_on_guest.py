@@ -6,7 +6,8 @@ import json
 from libs.cli import run_command
 
 
-def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1):
+def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1,
+                          tiny_install=False, proxyfs=False):
     if not no_install:
         # get all the guest-executed stuff pushed over
         # lxc file push ./ansible/ $CNAME/root/
@@ -30,9 +31,8 @@ def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1):
                     return
                 yield '/srv/%d/node/d%d' % (i, total)
 
-    extra_vars = {'no_install': no_install,
-                  'tiny_install': drive_count == 1,
-                 }
+    extra_vars = {'no_install': no_install, 'tiny_install': tiny_install,
+                  'proxyfs': proxyfs}
     drive_list = []
     all_mounts = available_mounts()
     for i in range(drive_count):
@@ -71,7 +71,10 @@ def main():
     no_install = '--no-install' in sys.argv
 
     # TODO
-    # need to accept "tiny_mode" and also (list of drives or number of drives)
+    # We never call this script directly, we just import and call
+    # setup_and_run_ansible function. We should clean this up. Otherwise, we
+    # need to accept "tiny_mode", "proxyfs" and also (list of drives or number
+    # of drives)
 
     setup_and_run_ansible(cname, debug=debug, no_install=no_install)
 

@@ -5,6 +5,11 @@
     path: /home/swift/code/liberasurecode
   register: libec_stat
 
+- name: Is pyeclib in components
+  stat:
+    path: /home/swift/code/pyeclib
+  register: pyeclib_stat
+
 - name: Libec - install build tools (Debian)
   when: libec_stat.stat.exists and libec_stat.stat.isdir and ansible_os_family == 'Debian'
   register: build_tools_installed
@@ -26,22 +31,16 @@
     - automake
     - libtool
 
-- name: Download and Install liberasurecode
-  yum:
-    name: https://rpmfind.net/linux/fedora/linux/releases/28/Everything/x86_64/os/Packages/l/liberasurecode-1.5.0-5.fc28.x86_64.rpm
-    state: present
-  when: ansible_os_family == 'RedHat'
-
-- name: Download and Install liberasurecode-devel
-  yum:
-    name: https://rpmfind.net/linux/fedora/linux/releases/28/Everything/x86_64/os/Packages/l/liberasurecode-devel-1.5.0-5.fc28.x86_64.rpm
-    state: present
-  when: ansible_os_family == 'RedHat'
-  register: libec_installed
-
 - name: Libec - install from source
-  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed is success and ansible_os_family == 'Debian'
+  when: libec_stat.stat.exists and libec_stat.stat.isdir and build_tools_installed is success
   register: libec_installed
-  shell: ./autogen.sh && ./configure && make && make test && sudo make install && ldconfig
+  shell: ./autogen.sh && ./configure && make && sudo make install && sed -i '1s/^/\/usr\/local\/lib\n/' /etc/ld.so.conf && ldconfig
   args:
     chdir: /home/swift/code/liberasurecode
+
+- name: pyeclib - install from source
+  when: pyeclib_stat.stat.exists and libec_installed is success
+  register: pyeclib_installed
+  shell: pip install -e . && pip install -r test-requirements.txt
+  args:
+    chdir: /home/swift/code/pyeclib

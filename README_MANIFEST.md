@@ -9,6 +9,9 @@ A typical manifest file might look like this:
 ```ini
 [runway]
 family = ProxyFS
+drive_size = 5G
+drive_count = 8
+proxyfs = yes
 
 [swift]
 url = git@github.com:swiftstack/swift.git
@@ -72,14 +75,23 @@ Any configuration option that affects how Runway runs, will be included in the
 `runway` section. Adding a `runway` section is completely optional, and so is
 adding any configuration options inside this section.
 
-\* For now, we only have one option, but the set of possible options will grow
-in the future.
+Here's a list of currently available options:
 
-Here's a list of available options:
-
+* `debug` (boolean): If set to `true`, additional debugging output will be
+printed.
+* `drive_count` (integer): Amount of drives that will be set up. Every drive's
+size will be `drive_size`. Defaults to `8`.
+* `drive_size` (string): It must be an integer followed by a one letter
+abbreviations for data units (T, G, M, K, B). It represents the size for each
+drive that will be setup in the container. Defaults to `10G`.
 * `family` (string): If this option is provided, runway will try to create
 containers based on a snapshot using that same family name. If none is found,
 it will create a new container from scratch and a new snapshot based on it.
+* `proxyfs` (boolean): If set to `true`, Swift will be configured with a set of
+options that are optimal for ProxyFS development and optimal usage of disk
+space.
+* `tiny` (boolean): If set to `true`, Swift will be set up with very minimal
+options (1 single-replica policy, limited number of servers, etc.)
 
 
 Components options
@@ -123,3 +135,5 @@ already been cloned or if it's a local component.
 \* Valid values for `false` booleans are: `0`, `no`, `false`, and `off`.
 
 \* Boolean values are case insensitive.
+
+\* Boolean values default to `false` if not specified.

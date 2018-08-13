@@ -82,7 +82,7 @@ printed.
 * `drive_count` (integer): Amount of drives that will be set up. Every drive's
 size will be `drive_size`. Defaults to `8`.
 * `drive_size` (string): It must be an integer followed by a one letter
-abbreviations for data units (T, G, M, K, B). It represents the size for each
+abbreviation for data units (T, G, M, K, B). It represents the size for each
 drive that will be setup in the container. Defaults to `10G`.
 * `family` (string): If this option is provided, runway will try to create
 containers based on a snapshot using that same family name. If none is found,

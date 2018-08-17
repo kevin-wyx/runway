@@ -1,4 +1,9 @@
 import datetime
+import platform
+
+if platform.system() == 'Windows':
+    from colorama import init
+    init()
 
 
 class bcolors:

@@ -7,7 +7,7 @@ import sys
 from libs import colorprint
 from libs import workspaces
 from libs.cli import run_command
-from libs.manifest import DEFAULTS as manifest_defaults
+from libs.manifest import RUNWAY_DEFAULTS as manifest_defaults
 from libs.manifest import Manifest
 import setup_and_run_ansible_on_guest
 
@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
     container_name = workspace_name
 
+    swift = manifest.get_config_option('swift')
+
     vol_count = int(manifest.get_config_option('drive_count'))
     tiny = manifest.get_config_option('tiny')
     proxyfs = manifest.get_config_option('proxyfs')
@@ -112,7 +114,7 @@ if __name__ == "__main__":
                     RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,
-            no_install=args.no_install, tiny_install=tiny, proxyfs=proxyfs)
+            no_install=args.no_install, tiny_install=tiny, proxyfs=proxyfs, swift=swift)
         # If we're in a "no install" mode, skip the rest
         # we assume it's already all set up (ie started from a snapshot)
         if install_components:

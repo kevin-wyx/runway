@@ -7,7 +7,7 @@ from libs.cli import run_command
 
 
 def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1,
-                          tiny_install=False, proxyfs=False):
+                          tiny_install=False, swift=True, proxyfs=False):
     if not no_install:
         # get all the guest-executed stuff pushed over
         # lxc file push ./ansible/ $CNAME/root/
@@ -60,9 +60,10 @@ def setup_and_run_ansible(cname, debug=False, no_install=False, drive_count=1,
 
     # install
     if not no_install:
-        cmd = 'lxc exec %s -- ansible-playbook -i "localhost," -c local --extra-vars \'%s\' ' \
-              '/root/ansible/master_playbook.yaml' % (cname, extra_vars)
-        run_command(cmd)
+        if swift:
+            cmd = 'lxc exec %s -- ansible-playbook -i "localhost," -c local --extra-vars \'%s\' ' \
+                  '/root/ansible/master_playbook.yaml' % (cname, extra_vars)
+            run_command(cmd)
 
 
 def main():

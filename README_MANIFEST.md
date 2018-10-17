@@ -87,6 +87,8 @@ drive that will be setup in the container. Defaults to `10G`.
 * `family` (string): If this option is provided, runway will try to create
 containers based on a snapshot using that same family name. If none is found,
 it will create a new container from scratch and a new snapshot based on it.
+* `swift` (boolean): If set to `true`, Swift will be installed and configured
+on the container.  Defaults to `true`. 
 * `proxyfs` (boolean): If set to `true`, Swift will be configured with a set of
 options that are optimal for ProxyFS development and optimal usage of disk
 space.

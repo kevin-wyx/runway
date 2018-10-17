@@ -7,12 +7,13 @@ from libs.cli import run_command
 
 RUNWAY_CONFIG_SECTION = "runway"
 DOWNLOAD_LOG_FILE_NAME = "download.log"
-DEFAULTS = {
+RUNWAY_DEFAULTS = {
     "drive_size": "10G",
     "drive_count": 8,
+    "swift": True,
 }
 BOOLEAN_RUNWAY_OPTIONS = {"debug", "no_install", "no_snapshot", "proxyfs",
-                          "tiny"}
+                          "tiny", "swift"}
 BOOLEAN_OPTIONS = {"local"}
 
 
@@ -42,7 +43,7 @@ class Manifest(object):
         self.workspace_dir = workspace_dir
 
     def set_default_runway_options(self):
-        for key, value in DEFAULTS.items():
+        for key, value in RUNWAY_DEFAULTS.items():
             if key not in self.runway_options:
                 self.runway_options[key] = value
 
@@ -122,7 +123,7 @@ class Manifest(object):
 
         for option in boolean_options_for_current_section:
             if option not in config_options:
-                config_options[option] = False
+                config_options[option] = RUNWAY_DEFAULTS.get(option, False)
 
         return config_options
 

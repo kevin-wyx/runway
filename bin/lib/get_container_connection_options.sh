@@ -32,7 +32,8 @@ if [ $RUNWAYCNAME == "CURRENT" ]; then
     RUNWAYCNAME=`ssh ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc list | grep swift-runway | cut -d '|' -f2 | awk '{$1=$1;print}' | tail -1`
 fi
 
-if [ -z $RUNWAYCNAME ]; then
+# If $OPTIONALRUNWAYCNAME is set, it means we don't require a container name
+if [ -z $RUNWAYCNAME ] && [ -z $OPTIONALRUNWAYCNAME ]; then
     # no currently running containers
     echo "No runway guest containers found. Exiting."
     exit 1

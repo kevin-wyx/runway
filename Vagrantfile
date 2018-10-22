@@ -20,7 +20,13 @@ Vagrant.configure(2) do |config|
       # We want to allow 2 equal containers to be created within the same VM
       # Volume size in MiB * number of devices x 2 containers
       vol_count = Integer(ENV['VOL_COUNT'] || DEFAULT_VOL_COUNT)
+      if vol_count == 0
+        vol_count = Integer(DEFAULT_VOL_COUNT)
+      end
       vol_size = Integer(ENV['VOL_SIZE'] || DEFAULT_VOL_SIZE)
+      if vol_size == 0
+        vol_size = Integer(DEFAULT_VOL_SIZE)
+      end
       vmdk_size = vol_size * vol_count * 2
       vb.customize [ "createmedium", "disk", "--filename", file_to_disk, "--format", "vmdk", "--size", vmdk_size ]
     end

@@ -36,5 +36,5 @@ Vagrant.configure(2) do |config|
   end
 
   # Bootstrapping
-  config.vm.provision "shell", env: {'DISTRO' => ENV['DISTRO']}, path: "vagrant_bootstrap.sh"
+  config.vm.provision "shell", path: "vagrant_bootstrap.sh"
 end

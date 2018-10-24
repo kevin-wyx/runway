@@ -99,19 +99,16 @@ if __name__ == "__main__":
                            "Controller and provide it in the CONTROLLER_NAME "
                            "env var.")
     vagrant_env_vars = {
-        'DISTRO': distro,
         'VOL_SIZE': "{}".format(vol_size_in_mebibytes(vol_size)),
         'VOL_COUNT': "{}".format(vol_count),
     }
     try:
         run_command("vagrant up", cwd=RUNWAY_DIR, env=vagrant_env_vars)
-        colorprint.info("VM and container need to be rebooted after install.")
-        colorprint.info("Stopping container...")
-        run_command("./stop_container.sh", cwd=BIN_DIR)
-        colorprint.info("Restarting VM...")
+        colorprint.success("VM successfully created.")
+        colorprint.info("VM needs to be rebooted before container creation.")
         run_command("vagrant reload", cwd=RUNWAY_DIR)
-        colorprint.info("Starting container...")
-        run_command("./start_container.sh", cwd=BIN_DIR)
+        colorprint.info("Creating container...")
+        run_command("./create_container.sh -d {}".format(distro), cwd=BIN_DIR)
     except Exception as e:
         exit_on_error(e.message)
 

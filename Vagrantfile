@@ -28,6 +28,8 @@ Vagrant.configure(2) do |config|
         vol_size = Integer(DEFAULT_VOL_SIZE)
       end
       vmdk_size = vol_size * vol_count * 2
+      # It turns out we need the vmdk size in MB (not MiB)
+      vmdk_size = (vmdk_size * 1024 * 1024) / 1000000
       vb.customize [ "createmedium", "disk", "--filename", file_to_disk, "--format", "vmdk", "--size", vmdk_size ]
     end
     vb.customize [ "storageattach", :id , "--storagectl", controller_name, "--port", 2, "--device", 0, "--type", "hdd", "--medium", file_to_disk]

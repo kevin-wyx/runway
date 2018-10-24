@@ -19,10 +19,6 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-echo MANIFEST        = "${MANIFEST}"
-echo THE REST        = "${*}"
-
-
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ -n "$MANIFEST" ]; then

@@ -42,6 +42,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--debug', action='store_true',
                         default=False, help="Enable debug mode")
+    parser.add_argument('-c', '--container-name', default=None,
+                        help="Container name. Default: the name of the "
+                             "workspace")
     parser.add_argument('-d', '--distro', default=DEFAULT_DISTRO,
                         help="Container distro. Default: "
                              "{}".format(DEFAULT_DISTRO))
@@ -66,6 +69,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     debug = args.debug
     debug_string = " --debug" if debug else ""
+    container_name = args.container_name
     distro = args.distro
     base_image = args.base_image
     install_components = not args.no_install
@@ -94,7 +98,8 @@ if __name__ == "__main__":
                                "image name will not be used.")
         base_image = family
 
-    container_name = workspace_name
+    if container_name is None:
+        container_name = workspace_name
 
     swift = manifest.get_config_option('swift')
 
@@ -114,7 +119,8 @@ if __name__ == "__main__":
                     RUNWAY_DIR)
         setup_and_run_ansible_on_guest.setup_and_run_ansible(
             container_name, debug=debug, drive_count=vol_count,
-            no_install=args.no_install, tiny_install=tiny, proxyfs=proxyfs, swift=swift)
+            no_install=args.no_install, tiny_install=tiny, proxyfs=proxyfs,
+            swift=swift, workspace_name=workspace_name)
         # If we're in a "no install" mode, skip the rest
         # we assume it's already all set up (ie started from a snapshot)
         if install_components:
@@ -124,8 +130,8 @@ if __name__ == "__main__":
             # We need to find repos there (excluding stuff like swift itself)
             # and call the install command from the manifest or install.sh at
             # the root of the component (not finding any of them is ok).
-            run_command("./generic_installer.py {}".format(container_name),
-                        RUNWAY_DIR)
+            run_command("./generic_installer.py {} {}".format(
+                container_name, workspace_name), RUNWAY_DIR)
             if not no_snapshot:
                 run_command("./snapshot_created_container.sh "
                             "{} {}{}{}".format(container_name, base_image,

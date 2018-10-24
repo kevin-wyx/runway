@@ -6,6 +6,41 @@ import sys
 import os.path
 
 
+def undo_lv_and_exit(last_used_index, cname, volume_group):
+    print("There was an error trying to create logical volume "
+          "'/dev/%s/%s-vol%s'. We'll now try to undo LV creation." % (
+        volume_group, cname, last_used_index), file=sys.stderr)
+    for i in range(last_used_index + 1):
+        lv_path = "/dev/%s/%s-vol%s" % (volume_group, cname, i)
+        remove_command = "lvremove -y '%s'" % lv_path
+        try:
+            subprocess.run(shlex.split(remove_command), stdout=subprocess.PIPE,
+                           check=True)
+            print("Attempting to remove logical volume '%s'... "
+                  "Done!" % lv_path, file=sys.stderr)
+        except subprocess.CalledProcessError:
+            if i == last_used_index:
+                print("Attempting to remove logical volume '%s'... "
+                      "Fail! This is the logical volume that just failed "
+                      "being created, so it should be fine." % lv_path,
+                      file=sys.stderr)
+            else:
+                print("Attempting to remove logical volume '%s'... "
+                      "Fail! You might have some leftover logical volumes. "
+                      "You can check running 'lvdisplay'." % lv_path,
+                      file=sys.stderr)
+    lxc_profile_name = "%s-profile" % cname
+    try:
+        subprocess.run(shlex.split("lxc profile delete %s" % lxc_profile_name),
+                       stdout=subprocess.PIPE, check=True)
+        print("Attempting to delete lxc profile '%s'... Done!" %
+              lxc_profile_name, file=sys.stderr)
+    except subprocess.CalledProcessError:
+        print("Attempting to delete lxc profile '%s'... Fail!" %
+              lxc_profile_name, file=sys.stderr)
+    sys.exit(1)
+
+
 CNAME = sys.argv[1]
 VOLUME_GROUP = sys.argv[2]
 try:
@@ -33,8 +68,11 @@ for i in range(DRIVE_COUNT):
     drive_letter = chr(ord('b') + i)
     create_command = "lvcreate -y --size %s --name '%s-vol%s' %s" % (
         DRIVE_SIZE, CNAME, i, VOLUME_GROUP)
-    p = subprocess.run(shlex.split(create_command), stdout=subprocess.PIPE)
-    # TODO: check return code for errors
+    try:
+        p = subprocess.run(shlex.split(create_command), stdout=subprocess.PIPE,
+                           check=True)
+    except subprocess.CalledProcessError:
+        undo_lv_and_exit(i, CNAME, VOLUME_GROUP)
     display_command = "lvdisplay '/dev/%s/%s-vol%s'" % (VOLUME_GROUP, CNAME, i)
     p = subprocess.run(shlex.split(display_command), stdout=subprocess.PIPE)
     for line in p.stdout.decode().split('\n'):

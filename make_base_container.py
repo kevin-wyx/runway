@@ -2,9 +2,11 @@
 
 import argparse
 import os
+import random
 import requests
 import sys
 import tempfile
+import uuid
 
 from libs import colorprint
 from libs.cli import run_command
@@ -205,13 +207,13 @@ if __name__ == "__main__":
     try:
         # make a container profile that maps 8 block devices to the guest
         run_command("lxc profile create {}-profile".format(container_name))
-        run_command("./make_lxc_profile.py {} {} {} {} | "
-                    "lxc profile edit {}-profile".format(container_name,
-                                                         VG_NAME,
-                                                         volume_size,
-                                                         volume_count,
-                                                         container_name),
+        rand_file_name = str(uuid.UUID(int=random.getrandbits(128)))
+        run_command("./make_lxc_profile.py {} {} {} {} > "
+                    "/tmp/{}".format(container_name, VG_NAME, volume_size,
+                                     volume_count, rand_file_name),
                     cwd=SCRIPT_DIR, shell=True)
+        run_command("cat /tmp/{} | lxc profile edit {}-profile".format(
+            rand_file_name, container_name), cwd=SCRIPT_DIR, shell=True)
 
         # launch the new container
         print("Trying to launch container from base image "

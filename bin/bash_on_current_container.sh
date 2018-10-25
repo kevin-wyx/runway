@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ $# -gt 0 ]]; then
+    RUNWAYCNAME="$1"
+fi
+
 # run external to the runway host
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -42,6 +42,9 @@ def print_remaining_process_output(p, logfile_path=None):
 
 
 def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
+    # TODO: when a script uses run_command to call another script that also
+    # uses run_command, weird output formatting is shown. Fix it!
+    # Eg: bin/build_vm_and_container.py calling start.py
     envs_for_popen = os.environ.copy()
     if env is not None:
         envs_for_popen.update(env)

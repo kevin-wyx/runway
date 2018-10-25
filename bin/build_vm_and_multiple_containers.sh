@@ -41,7 +41,7 @@ help() {
     echo "                     you specifically need to create the images."
 }
 
-POSITIONAL=()
+ADDITIONALARGS=()
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -85,12 +85,12 @@ case $key in
     shift # past value
     ;;
     *)    # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
+    ADDITIONALARGS+=("$1") # save it in an array for later
     shift # past argument
     ;;
 esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+set -- "${ADDITIONALARGS[@]}" # restore additional parameters
 
 if [[ -z "$CONTAINER_COUNT" ]]; then
     echo "ERROR: -C / --container-count argument is mandatory"
@@ -132,5 +132,5 @@ fi
 
 $SCRIPTDIR/build_vm_and_container.py --distro $DISTRO --workspace $WORKSPACE --container-name ${CONTAINER_PREFIX}1
 for (( i=2; i<=$CONTAINER_COUNT; i++ )); do
-    $SCRIPTDIR/create_container.sh --distro $DISTRO --workspace $WORKSPACE -c ${CONTAINER_PREFIX}${i}
+    $SCRIPTDIR/create_container.sh --distro $DISTRO --workspace $WORKSPACE -c ${CONTAINER_PREFIX}${i} ${*}
 done

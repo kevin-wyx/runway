@@ -48,13 +48,17 @@ key="$1"
 
 case $key in
     -c|--container-name)
-    echo "Error: you can't specify a container name when creating multiple containers at once."
+    echo "ERROR: you can't specify a container name when creating multiple containers at once."
+    echo ""
+    help
     exit 1
     ;;
     -C|--container-count)
     CONTAINER_COUNT="$2"
     if [[ "$CONTAINER_COUNT" -lt 2 ]]; then
-        echo "Container count has to be 2 or greater"
+        echo "ERROR: container count has to be 2 or greater"
+        echo ""
+        help
         exit 1
     fi
     shift # past argument

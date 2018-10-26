@@ -8,7 +8,9 @@ eval RUNWAYDIR=`pwd`
 
 if [ -z "$RUNWAYHOST" ]; then
     if vagrant ssh-config >/dev/null 2>&1; then
-        echo "Connecting to Vagrant VM..."
+        if [ -z "$QUIET" ]; then
+            echo "Connecting to Vagrant VM..."
+        fi
         # We currently don't support multiple Vagrant hosts, but if we want to (some day), we just need to populate
         # this variable:
         VAGRANTHOST=""
@@ -19,7 +21,7 @@ if [ -z "$RUNWAYHOST" ]; then
     fi
 fi
 
-if [ -z "$VAGRANTOPTIONS" ]; then
+if [ -z "$VAGRANTOPTIONS" ] && [ -z "$QUIET" ]; then
     echo "Connecting to $RUNWAYHOST..."
 fi
 
@@ -39,4 +41,5 @@ if [ -z $RUNWAYCNAME ] && [ -z $OPTIONALRUNWAYCNAME ]; then
     exit 1
 fi
 
-#ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- 'sudo su - swift'
+# Example of how to use vars we just got:
+# ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- 'sudo su - swift'

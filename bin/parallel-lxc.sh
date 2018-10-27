@@ -81,8 +81,8 @@ OPTIONALRUNWAYCNAME=1
 source $SCRIPTDIR/lib/get_container_connection_options.sh
 
 for RUNWAYCNAME in "${CONTAINERS[@]}"; do
+    echo ""
     echo "===> Running '${*}' on ${RUNWAYCNAME}"
     ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"
     echo "===> End of '${*}' on ${RUNWAYCNAME}"
-    echo "---------------------------------"
 done

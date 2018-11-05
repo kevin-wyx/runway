@@ -128,13 +128,14 @@ if [[ -z "$WORKSPACE" ]]; then
     WORKSPACE=$CONTAINER_PREFIX
 fi
 
+set -e
+
 if [[ -n "$MANIFEST" ]]; then
-    $SCRIPTDIR/setup_guest_workspace.py --manifest $MANIFEST --workspace $WORKSPACE
+    $SCRIPTDIR/build_vm_and_container.py --distro $DISTRO --manifest $MANIFEST --workspace $WORKSPACE --container-name ${CONTAINER_PREFIX}1
 else
-    $SCRIPTDIR/setup_guest_workspace.py --workspace $WORKSPACE
+    $SCRIPTDIR/build_vm_and_container.py --distro $DISTRO --workspace $WORKSPACE --container-name ${CONTAINER_PREFIX}1
 fi
 
-$SCRIPTDIR/build_vm_and_container.py --distro $DISTRO --workspace $WORKSPACE --container-name ${CONTAINER_PREFIX}1
 for (( i=2; i<=$CONTAINER_COUNT; i++ )); do
     $SCRIPTDIR/create_container.sh --distro $DISTRO --workspace $WORKSPACE -c ${CONTAINER_PREFIX}${i} ${*}
 done

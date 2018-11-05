@@ -24,8 +24,8 @@ def extract_env_vars(cmd):
 
 
 def print_and_log(text, logfile_path):
-    print(text)
-    log(text, logfile_path)
+    print(text.encode('utf-8'))
+    log(text.encode('utf-8'), logfile_path)
 
 
 def log(text, logfile_path):

@@ -3,6 +3,7 @@ import os
 import re
 import shlex
 import subprocess
+import sys
 from subprocess import CalledProcessError
 
 
@@ -23,9 +24,14 @@ def extract_env_vars(cmd):
     return env_vars if len(env_vars) > 0 else None, remainder
 
 
+def native_string(s):
+    if sys.version_info[0] < 3:
+        return s
+    return s.decode('utf-8')
+
 def print_and_log(text, logfile_path):
-    print(text.encode('utf-8'))
-    log(text.encode('utf-8'), logfile_path)
+    print(text)
+    log(text, logfile_path)
 
 
 def log(text, logfile_path):
@@ -36,9 +42,9 @@ def log(text, logfile_path):
 
 
 def print_remaining_process_output(p, logfile_path=None):
-    remaining_output = p.stdout.read().decode('utf-8').strip()
+    remaining_output = native_string(p.stdout.read()).strip()
     if remaining_output != "":
-        print_and_log(p.stdout.read(), logfile_path)
+        print_and_log(native_string(p.stdout.read()), logfile_path)
 
 
 def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
@@ -68,8 +74,8 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
                              bufsize=1,
                              shell=shell)
         while p.poll() is None:
-            l = p.stdout.readline()  # This blocks until it receives a newline.
-            print_and_log(l.decode('utf-8').rstrip(), logfile_path)
+            l = native_string(p.stdout.readline())  # This blocks until it receives a newline.
+            print_and_log(l.rstrip(), logfile_path)
         print_remaining_process_output(p, logfile_path=logfile_path)
         exit_code = p.wait()
         if exit_code != 0:

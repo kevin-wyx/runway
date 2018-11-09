@@ -137,5 +137,5 @@ else
 fi
 
 for (( i=2; i<=$CONTAINER_COUNT; i++ )); do
-    $SCRIPTDIR/create_container.sh --distro $DISTRO --workspace $WORKSPACE -c ${CONTAINER_PREFIX}${i} ${*}
+    $SCRIPTDIR/create_container.sh --distro $DISTRO --workspace $WORKSPACE --container-name ${CONTAINER_PREFIX}${i} ${*}
 done

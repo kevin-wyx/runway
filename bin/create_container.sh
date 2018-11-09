@@ -32,6 +32,4 @@ source $SCRIPTDIR/lib/get_container_connection_options.sh
 # Ideally we should get expected options from the manifest
 # But for now, you must specify -d <DISTRO> -v <VOLSIZE> e.g., -d RHEL -v 1G
 echo "Running in the Linux VM: sudo /vagrant/start.py ${*}"
-echo
-echo ssh ${VAGRANTOPTIONS} ${RUNWAYHOST} sudo /vagrant/start.py ${*} 
 ssh ${VAGRANTOPTIONS} ${RUNWAYHOST} sudo /vagrant/start.py ${*} && echo "Done"

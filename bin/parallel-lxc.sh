@@ -10,6 +10,7 @@ help() {
     echo "Flags:"
     echo ""
     echo "  --help:      Prints this message."
+    echo "  -c, --copy:  <src> <dest>. Copy file located in <src> location to <dest> in container."
     echo "  -h, --hosts: Hosts file. Each line must contain a container name."
     echo "  -H, --host:  Additional host entry (container name). You can"
     echo "               specify more than one additional entry by passing the"
@@ -24,11 +25,13 @@ do
 key="$1"
 
 case $key in
-    --copy)
+    -c|--copy)
     COPY=true
-    FNAME="$2"
+    SRC="$2"
+    DEST="$3"
     shift # past argument
-    shift # past value
+    shift # past src
+    shift # past dest
     ;;
     --help)
     help
@@ -91,9 +94,9 @@ for RUNWAYCNAME in "${CONTAINERS[@]}"; do
     echo ""
     if $COPY
     then
-        echo "===> Running COPY '${FNAME}' to ${RUNWAYCNAME}"
-        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push "$FNAME" ${RUNWAYCNAME}/root
-        echo "===> End of COPY '$${FNAME}' on ${RUNWAYCNAME}"
+        echo "===> Running COPY '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
+        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push ${SRC} ${RUNWAYCNAME}/${DEST}
+        echo "===> End of COPY '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
     else
         echo "===> Running '${*}' on ${RUNWAYCNAME}"
         ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"

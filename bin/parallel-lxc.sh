@@ -26,7 +26,9 @@ key="$1"
 case $key in
     --copy)
     COPY=true
+    FNAME="$2"
     shift # past argument
+    shift # past value
     ;;
     --help)
     help
@@ -89,9 +91,9 @@ for RUNWAYCNAME in "${CONTAINERS[@]}"; do
     echo ""
     if $COPY
     then
-        echo "===> Running COPY '${*}' to ${RUNWAYCNAME}"
-        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push "${*}" ${RUNWAYCNAME}/root
-        echo "===> End of COPY '${*}' on ${RUNWAYCNAME}"
+        echo "===> Running COPY '${FNAME}' to ${RUNWAYCNAME}"
+        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push "$FNAME" ${RUNWAYCNAME}/root
+        echo "===> End of COPY '$${FNAME}' on ${RUNWAYCNAME}"
     else
         echo "===> Running '${*}' on ${RUNWAYCNAME}"
         ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"

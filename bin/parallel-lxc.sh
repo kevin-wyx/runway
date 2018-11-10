@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -x
+set -x
 
 help() {
     echo "Description:"
@@ -16,6 +16,7 @@ help() {
     echo "               -H / --host flag multiple times."
 }
 
+COPY=false
 POSITIONAL=()
 CMDLINEHOSTS=()
 while [[ $# -gt 0 ]]
@@ -23,6 +24,10 @@ do
 key="$1"
 
 case $key in
+    --copy)
+    COPY=true
+    shift # past argument
+    ;;
     --help)
     help
     exit 0
@@ -82,7 +87,14 @@ source $SCRIPTDIR/lib/get_container_connection_options.sh
 
 for RUNWAYCNAME in "${CONTAINERS[@]}"; do
     echo ""
-    echo "===> Running '${*}' on ${RUNWAYCNAME}"
-    ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"
-    echo "===> End of '${*}' on ${RUNWAYCNAME}"
+    if $COPY
+    then
+        echo "===> Running COPY '${*}' to ${RUNWAYCNAME}"
+        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push "${*}" ${RUNWAYCNAME}/root
+        echo "===> End of COPY '${*}' on ${RUNWAYCNAME}"
+    else
+        echo "===> Running '${*}' on ${RUNWAYCNAME}"
+        ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"
+        echo "===> End of '${*}' on ${RUNWAYCNAME}"
+    fi
 done

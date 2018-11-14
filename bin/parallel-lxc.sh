@@ -10,14 +10,14 @@ help() {
     echo "Flags:"
     echo ""
     echo "  --help:      Prints this message."
-    echo "  -c, --copy:  <src> <dest>. Copy file located in <src> location to <dest> in container."
+    echo "  -p, --push:  <src> <dest>. Push file located in <src> location to <dest> in container."
     echo "  -h, --hosts: Hosts file. Each line must contain a container name."
     echo "  -H, --host:  Additional host entry (container name). You can"
     echo "               specify more than one additional entry by passing the"
     echo "               -H / --host flag multiple times."
 }
 
-COPY=false
+PUSH=false
 POSITIONAL=()
 CMDLINEHOSTS=()
 while [[ $# -gt 0 ]]
@@ -25,8 +25,8 @@ do
 key="$1"
 
 case $key in
-    -c|--copy)
-    COPY=true
+    -p|--push)
+    PUSH=true
     SRC="$2"
     DEST="$3"
     shift # past argument
@@ -92,11 +92,11 @@ source $SCRIPTDIR/lib/get_container_connection_options.sh
 
 for RUNWAYCNAME in "${CONTAINERS[@]}"; do
     echo ""
-    if $COPY
+    if $PUSH
     then
-        echo "===> Running COPY '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
+        echo "===> Running PUSH '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
         ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc file push ${SRC} ${RUNWAYCNAME}/${DEST}
-        echo "===> End of COPY '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
+        echo "===> End of PUSH '${SRC}' to '${RUNWAYCNAME}/${DEST}'"
     else
         echo "===> Running '${*}' on ${RUNWAYCNAME}"
         ssh -t ${VAGRANTOPTIONS} ${RUNWAYHOST} lxc exec ${RUNWAYCNAME} -- "${*}"

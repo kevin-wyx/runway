@@ -58,6 +58,9 @@ def vol_size_in_mebibytes(size_str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--container-name', default=None,
+                        help="Container name. Default: the name of the "
+                             "workspace")
     parser.add_argument('-d', '--distro', default=DEFAULT_CONTAINER_DISTRO,
                         help="Container distro (not the VM's). Default: "
                              "{}".format(DEFAULT_CONTAINER_DISTRO))
@@ -69,6 +72,7 @@ if __name__ == "__main__":
                         help="Workspace name")
 
     args = parser.parse_args()
+    container_name = args.container_name
     distro = args.distro
     manifest_file = os.path.abspath(args.manifest) \
         if args.manifest is not None else None
@@ -86,6 +90,9 @@ if __name__ == "__main__":
     # create a Virtual Disk large enough for 2 containers when creating the VM
     if workspace_name is None:
         workspace_name = workspaces.get_last_workspace_name()
+        provided_workspace_name = False
+    else:
+        provided_workspace_name = True
     manifest = get_manifest(workspace_name)
 
     vol_size = manifest.get_config_option("drive_size")
@@ -99,24 +106,28 @@ if __name__ == "__main__":
                            "Controller and provide it in the CONTROLLER_NAME "
                            "env var.")
     vagrant_env_vars = {
-        'DISTRO': distro,
         'VOL_SIZE': "{}".format(vol_size_in_mebibytes(vol_size)),
         'VOL_COUNT': "{}".format(vol_count),
     }
     try:
         run_command("vagrant up", cwd=RUNWAY_DIR, env=vagrant_env_vars)
-        colorprint.info("VM and container need to be rebooted after install.")
-        colorprint.info("Stopping container...")
-        run_command("./stop_container.sh", cwd=BIN_DIR)
-        colorprint.info("Restarting VM...")
+        colorprint.success("VM successfully created.")
+        colorprint.info("VM needs to be rebooted before container creation.")
         run_command("vagrant reload", cwd=RUNWAY_DIR)
-        colorprint.info("Starting container...")
-        run_command("./start_container.sh", cwd=BIN_DIR)
+        colorprint.info("Creating container...")
+        create_container_cmd = "./create_container.sh -d {}".format(distro)
+        if container_name is not None:
+            create_container_cmd += " --container-name {}".format(
+                container_name)
+        if provided_workspace_name:
+            create_container_cmd += " --workspace {}".format(workspace_name)
+        run_command(create_container_cmd, cwd=BIN_DIR)
     except Exception as e:
         exit_on_error(e.message)
 
     # Log into our brand new container?
-    colorprint.success("Your new container is now up and running! If you want "
-                       "to log into it, just run the following command from "
-                       "the runway directory:\n\n\t"
-                       "bin/bash_on_current_container.sh")
+    colorprint.success(
+        "Your new container is now up and running! If you want to log into "
+        "it, just run the following command from the runway directory:\n\n"
+        "\tbin/bash_on_current_container.sh {}".format(
+            workspace_name if container_name is None else container_name))

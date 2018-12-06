@@ -82,10 +82,14 @@ def get_install_commands(manifest, workspace_path, logfile_path):
 
 if __name__ == "__main__":
     container_name = sys.argv[1]
-    workspace_path = workspaces.get_workspace_path(container_name)
+    if len(sys.argv) > 2:
+        workspace_name = sys.argv[2]
+    else:
+        workspace_name = container_name
+    workspace_path = workspaces.get_workspace_path(workspace_name)
     logfile_path = os.path.abspath(os.path.join(workspace_path,
                                                 INSTALL_LOG_FILE_NAME))
-    manifest = get_manifest(container_name, logfile_path)
+    manifest = get_manifest(workspace_name, logfile_path)
 
     install_commands = get_install_commands(manifest, workspace_path,
                                             logfile_path)

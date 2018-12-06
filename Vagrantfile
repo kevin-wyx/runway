@@ -11,7 +11,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider :virtualbox do |vb|
     vb.name = "runway"
     vb.cpus = Integer(ENV['VAGRANT_CPUS'] || 2)
-    vb.memory = Integer(ENV['VAGRANT_RAM'] || 4096)
+    vb.memory = Integer(ENV['VAGRANT_RAM'] || 6144)
 
     # Disk management
     controller_name = (ENV['CONTROLLER_NAME'] || "SCSI")

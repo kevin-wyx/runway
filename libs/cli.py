@@ -56,7 +56,7 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
         envs_for_popen.update(env)
     if cwd is not None:
         print_and_log("$ cd {}".format(cwd), logfile_path)
-    env_vars, stripped_cmd = None, cmd  #extract_env_vars(cmd)
+    env_vars, stripped_cmd = None, cmd  # extract_env_vars(cmd)
     if env_vars is not None:
         envs_for_popen.update(env_vars)
     if shell:
@@ -74,8 +74,9 @@ def run_command(cmd, cwd=None, logfile_path=None, shell=False, env=None):
                              bufsize=1,
                              shell=shell)
         while p.poll() is None:
-            l = native_string(p.stdout.readline())  # This blocks until it receives a newline.
-            print_and_log(l.rstrip(), logfile_path)
+            # This blocks until it receives a newline:
+            line = native_string(p.stdout.readline())
+            print_and_log(line.rstrip(), logfile_path)
         print_remaining_process_output(p, logfile_path=logfile_path)
         exit_code = p.wait()
         if exit_code != 0:

@@ -7,8 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '..')))
 
 from libs import colorprint
-from libs.workspaces import create_workspace_dir
-from libs.workspaces import MANIFEST_COPY_NAME
+from libs.workspaces import create_workspace_dir, MANIFEST_COPY_NAME
 from libs.manifest import Manifest
 from shutil import copyfile
 
@@ -31,8 +30,8 @@ def exit_with_error(error_text):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--manifest', default=DEFAULT_MANIFEST_PATH,
-                        help="Path to manifest file. Default:"
-                            " '{}'".format(DEFAULT_MANIFEST_PATH))
+                        help="Path to manifest file. Default: '{}'".format(
+                            DEFAULT_MANIFEST_PATH))
     parser.add_argument('-w', '--workspace', default=None,
                         help="Workspace name")
 

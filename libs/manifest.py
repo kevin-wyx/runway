@@ -178,6 +178,8 @@ class Manifest(object):
 
     def git_checkout_and_pull_component(self, section, dest_path,
                                         logfile_path=None):
+        run_command("git fetch", dest_path, logfile_path=logfile_path)
+
         section_options = self.components_options[section]
         git_cmd = "git checkout "
         if "tag" in section_options:

@@ -24,8 +24,10 @@
     owner: swift
     group: swift
 
-# doc/saio/swift/proxy-server.conf defines 2 s3api entries, so we'll patch /etc/swift/proxy-server.conf
-# entries. Remove this once it's fixed.
+# doc/saio/swift/proxy-server.conf defines 2 s3api entries, so we'll patch
+# /etc/swift/proxy-server.conf to only have 1 entry.
+# TODO: Remove this and the patch file once it's fixed.
+
 - name: yum install patch
   yum: name={{ item }} state=present
   become: yes
@@ -47,7 +49,7 @@
     src: "patches/proxy-server.conf.patch"
     dest: "/etc/swift/proxy-server.conf"
 
-# End of patching doc/saio/swift/proxy-server.conf
+# End of patching /etc/swift/proxy-server.conf
 
 - name: Copy custom swift.conf file for ProxyFS
   when: etcswiftcreated is success and proxyfs

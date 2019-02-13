@@ -24,6 +24,31 @@
     owner: swift
     group: swift
 
+# doc/saio/swift/proxy-server.conf defines 2 s3api entries, so we'll patch /etc/swift/proxy-server.conf
+# entries. Remove this once it's fixed.
+- name: yum install patch
+  yum: name={{ item }} state=present
+  become: yes
+  become_user: root
+  with_items:
+    - patch
+  when: ansible_os_family == 'RedHat'
+
+- name: apt install patch
+  apt: name={{ item }} state=present
+  become: yes
+  become_user: root
+  with_items:
+    - patch
+  when: ansible_os_family == 'Debian'
+
+- name: apply patch to file
+  patch:
+    src: "patches/proxy-server.conf.patch"
+    dest: "/etc/swift/proxy-server.conf"
+
+# End of patching doc/saio/swift/proxy-server.conf
+
 - name: Copy custom swift.conf file for ProxyFS
   when: etcswiftcreated is success and proxyfs
   copy:

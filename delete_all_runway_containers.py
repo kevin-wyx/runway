@@ -67,6 +67,7 @@ to_delete = [x['name'] for x in containers if x['name'].startswith(prefix)]
 
 if to_delete:
     delete_command = 'lxc delete --force %s' % ' '.join(to_delete)
+    print(delete_command)
     p = subprocess.run(shlex.split(delete_command))
     print('%d containers deleted' % len(to_delete))
 else:
@@ -86,6 +87,7 @@ else:
     num_deleted = 0
     for logical_volume in lvlist:
         delete_command = 'lvremove --yes %s' % logical_volume
+        print(delete_command)
         try:
             p = subprocess.run(
                 shlex.split(delete_command),
@@ -117,6 +119,7 @@ for line in p.stdout.decode().split('\n'):
 if to_delete:
     for profile in to_delete:
         delete_command = 'lxc profile delete %s' % profile
+        print(delete_command)
         p = subprocess.run(shlex.split(delete_command))
     print('%d profiles deleted' % len(to_delete))
 else:
@@ -145,6 +148,7 @@ for line in p.stdout.decode().split('\n'):
 if images_to_delete:
     print('Deleting %d images' % len(images_to_delete))
     image_delete_command = 'lxc image delete %s' % ' '.join(images_to_delete)
+    print(image_delete_command)
     p = subprocess.run(shlex.split(image_delete_command))
 else:
     print('No images to delete')
